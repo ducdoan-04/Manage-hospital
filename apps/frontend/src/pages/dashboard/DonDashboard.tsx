@@ -13,14 +13,18 @@ export function DonDashboard() {
         });
     }, []);
 
-    if (!data) return <div className="p-8">Loading dashboard...</div>;
+    if (!data) return <div className="p-8 text-center text-slate-500">Đang tải dữ liệu tổng quan...</div>;
+
+    const formatVnd = (amount: number) => {
+        return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+    };
 
     return (
         <div className="flex h-full flex-col bg-[#F8FAFC]">
             <div className="mb-6">
-                <h2 className="text-sm font-medium text-slate-500">Dashboard</h2>
-                <h1 className="mt-1 text-3xl font-bold text-slate-900">Good morning, {user?.firstName || "Denise"}</h1>
-                <p className="mt-2 text-sm text-slate-500">Facility overview — Riverside Wing</p>
+                <h2 className="text-sm font-medium text-slate-500">Bảng Điều Khiển</h2>
+                <h1 className="mt-1 text-3xl font-bold text-slate-900">Xin chào, {user?.firstName || "BS. Trưởng khoa"}</h1>
+                <p className="mt-2 text-sm text-slate-500">Tổng quan Hoạt động Lâm sàng — Khu Nội trú Đa khoa</p>
             </div>
 
             <div className="mb-6 grid grid-cols-4 gap-6">
@@ -29,7 +33,7 @@ export function DonDashboard() {
                         <Clock className="h-6 w-6 text-yellow-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Pending Review</p>
+                        <p className="text-sm font-medium text-slate-500">Kế hoạch Chờ duyệt</p>
                         <p className="text-2xl font-bold text-slate-900">{data.pendingReview}</p>
                     </div>
                 </div>
@@ -39,7 +43,7 @@ export function DonDashboard() {
                         <ShieldAlert className="h-6 w-6 text-red-500" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Open Incidents</p>
+                        <p className="text-sm font-medium text-slate-500">Sự cố Đang xử lý</p>
                         <p className="text-2xl font-bold text-slate-900">{data.openIncidents}</p>
                     </div>
                 </div>
@@ -49,7 +53,7 @@ export function DonDashboard() {
                         <Activity className="h-6 w-6 text-yellow-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Reassessments Due</p>
+                        <p className="text-sm font-medium text-slate-500">Đến kỳ Tái đánh giá</p>
                         <p className="text-2xl font-bold text-slate-900">{data.reassessmentsDue}</p>
                     </div>
                 </div>
@@ -59,7 +63,7 @@ export function DonDashboard() {
                         <FileCheck className="h-6 w-6 text-purple-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Compliance Alerts</p>
+                        <p className="text-sm font-medium text-slate-500">Cảnh báo Tuân thủ</p>
                         <p className="text-2xl font-bold text-slate-900">{data.complianceAlerts}</p>
                     </div>
                 </div>
@@ -74,20 +78,20 @@ export function DonDashboard() {
 
             <div className="mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-                    <h3 className="font-bold text-slate-900">Care Plans Pending Review</h3>
-                    <a href="/residents" className="text-sm font-medium text-blue-600 hover:underline">
-                        View all
+                    <h3 className="font-bold text-slate-900">Kế hoạch Điều trị Chờ Phê Duyệt (Hồ sơ mới)</h3>
+                    <a href="/care-plans" className="text-sm font-medium text-[#0F766E] hover:underline">
+                        Xem tất cả
                     </a>
                 </div>
                 <table className="w-full">
                     <thead className="border-b border-slate-200 bg-slate-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Resident</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Submitted By</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Submitted</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">LOC Tier</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Waiting</th>
-                            <th className="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase"></th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Người bệnh</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Người lập</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Thời gian gửi</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Phân cấp chăm sóc</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Chờ duyệt</th>
+                            <th className="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200">
@@ -101,7 +105,7 @@ export function DonDashboard() {
                                 <td className="px-6 py-4 text-sm text-slate-600">{plan.locTier}</td>
                                 <td className="px-6 py-4 text-sm text-slate-500">{plan.waiting}</td>
                                 <td className="px-6 py-4 text-right">
-                                    <button className="text-sm font-bold text-blue-600 hover:text-blue-800">Review</button>
+                                    <a href="/care-plans" className="text-sm font-bold text-[#0F766E] hover:text-[#115E59]">Xem xét</a>
                                 </td>
                             </tr>
                         ))}
@@ -112,31 +116,31 @@ export function DonDashboard() {
             <div className="grid grid-cols-2 gap-6">
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="mb-6 flex items-center justify-between">
-                        <h3 className="font-bold text-slate-900">Census + LOC Mix</h3>
-                        <a href="/residents" className="text-sm font-medium text-blue-600 hover:underline">
-                            View residents
+                        <h3 className="font-bold text-slate-900">Công suất Giường bệnh & Cơ cấu Cấp độ</h3>
+                        <a href="/residents" className="text-sm font-medium text-[#0F766E] hover:underline">
+                            Danh sách người bệnh
                         </a>
                     </div>
 
                     <div className="mb-6">
-                        <p className="text-sm text-slate-500">Current Census</p>
+                        <p className="text-sm text-slate-500">Số giường đang điều trị</p>
                         <div className="flex items-baseline gap-2">
                             <span className="text-3xl font-bold text-slate-900">
-                                {data.censusAndLocMix?.current} / {data.censusAndLocMix?.total} beds
+                                {data.censusAndLocMix?.current} / {data.censusAndLocMix?.total} giường
                             </span>
                         </div>
-                        <p className="text-sm font-bold text-green-600">{data.censusAndLocMix?.occupancyRate}% occupancy</p>
+                        <p className="text-sm font-bold text-emerald-600">Công suất sử dụng giường: {data.censusAndLocMix?.occupancyRate}%</p>
                     </div>
 
                     <div className="space-y-4">
                         {data.censusAndLocMix?.tiers?.map((tier: any, idx: number) => {
-                            const colors = ["bg-green-500", "bg-blue-600", "bg-orange-500", "bg-red-600"];
+                            const colors = ["bg-emerald-500", "bg-teal-600", "bg-amber-500", "bg-rose-600"];
                             const width = `${(tier.count / data.censusAndLocMix.current) * 100}%`;
                             return (
                                 <div key={idx}>
                                     <div className="mb-1 flex justify-between text-sm">
                                         <span className="text-slate-600">{tier.label}</span>
-                                        <span className="font-bold text-slate-900">{tier.count}</span>
+                                        <span className="font-bold text-slate-900">{tier.count} người bệnh</span>
                                     </div>
                                     <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                                         <div className={`h-full ${colors[idx % colors.length]}`} style={{ width }}></div>
@@ -149,32 +153,33 @@ export function DonDashboard() {
 
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="mb-6 flex items-center justify-between">
-                        <h3 className="font-bold text-slate-900">Billing Snapshot</h3>
-                        <span className="rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-500">read-only</span>
+                        <h3 className="font-bold text-slate-900">Tổng Quan Viện Phí & Doanh Thu</h3>
+                        <span className="rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-500 font-medium">Chỉ xem</span>
                     </div>
 
                     <div className="space-y-6">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                            <span className="text-sm text-slate-600">Est. daily revenue</span>
-                            <span className="font-bold text-slate-900">${data.billingSnapshot?.estDailyRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                            <span className="text-sm text-slate-600">Doanh thu dự kiến / ngày</span>
+                            <span className="font-bold text-slate-900">{formatVnd((data.billingSnapshot?.estDailyRevenue || 0) * 25000)}</span>
                         </div>
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                            <span className="text-sm text-slate-600">Est. monthly revenue</span>
-                            <span className="font-bold text-slate-900">${data.billingSnapshot?.estMonthlyRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                            <span className="text-sm text-slate-600">Doanh thu dự kiến / tháng</span>
+                            <span className="font-bold text-[#0F766E]">{formatVnd((data.billingSnapshot?.estMonthlyRevenue || 0) * 25000)}</span>
                         </div>
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                            <span className="text-sm text-slate-600">Pending authorizations</span>
-                            <span className="font-bold text-slate-900">{data.billingSnapshot?.pendingAuthorizations} residents</span>
+                            <span className="text-sm text-slate-600">Hồ sơ chờ phê duyệt thanh toán</span>
+                            <span className="font-bold text-slate-900">{data.billingSnapshot?.pendingAuthorizations} hồ sơ</span>
                         </div>
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                            <span className="text-sm text-slate-600">Medicare 100-day cap alerts</span>
-                            <span className="font-bold text-slate-900">{data.billingSnapshot?.medicare100DayCapAlerts} resident</span>
+                            <span className="text-sm text-slate-600">Cảnh báo hạn mức thẻ BHYT</span>
+                            <span className="font-bold text-slate-900">{data.billingSnapshot?.medicare100DayCapAlerts} người bệnh</span>
                         </div>
 
-                        <p className="mt-4 text-xs text-slate-400">Simulated — not a billing transaction.</p>
+                        <p className="mt-4 text-xs text-slate-400">Số liệu thống kê ước tính nội bộ theo thời gian thực.</p>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+

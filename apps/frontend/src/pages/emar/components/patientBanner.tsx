@@ -1,16 +1,16 @@
 import { User, AlertTriangle } from "lucide-react";
 
 export const patientInfo = {
-  id: "PT-7892",
-  name: "Nguyễn Văn A",
+  id: "BN-7892",
+  name: "Nguyễn Văn An",
   age: 45,
-  gender: "Male",
+  gender: "Nam",
   bloodType: "O+",
   weight: "72 kg",
   height: "175 cm",
-  allergies: ["Penicillin", "Peanuts"],
-  room: "102-A",
-  admissionDate: "2026-06-25",
+  allergies: ["Penicillin", "Đậu phộng"],
+  room: "P-204 (Khoa Nội Tổng Hợp)",
+  admissionDate: "25/06/2026",
 };
 
 export const PatientBanner = () => {
@@ -21,7 +21,7 @@ export const PatientBanner = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-[#CCFBF1] text-[#0F766E] flex items-center justify-center font-bold text-2xl border border-[#99F6E4] shadow-inner">
-            NV
+            NA
           </div>
           <div>
             <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
@@ -31,11 +31,13 @@ export const PatientBanner = () => {
               </span>
             </h2>
             <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mt-2">
-              <span className="flex items-center gap-1"><User className="w-4 h-4"/> {patientInfo.gender}, {patientInfo.age} yrs</span>
+              <span className="flex items-center gap-1"><User className="w-4 h-4"/> Giới tính: {patientInfo.gender}, {patientInfo.age} tuổi</span>
               <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-              <span>Room: <strong className="text-slate-700">{patientInfo.room}</strong></span>
+              <span>Nhóm máu: <strong className="text-slate-700">{patientInfo.bloodType}</strong></span>
               <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-              <span>Admitted: {patientInfo.admissionDate}</span>
+              <span>Phòng: <strong className="text-slate-700">{patientInfo.room}</strong></span>
+              <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+              <span>Ngày nhập viện: {patientInfo.admissionDate}</span>
             </div>
           </div>
         </div>
@@ -44,7 +46,7 @@ export const PatientBanner = () => {
           <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 flex items-start gap-3 w-full md:w-auto">
             <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0" />
             <div>
-              <p className="text-xs font-semibold text-rose-700 uppercase tracking-wider">Allergies</p>
+              <p className="text-xs font-semibold text-rose-700 uppercase tracking-wider">Tiền sử Dị ứng</p>
               <p className="text-sm font-medium text-rose-900 mt-0.5">{patientInfo.allergies.join(", ")}</p>
             </div>
           </div>
@@ -53,3 +55,4 @@ export const PatientBanner = () => {
     </div>
   );
 };
+

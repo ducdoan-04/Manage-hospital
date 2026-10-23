@@ -8,11 +8,12 @@ export class AdmissionsService {
     constructor(private readonly prisma: PrismaService) {}
 
     private serializeResident(resident: any) {
-        const fullName = [resident.first_name, resident.middle_name, resident.last_name].filter(Boolean).join(" ");
+        // Vietnamese naming order: Họ + Đệm + Tên
+        const fullName = [resident.last_name, resident.middle_name, resident.first_name].filter(Boolean).join(" ");
         return {
             id: resident.id,
-            residentCode: `NH-${String(resident.id).slice(0, 8).toUpperCase()}`,
-            fullName,
+            residentCode: `BN-${String(resident.id).slice(0, 8).toUpperCase()}`,
+            fullName: fullName || "Bệnh nhân",
             dateOfBirth: resident.date_of_birth.toISOString().slice(0, 10),
             gender: String(resident.gender ?? "other").toLowerCase(),
             admissionDate: resident.created_at.toISOString().slice(0, 10),
@@ -27,9 +28,17 @@ export class AdmissionsService {
 
     private splitFullName(fullName: string) {
         const parts = fullName.trim().split(/\s+/);
-        const firstName = parts.shift() ?? fullName.trim();
-        const lastName = parts.pop() ?? firstName;
-        const middleName = parts.length ? parts.join(" ") : null;
+        if (parts.length === 1) {
+            return {
+                first_name: parts[0],
+                middle_name: null,
+                last_name: parts[0],
+            };
+        }
+        // Vietnamese standard naming: Họ (Last Name) is first, Tên (First Name) is last
+        const lastName = parts[0];
+        const firstName = parts[parts.length - 1];
+        const middleName = parts.length > 2 ? parts.slice(1, -1).join(" ") : null;
         return { first_name: firstName, middle_name: middleName, last_name: lastName };
     }
 

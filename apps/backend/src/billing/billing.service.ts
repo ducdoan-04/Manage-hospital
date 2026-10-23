@@ -11,7 +11,7 @@ export class BillingService {
             where: { id: residentId },
             include: { beds: { include: { rooms: true } } },
         });
-        if (!resident || resident.is_deleted) throw new NotFoundException("Resident not found");
+        if (!resident || resident.is_deleted) throw new NotFoundException("Không tìm thấy hồ sơ bệnh nhân");
 
         const loc = await this.prisma.resident_care_level_history.findFirst({
             where: { resident_id: residentId },
@@ -57,7 +57,7 @@ export class BillingService {
         return {
             resident: {
                 id: resident.id,
-                fullName: [resident.first_name, resident.middle_name, resident.last_name].filter(Boolean).join(" "),
+                fullName: [resident.last_name, resident.middle_name, resident.first_name].filter(Boolean).join(" "),
                 roomNumber: resident.beds?.rooms?.room_number ?? null,
             },
             activeLoc: loc
@@ -74,7 +74,15 @@ export class BillingService {
                 : null,
             status: invoice?.status ?? "ESTIMATE",
             total,
-            payerBreakdown: { medicare, medicaid, privateInsurance, privatePay },
+            payerBreakdown: {
+                medicare,
+                medicaid,
+                privateInsurance,
+                privatePay,
+                bhyt: medicare,
+                baoTroXaHoi: medicaid,
+                tuChiTra: privatePay,
+            },
             lineItems:
                 invoice?.invoice_line_items.map((item) => ({ id: item.id.toString(), description: item.description, itemType: item.item_type, amount: Number(item.amount) })) ?? [],
             rateHistory: rateHistory.map((item) => ({
@@ -88,9 +96,9 @@ export class BillingService {
 
     async updateRate(residentId: string, careLevelId: string, dto: UpdateBillingRateDto) {
         const resident = await this.prisma.residents.findUnique({ where: { id: residentId } });
-        if (!resident) throw new NotFoundException("Resident not found");
+        if (!resident) throw new NotFoundException("Không tìm thấy hồ sơ bệnh nhân");
         const facilityId = dto.facilityId ?? (await this.prisma.facility.findFirst({ where: { isDeleted: false }, select: { id: true } }))?.id;
-        if (!facilityId) throw new NotFoundException("No active facility is available");
+        if (!facilityId) throw new NotFoundException("Không tìm thấy thông tin cơ sở bệnh viện");
         const effectiveFrom = new Date(`${dto.effectiveFrom}T00:00:00.000Z`);
         const previousDay = new Date(effectiveFrom);
         previousDay.setUTCDate(previousDay.getUTCDate() - 1);

@@ -9,7 +9,7 @@ interface CalendarWeekProps {
 }
 
 export const CalendarWeek = ({ currentMonth }: CalendarWeekProps) => {
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const daysOfWeek = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
 
   const weekDays = useMemo(() => {
     // The mockup's 'Today' is the 20th, so let's show the week containing the 20th

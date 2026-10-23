@@ -35,20 +35,20 @@ const careLevelOptions: CareLevel[] = ["independent", "assisted_living", "memory
 const mobilityOptions: MobilityStatus[] = ["independent", "walker", "wheelchair", "bed_bound"];
 
 const residentFormSchema = z.object({
-    fullName: z.string().trim().min(2, "Full name must be at least 2 characters."),
-    dateOfBirth: z.string().min(1, "Date of birth is required."),
-    gender: z.enum(["male", "female", "other"], "Gender is required."),
+    fullName: z.string().trim().min(2, "Họ và tên bệnh nhân phải có ít nhất 2 ký tự."),
+    dateOfBirth: z.string().min(1, "Vui lòng chọn ngày sinh."),
+    gender: z.enum(["male", "female", "other"], "Vui lòng chọn giới tính."),
     phone: z.string(),
     address: z.string(),
-    admissionDate: z.string().min(1, "Admission date is required."),
-    roomNumber: z.string().trim().min(1, "Room is required."),
-    careLevel: z.enum(["independent", "assisted_living", "memory_care", "skilled_nursing"], "Care level is required."),
+    admissionDate: z.string().min(1, "Vui lòng chọn ngày nhập viện."),
+    roomNumber: z.string().trim().min(1, "Vui lòng chỉ định buồng / giường bệnh."),
+    careLevel: z.enum(["independent", "assisted_living", "memory_care", "skilled_nursing"], "Vui lòng chọn mức độ chăm sóc."),
     assignedNurse: z.string(),
     assignedDoctor: z.string(),
-    emergencyContactName: z.string().trim().min(2, "Emergency contact name is required."),
+    emergencyContactName: z.string().trim().min(2, "Vui lòng nhập tên người thân / liên hệ khẩn cấp."),
     emergencyContactRelationship: z.string(),
-    emergencyContactPhone: z.string().trim().min(7, "Emergency contact phone is required."),
-    emergencyContactEmail: z.string().email("Enter a valid emergency contact email.").or(z.literal("")),
+    emergencyContactPhone: z.string().trim().min(7, "Số điện thoại liên hệ phải từ 7 chữ số trở lên."),
+    emergencyContactEmail: z.string().email("Địa chỉ email người liên hệ không hợp lệ.").or(z.literal("")),
     primaryDiagnosis: z.string(),
     allergies: z.string(),
     currentMedications: z.string(),
@@ -213,7 +213,7 @@ export function ResidentFormPage() {
 
             navigate(`${APP_ROUTES.RESIDENTS}/${savedResident.id}`);
         } catch {
-            setErrorMessage("Unable to save resident. Please review the form.");
+            setErrorMessage("Không thể lưu thông tin bệnh nhân. Vui lòng kiểm tra lại biểu mẫu.");
         } finally {
             setIsSubmitting(false);
         }
@@ -223,8 +223,8 @@ export function ResidentFormPage() {
         return (
             <main className="page-shell">
                 <div className="empty-state">
-                    <strong>Loading resident form...</strong>
-                    <span>Preparing resident information.</span>
+                    <strong>Đang tải biểu mẫu bệnh nhân...</strong>
+                    <span>Đang nạp dữ liệu hồ sơ bệnh án.</span>
                 </div>
             </main>
         );
@@ -234,19 +234,19 @@ export function ResidentFormPage() {
         <main className="page-shell">
             <section className="page-header">
                 <div>
-                    <span className="eyebrow">Resident Management</span>
-                    <h1>{isEditMode ? "Edit Resident" : "Create Resident"}</h1>
-                    <p>Maintain demographic, admission, care assignment, and emergency contact details for the resident profile.</p>
+                    <span className="eyebrow">Hồ sơ Bệnh nhân</span>
+                    <h1>{isEditMode ? "Chỉnh sửa Hồ sơ Bệnh nhân" : "Tiếp nhận Bệnh nhân mới"}</h1>
+                    <p>Quản lý thông tin hành chính, phân buồng giường, chỉ định bác sĩ điều trị và thông tin thân nhân.</p>
                 </div>
                 <Link className="secondary-action" to={APP_ROUTES.RESIDENTS}>
-                    Back to List
+                    ← Quay lại danh sách
                 </Link>
             </section>
 
             <section className="intake-summary">
                 <div>
-                    <strong>{completionScore}% complete</strong>
-                    <span>Required resident profile fields</span>
+                    <strong>{completionScore}% hoàn tất</strong>
+                    <span>Các trường thông tin bệnh án bắt buộc</span>
                 </div>
                 <div className="progress-track">
                     <div style={{ width: `${completionScore}%` }} />
@@ -260,22 +260,22 @@ export function ResidentFormPage() {
                     <div className="form-card__header">
                         <span>01</span>
                         <div>
-                            <h2>Personal Information</h2>
-                            <p>Demographics and direct contact information.</p>
+                            <h2>Thông tin Cá nhân & Hành chính</h2>
+                            <p>Thông tin định danh người bệnh và liên hệ trực tiếp.</p>
                         </div>
                     </div>
                     <div className="form-grid">
-                        <TextInput label="Full name" value={form.fullName} error={errors.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
+                        <TextInput label="Họ và tên bệnh nhân *" value={form.fullName} error={errors.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
                         <TextInput
-                            label="Date of birth"
+                            label="Ngày sinh *"
                             type="date"
                             value={form.dateOfBirth}
                             error={errors.dateOfBirth}
                             onChange={(event) => updateField("dateOfBirth", event.target.value)}
                         />
-                        <ReceptionField label="Gender" error={errors.gender}>
+                        <ReceptionField label="Giới tính *" error={errors.gender}>
                             <select value={form.gender} onChange={(event) => updateField("gender", event.target.value as Gender | "")}>
-                                <option value="">Select gender</option>
+                                <option value="">Chọn giới tính</option>
                                 {genderOptions.map((gender) => (
                                     <option key={gender} value={gender}>
                                         {GENDER_LABEL[gender]}
@@ -283,8 +283,8 @@ export function ResidentFormPage() {
                                 ))}
                             </select>
                         </ReceptionField>
-                        <TextInput label="Phone" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} />
-                        <TextArea label="Address" value={form.address} onChange={(event) => updateField("address", event.target.value)} />
+                        <TextInput label="Số điện thoại liên hệ" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} />
+                        <TextArea label="Địa chỉ thường trú" value={form.address} onChange={(event) => updateField("address", event.target.value)} />
                     </div>
                 </section>
 
@@ -292,22 +292,22 @@ export function ResidentFormPage() {
                     <div className="form-card__header">
                         <span>02</span>
                         <div>
-                            <h2>Admission</h2>
-                            <p>Room, admission date, care level, and assigned clinicians.</p>
+                            <h2>Thông tin Nhập viện & Phân buồng</h2>
+                            <p>Số phòng, ngày vào viện, mức độ chăm sóc và bác sĩ phụ trách.</p>
                         </div>
                     </div>
                     <div className="form-grid">
                         <TextInput
-                            label="Admission date"
+                            label="Ngày nhập viện *"
                             type="date"
                             value={form.admissionDate}
                             error={errors.admissionDate}
                             onChange={(event) => updateField("admissionDate", event.target.value)}
                         />
-                        <TextInput label="Room" value={form.roomNumber} error={errors.roomNumber} onChange={(event) => updateField("roomNumber", event.target.value)} />
-                        <ReceptionField label="Care level" error={errors.careLevel}>
+                        <TextInput label="Buồng / Giường bệnh *" value={form.roomNumber} error={errors.roomNumber} onChange={(event) => updateField("roomNumber", event.target.value)} />
+                        <ReceptionField label="Mức độ điều trị *" error={errors.careLevel}>
                             <select value={form.careLevel} onChange={(event) => updateField("careLevel", event.target.value as CareLevel | "")}>
-                                <option value="">Select care level</option>
+                                <option value="">Chọn mức độ điều trị</option>
                                 {careLevelOptions.map((level) => (
                                     <option key={level} value={level}>
                                         {CARE_LEVEL_LABEL[level]}
@@ -315,8 +315,8 @@ export function ResidentFormPage() {
                                 ))}
                             </select>
                         </ReceptionField>
-                        <TextInput label="Assigned nurse" value={form.assignedNurse} onChange={(event) => updateField("assignedNurse", event.target.value)} />
-                        <TextInput label="Assigned physician" value={form.assignedDoctor} onChange={(event) => updateField("assignedDoctor", event.target.value)} />
+                        <TextInput label="Điều dưỡng phụ trách" value={form.assignedNurse} onChange={(event) => updateField("assignedNurse", event.target.value)} />
+                        <TextInput label="Bác sĩ điều trị" value={form.assignedDoctor} onChange={(event) => updateField("assignedDoctor", event.target.value)} />
                     </div>
                 </section>
 
@@ -324,30 +324,30 @@ export function ResidentFormPage() {
                     <div className="form-card__header">
                         <span>03</span>
                         <div>
-                            <h2>Emergency Contact</h2>
-                            <p>Primary contact for urgent communication and consent.</p>
+                            <h2>Người liên hệ Khẩn cấp / Thân nhân</h2>
+                            <p>Thông tin thân nhân để trao đổi bệnh lý và đồng thuận phẫu thuật/điều trị.</p>
                         </div>
                     </div>
                     <div className="form-grid">
                         <TextInput
-                            label="Contact name"
+                            label="Họ tên người thân *"
                             value={form.emergencyContactName}
                             error={errors.emergencyContactName}
                             onChange={(event) => updateField("emergencyContactName", event.target.value)}
                         />
                         <TextInput
-                            label="Relationship"
+                            label="Mối quan hệ"
                             value={form.emergencyContactRelationship}
                             onChange={(event) => updateField("emergencyContactRelationship", event.target.value)}
                         />
                         <TextInput
-                            label="Phone"
+                            label="Số điện thoại *"
                             value={form.emergencyContactPhone}
                             error={errors.emergencyContactPhone}
                             onChange={(event) => updateField("emergencyContactPhone", event.target.value)}
                         />
                         <TextInput
-                            label="Email"
+                            label="Email liên hệ"
                             type="email"
                             value={form.emergencyContactEmail}
                             error={errors.emergencyContactEmail}
@@ -360,15 +360,15 @@ export function ResidentFormPage() {
                     <div className="form-card__header">
                         <span>04</span>
                         <div>
-                            <h2>Clinical Summary</h2>
-                            <p>Care notes visible from the resident profile.</p>
+                            <h2>Tóm tắt Tiền sử & Bệnh học</h2>
+                            <p>Chẩn đoán y khoa, thuốc và dị ứng hiển thị trong hồ sơ bệnh án.</p>
                         </div>
                     </div>
                     <div className="form-grid">
-                        <TextInput label="Primary diagnosis" value={form.primaryDiagnosis} onChange={(event) => updateField("primaryDiagnosis", event.target.value)} />
-                        <ReceptionField label="Mobility status">
+                        <TextInput label="Chẩn đoán chính vào viện" value={form.primaryDiagnosis} onChange={(event) => updateField("primaryDiagnosis", event.target.value)} />
+                        <ReceptionField label="Tình trạng vận động">
                             <select value={form.mobilityStatus} onChange={(event) => updateField("mobilityStatus", event.target.value as MobilityStatus | "")}>
-                                <option value="">Select mobility status</option>
+                                <option value="">Chọn tình trạng vận động</option>
                                 {mobilityOptions.map((status) => (
                                     <option key={status} value={status}>
                                         {MOBILITY_STATUS_LABEL[status]}
@@ -376,18 +376,18 @@ export function ResidentFormPage() {
                                 ))}
                             </select>
                         </ReceptionField>
-                        <TextArea label="Allergies" value={form.allergies} onChange={(event) => updateField("allergies", event.target.value)} />
-                        <TextArea label="Current medications" value={form.currentMedications} onChange={(event) => updateField("currentMedications", event.target.value)} />
+                        <TextArea label="Tiền sử dị ứng thuốc / thực phẩm" value={form.allergies} onChange={(event) => updateField("allergies", event.target.value)} />
+                        <TextArea label="Thuốc đang dùng trước khi nhập viện" value={form.currentMedications} onChange={(event) => updateField("currentMedications", event.target.value)} />
                     </div>
                 </section>
             </form>
 
             <footer className="sticky-actions">
                 <Link className="secondary-action" to={APP_ROUTES.RESIDENTS}>
-                    Cancel
+                    Hủy bỏ
                 </Link>
                 <button className="primary-action" type="button" disabled={isSubmitting} onClick={handleSubmit}>
-                    {isSubmitting ? "Saving..." : isEditMode ? "Save Changes" : "Create Resident"}
+                    {isSubmitting ? "Đang lưu..." : isEditMode ? "Lưu thay đổi" : "Tạo hồ sơ bệnh nhân"}
                 </button>
             </footer>
         </main>

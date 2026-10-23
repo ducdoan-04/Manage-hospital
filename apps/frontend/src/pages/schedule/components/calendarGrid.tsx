@@ -9,7 +9,7 @@ interface CalendarGridProps {
 }
 
 export const CalendarGrid = ({ currentMonth }: CalendarGridProps) => {
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const daysOfWeek = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
 
   const calendarDays = useMemo(() => {
     const startOfMonth = dayjs(currentMonth).startOf("month");

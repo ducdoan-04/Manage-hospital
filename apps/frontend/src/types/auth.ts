@@ -28,6 +28,7 @@ export interface LoginResponse {
     accessToken?: string;
     refreshToken?: string;
     user?: User;
+    tempCode?: string;
 }
 
 /** Returned by POST /api/auth/verify-otp */
@@ -39,5 +40,5 @@ export interface VerifyOtpResponse {
 
 /** Returned by POST /api/auth/resend-otp */
 export interface ResendOtpResponse {
-    // empty — resend only confirms delivery, no token data exposed
+    tempCode?: string;
 }

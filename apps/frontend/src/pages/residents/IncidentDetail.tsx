@@ -5,7 +5,7 @@ import { incidentsService } from "../../services/incidents";
 import { session } from "../../utils/session";
 import { fieldClassName, labelClassName, LoadingState, Notice, Panel, PrimaryButton, SecondaryButton, StatusBadge, WorkflowPage } from "../../components/workflow/WorkflowUi";
 
-const formatRemaining = (minutes: number) => (minutes < 0 ? "OVERDUE" : minutes < 60 ? `${minutes}m remaining` : `${Math.ceil(minutes / 60)}h remaining`);
+const formatRemaining = (minutes: number) => (minutes < 0 ? "QUÁ HẠN XỬ LÝ" : minutes < 60 ? `Còn ${minutes} phút` : `Còn ${Math.ceil(minutes / 60)} giờ`);
 
 export default function IncidentDetail() {
     const navigate = useNavigate();
@@ -43,7 +43,7 @@ export default function IncidentDetail() {
                 status: "UNDER_INVESTIGATION",
             }),
         onSuccess: async () => {
-            setMessage("Root cause analysis and corrective actions saved.");
+            setMessage("Phân tích nguyên nhân gốc rễ và kế hoạch khắc phục đã được lưu.");
             await refresh();
         },
     });
@@ -51,27 +51,27 @@ export default function IncidentDetail() {
         mutationFn: () => incidentsService.addProgressNote(id, note),
         onSuccess: async () => {
             setNote("");
-            setMessage("Progress note added to the incident timeline.");
+            setMessage("Đã thêm ghi chú theo dõi diễn biến sự cố.");
             await refresh();
         },
     });
     const reviewMutation = useMutation({
         mutationFn: () => incidentsService.requestDonReview(id),
         onSuccess: async () => {
-            setMessage("Incident sent to the DON review queue.");
+            setMessage("Đã gửi sự cố tới hàng đợi duyệt của Trưởng khoa Điều dưỡng.");
             await refresh();
         },
     });
     const resolveMutation = useMutation({
         mutationFn: () => incidentsService.resolve(id, { resolution, followUpPlan }),
         onSuccess: async () => {
-            setMessage("Incident marked resolved.");
+            setMessage("Sự cố đã được đánh dấu giải quyết hoàn tất.");
             await refresh();
         },
     });
     if (query.isLoading || !query.data)
         return (
-            <WorkflowPage title="Incident Detail">
+            <WorkflowPage title="Chi tiết Sự cố Y khoa">
                 <Panel>
                     <LoadingState />
                 </Panel>
@@ -81,19 +81,19 @@ export default function IncidentDetail() {
     const anyError = query.error ?? investigationMutation.error ?? noteMutation.error ?? reviewMutation.error ?? resolveMutation.error;
     const isNurseView = !canManage;
     const checklist = [
-        { label: "Progress Notes logged", complete: incident.timeline?.some((item: any) => item.type === "INCIDENT_NOTE") },
-        { label: "Chart Status", complete: !incident.resident.isChartLocked },
-        { label: "External Report", complete: Boolean(incident.externalReport) },
+        { label: "Ghi chú theo dõi lâm sàng", complete: incident.timeline?.some((item: any) => item.type === "INCIDENT_NOTE") },
+        { label: "Trạng thái Bệnh án", complete: !incident.resident.isChartLocked },
+        { label: "Báo cáo Sở Y tế / Cục QLKCB", complete: Boolean(incident.externalReport) },
     ];
     return (
         <WorkflowPage
-            breadcrumb={`Incident & Risk  >  Incident List  >  #${incident.id}`}
-            title={`Incident #${incident.id} — ${incident.resident.fullName}`}
-            description={`${incident.incidentType} · ${incident.location} · Reported by ${incident.reporter.name} · ${new Date(incident.reportedAt).toLocaleString()}`}
+            breadcrumb={`Sự cố Y khoa  >  Danh sách Sự cố  >  #${incident.id}`}
+            title={`Sự cố #${incident.id} — ${incident.resident.fullName}`}
+            description={`${incident.incidentType} · Vị trí: ${incident.location} · Người báo cáo: ${incident.reporter.name} · ${new Date(incident.reportedAt).toLocaleString('vi-VN')}`}
         >
             {isNurseView && (
                 <div className="mb-4">
-                    <Notice type="info">Role: Nurse / CNA (documentation only). Chart unlock and incident resolution are DON-only actions.</Notice>
+                    <Notice type="info">Vai trò: Điều dưỡng / Kỹ thuật viên (Chỉ ghi chép tiến trình). Mở khóa bệnh án và kết luận xử lý thuộc thẩm quyền của Lãnh đạo khoa / Giám đốc điều dưỡng.</Notice>
                 </div>
             )}
             {message && (
@@ -108,53 +108,58 @@ export default function IncidentDetail() {
             )}
             <div className="grid gap-6 lg:grid-cols-[1fr_310px]">
                 <div className="space-y-5">
-                    <Panel title="Report Details (read-only)">
-                        <dl className="grid gap-4 text-sm md:grid-cols-[160px_1fr]">
-                            <dt className="font-semibold text-slate-500">Severity</dt>
+                    <Panel title="Thông tin Báo cáo (Chỉ xem)">
+                        <dl className="grid gap-4 text-sm md:grid-cols-[180px_1fr]">
+                            <dt className="font-semibold text-slate-500">Mức độ nghiêm trọng</dt>
                             <dd>
                                 <StatusBadge tone={incident.severity.name.toLowerCase().includes("critical") ? "danger" : "warning"}>{incident.severity.name}</StatusBadge>
                             </dd>
-                            <dt className="font-semibold text-slate-500">Location</dt>
+                            <dt className="font-semibold text-slate-500">Địa điểm xảy ra</dt>
                             <dd>{incident.location}</dd>
-                            <dt className="font-semibold text-slate-500">Description</dt>
+                            <dt className="font-semibold text-slate-500">Mô tả diễn biến</dt>
                             <dd>{incident.description}</dd>
-                            <dt className="font-semibold text-slate-500">Immediate action</dt>
-                            <dd>{incident.immediateAction || "Not documented"}</dd>
-                            <dt className="font-semibold text-slate-500">Status</dt>
+                            <dt className="font-semibold text-slate-500">Xử trí tức thì tại chỗ</dt>
+                            <dd>{incident.immediateAction || "Chưa ghi nhận"}</dd>
+                            <dt className="font-semibold text-slate-500">Trạng thái xử lý</dt>
                             <dd>
-                                <StatusBadge tone={incident.status === "RESOLVED" ? "success" : "info"}>{incident.status.replaceAll("_", " ")}</StatusBadge>
+                                <StatusBadge tone={incident.status === "RESOLVED" ? "success" : "info"}>
+                                    {incident.status === "RESOLVED" ? "ĐÃ XỬ LÝ XONG" : incident.status === "OPEN" ? "MỚI GHI NHẬN" : incident.status === "UNDER_INVESTIGATION" ? "ĐANG XÁC MINH" : "CHỜ DUYỆT"}
+                                </StatusBadge>
                             </dd>
                         </dl>
                     </Panel>
                     {canManage && (
-                        <Panel title="Root Cause Analysis & Corrective Action" description="Editable only by authorized DON/Admin roles.">
+                        <Panel title="Phân tích Nguyên nhân Gốc rễ & Biện pháp Khắc phục" description="Chỉ dành cho Lãnh đạo khoa và Quản trị viên y tế.">
                             <div className="grid gap-4 md:grid-cols-2">
                                 <label className={`${labelClassName} md:col-span-2`}>
-                                    Root Cause
+                                    Nguyên nhân gốc rễ (RCA)
                                     <textarea
                                         className={`${fieldClassName} min-h-24`}
                                         value={investigation.rootCause}
                                         onChange={(event) => setInvestigation({ ...investigation, rootCause: event.target.value })}
+                                        placeholder="Phân tích nguyên nhân trực tiếp và gián tiếp dẫn đến sự cố..."
                                     />
                                 </label>
                                 <label className={labelClassName}>
-                                    Corrective Action
+                                    Biện pháp khắc phục tức thì
                                     <textarea
                                         className={`${fieldClassName} min-h-24`}
                                         value={investigation.correctiveAction}
                                         onChange={(event) => setInvestigation({ ...investigation, correctiveAction: event.target.value })}
+                                        placeholder="Hành động khắc phục để xử lý tổn thương..."
                                     />
                                 </label>
                                 <label className={labelClassName}>
-                                    Preventive Action
+                                    Biện pháp phòng ngừa tái diễn
                                     <textarea
                                         className={`${fieldClassName} min-h-24`}
                                         value={investigation.preventiveAction}
                                         onChange={(event) => setInvestigation({ ...investigation, preventiveAction: event.target.value })}
+                                        placeholder="Đề xuất cải tiến quy trình, tập huấn nhân sự..."
                                     />
                                 </label>
                                 <label className={`${labelClassName} md:col-span-2`}>
-                                    Witnesses (comma separated)
+                                    Nhân chứng liên quan (ngăn cách bằng dấu phẩy)
                                     <input
                                         className={fieldClassName}
                                         value={investigation.witnesses}
@@ -163,102 +168,104 @@ export default function IncidentDetail() {
                                 </label>
                             </div>
                             <div className="mt-4 text-right">
-                                <PrimaryButton disabled={investigationMutation.isPending} onClick={() => investigationMutation.mutate()}>
-                                    Save Investigation
+                                <PrimaryButton className="bg-[#0F766E] hover:bg-[#115E59]" disabled={investigationMutation.isPending} onClick={() => investigationMutation.mutate()}>
+                                    Lưu Biên Bản Xác Minh
                                 </PrimaryButton>
                             </div>
                         </Panel>
                     )}
-                    <Panel title="Timeline">
+                    <Panel title="Dòng Thời Gian Diễn Biến & Xử Lý">
                         <div className="space-y-0">
                             {incident.timeline?.map((event: any, index: number) => (
                                 <div key={event.id} className="relative flex gap-4 pb-6">
-                                    <div className="relative z-10 mt-1 h-3 w-3 shrink-0 rounded-full border-2 border-blue-600 bg-white" />
+                                    <div className="relative z-10 mt-1 h-3 w-3 shrink-0 rounded-full border-2 border-[#0F766E] bg-white" />
                                     {index < incident.timeline.length - 1 && <div className="absolute top-4 left-[5px] h-full w-px bg-slate-200" />}
                                     <div>
                                         <p className="font-semibold text-slate-900">{event.description}</p>
                                         <p className="text-xs text-slate-500">
-                                            {event.user} · {new Date(event.timestamp).toLocaleString()}
+                                            {event.user} · {new Date(event.timestamp).toLocaleString('vi-VN')}
                                         </p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </Panel>
-                    <Panel title="Add Progress Note">
+                    <Panel title="Thêm Ghi Chú Tiến Trình Lâm Sàng">
                         <textarea
                             className={`${fieldClassName} min-h-24`}
                             value={note}
                             onChange={(event) => setNote(event.target.value)}
-                            placeholder="Document additional clinical observations or follow-up."
+                            placeholder="Ghi nhận các diễn biến sức khỏe, phản hồi của người bệnh hoặc y lệnh bổ sung..."
                         />
                         <div className="mt-4 text-right">
-                            <PrimaryButton disabled={!note.trim() || noteMutation.isPending} onClick={() => noteMutation.mutate()}>
-                                Add Progress Note
+                            <PrimaryButton className="bg-[#0F766E] hover:bg-[#115E59]" disabled={!note.trim() || noteMutation.isPending} onClick={() => noteMutation.mutate()}>
+                                Ghi Nhận Tiến Trình
                             </PrimaryButton>
                         </div>
                     </Panel>
                 </div>
                 <div className="space-y-5">
-                    <Panel title="SLA — Regulatory Reporting">
+                    <Panel title="Thời Hạn Xử Lý Theo Quy Định (SLA)">
                         <p className={`text-2xl font-bold ${incident.isSlaOverdue ? "text-red-600" : "text-emerald-600"}`}>{formatRemaining(incident.slaRemainingMinutes)}</p>
-                        <p className="mt-2 text-sm text-slate-500">Deadline: {new Date(incident.slaDeadline).toLocaleString()}</p>
+                        <p className="mt-2 text-sm text-slate-500">Hạn chót: {new Date(incident.slaDeadline).toLocaleString('vi-VN')}</p>
                     </Panel>
-                    <Panel title="Chart Status">
-                        <StatusBadge tone={incident.resident.isChartLocked ? "danger" : "success"}>{incident.resident.isChartLocked ? "Locked" : "Unlocked"}</StatusBadge>
+                    <Panel title="Trạng Thái Hồ Sơ Bệnh Án">
+                        <StatusBadge tone={incident.resident.isChartLocked ? "danger" : "success"}>
+                            {incident.resident.isChartLocked ? "ĐÃ PHONG TỎA BỆNH ÁN" : "BÌNH THƯỜNG / ĐƯỢC CHỈNH SỬA"}
+                        </StatusBadge>
                     </Panel>
                     {!incident.resident.isChartLocked && canManage && (
-                        <Panel title="Resolution Checklist">
+                        <Panel title="Bảng Kiểm Hoàn Tất Xử Lý">
                             <div className="space-y-3">
                                 {checklist.map((item) => (
                                     <div key={item.label} className="flex items-center justify-between text-sm">
                                         <span>{item.label}</span>
-                                        <StatusBadge tone={item.complete ? "success" : "warning"}>{item.complete ? "Complete" : "Pending"}</StatusBadge>
+                                        <StatusBadge tone={item.complete ? "success" : "warning"}>{item.complete ? "Đã đạt" : "Chưa hoàn tất"}</StatusBadge>
                                     </div>
                                 ))}
                             </div>
                         </Panel>
                     )}
-                    <Panel title={canManage ? "DON Actions" : "Clinical Actions"}>
+                    <Panel title={canManage ? "Quyền Hạn Lãnh Đạo Khoa / DON" : "Thao Tác Điều Dưỡng"}>
                         <div className="space-y-3">
                             {canManage ? (
                                 <>
                                     <SecondaryButton className="w-full" onClick={() => navigate(`/incidents/${id}/external-report`)}>
-                                        Submit External Report
+                                        Gửi Báo Cáo Cơ Quan Quản Lý
                                     </SecondaryButton>
                                     <SecondaryButton
-                                        className="w-full border-red-300 text-red-600"
+                                        className="w-full border-red-300 text-red-600 hover:bg-red-50"
                                         disabled={!incident.resident.isChartLocked}
                                         onClick={() => navigate(`/incidents/${id}/unlock`)}
                                     >
-                                        Unlock Chart
+                                        Mở Khóa Bệnh Án
                                     </SecondaryButton>
                                     <label className={labelClassName}>
-                                        Resolution Summary
-                                        <textarea className={`${fieldClassName} min-h-20`} value={resolution} onChange={(event) => setResolution(event.target.value)} />
+                                        Kết luận Xử lý Sự cố
+                                        <textarea className={`${fieldClassName} min-h-20`} value={resolution} onChange={(event) => setResolution(event.target.value)} placeholder="Tóm tắt kết luận và hình thức xử lý..." />
                                     </label>
                                     <label className={labelClassName}>
-                                        Follow-up Plan
-                                        <textarea className={`${fieldClassName} min-h-20`} value={followUpPlan} onChange={(event) => setFollowUpPlan(event.target.value)} />
+                                        Kế hoạch Theo dõi Tiếp theo
+                                        <textarea className={`${fieldClassName} min-h-20`} value={followUpPlan} onChange={(event) => setFollowUpPlan(event.target.value)} placeholder="Kế hoạch tái khám và giám sát an toàn..." />
                                     </label>
                                     <PrimaryButton
-                                        className="w-full"
+                                        className="w-full bg-[#0F766E] hover:bg-[#115E59]"
                                         disabled={incident.resident.isChartLocked || !incident.externalReport || !resolution.trim() || resolveMutation.isPending}
                                         onClick={() => resolveMutation.mutate()}
                                     >
-                                        Mark Resolved
+                                        Đóng &amp; Hoàn Tất Sự Cố
                                     </PrimaryButton>
-                                    {incident.resident.isChartLocked && <p className="text-xs text-slate-500">Unlock chart to enable resolution.</p>}
+                                    {incident.resident.isChartLocked && <p className="text-xs text-amber-600">Cần mở khóa bệnh án trước khi đóng sự cố.</p>}
                                 </>
                             ) : (
                                 <>
-                                    <PrimaryButton className="w-full" disabled={!note.trim() || noteMutation.isPending} onClick={() => noteMutation.mutate()}>
-                                        Add Progress Note
+                                    <PrimaryButton className="w-full bg-[#0F766E] hover:bg-[#115E59]" disabled={!note.trim() || noteMutation.isPending} onClick={() => noteMutation.mutate()}>
+                                        Thêm Ghi Chú Tiến Trình
                                     </PrimaryButton>
                                     <SecondaryButton className="w-full" disabled={reviewMutation.isPending} onClick={() => reviewMutation.mutate()}>
-                                        Request DON Review
+                                        Trình Lãnh Đạo Duyệt
                                     </SecondaryButton>
-                                    <p className="text-xs text-amber-700">Chart unlock and incident resolution are DON-only actions.</p>
+                                    <p className="text-xs text-amber-700">Mở khóa bệnh án và kết luận xử lý thuộc thẩm quyền của Lãnh đạo khoa / DON.</p>
                                 </>
                             )}
                         </div>
@@ -268,3 +275,4 @@ export default function IncidentDetail() {
         </WorkflowPage>
     );
 }
+

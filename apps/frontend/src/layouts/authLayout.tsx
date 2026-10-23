@@ -13,10 +13,10 @@ export default function AuthLayout() {
           </div>
           <div>
             <h1 className="text-xl font-bold leading-tight tracking-tight">
-              CareNest
+              BV Đa Khoa
             </h1>
             <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase">
-              Senior Living
+              Hệ thống Quản lý Bệnh viện
             </p>
           </div>
         </div>
@@ -24,10 +24,10 @@ export default function AuthLayout() {
         {/* Marketing Copy */}
         <div className="max-w-md">
           <h2 className="mb-6 text-5xl font-extrabold tracking-tight text-slate-50">
-            Elevating the <br /> standard of senior <br /> care.
+            Nâng tầm <br /> chất lượng khám chữa <br /> và điều trị y tế.
           </h2>
           <p className="text-lg leading-relaxed text-slate-400">
-            An intuitive, role-based platform designed to simplify daily operations and bring peace of mind to staff and families alike.
+            Nền tảng phân quyền y khoa chuyên nghiệp giúp tối ưu quy trình tiếp nhận, theo dõi bệnh án điện tử, y lệnh và cấp phát thuốc an toàn.
           </p>
         </div>
 
@@ -35,17 +35,17 @@ export default function AuthLayout() {
         <div className="relative z-10 w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
           <Quote className="mb-4 h-8 w-8 text-emerald-400 opacity-50" />
           <p className="mb-6 text-sm italic leading-relaxed text-slate-300">
-            "CareNest has completely transformed how our nurses and administrative staff coordinate. Everything is just one click away."
+            "Hệ thống giúp đội ngũ bác sĩ và điều dưỡng phối hợp nhịp nhàng, giảm thiểu sai sót y khoa và tra cứu hồ sơ bệnh nhân tức thì."
           </p>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-400 font-semibold text-sm">
-              SJ
+              VH
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-200">
-                Dr. Sarah Jenkins
+                BS. CKII. Nguyễn Văn Hoàng
               </p>
-              <p className="text-xs text-slate-500">Chief Medical Officer</p>
+              <p className="text-xs text-slate-500">Giám đốc chuyên môn</p>
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function AuthLayout() {
           
           <div className="mt-8 text-center">
             <p className="text-xs text-slate-400">
-              CareNest demo only. Real authentication will connect to the NestJS JWT backend and HttpOnly cookies later.
+              Hệ thống Quản lý Bệnh viện Đa khoa — Bảo mật thông tin bệnh án y khoa theo quy định Bộ Y tế.
             </p>
           </div>
         </div>

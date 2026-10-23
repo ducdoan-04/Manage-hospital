@@ -14,7 +14,7 @@ export default function ChartUnlockPage() {
     const mutation = useMutation({ mutationFn: () => incidentsService.unlockChart(id, reason, passwordConfirm), onSuccess: () => navigate(`/incidents/${id}`) });
     if (query.isLoading || !query.data)
         return (
-            <WorkflowPage title="Chart Unlock">
+            <WorkflowPage title="Mở Khóa Hồ Sơ Bệnh Án">
                 <Panel>
                     <LoadingState />
                 </Panel>
@@ -22,9 +22,9 @@ export default function ChartUnlockPage() {
         );
     return (
         <WorkflowPage
-            breadcrumb={`Incident & Risk  >  #${id}  >  Chart Unlock`}
-            title="Unlock Resident Chart"
-            description="DON/Admin only. Document the reason and verify your account password."
+            breadcrumb={`Sự cố Y khoa  >  #${id}  >  Mở Khóa Bệnh Án`}
+            title="Mở Khóa Hồ Sơ Bệnh Án Người Bệnh"
+            description="Thẩm quyền Lãnh đạo khoa / Giám đốc điều dưỡng. Ghi nhận lý do mở khóa và xác nhận mật khẩu tài khoản."
         >
             {(query.error || mutation.error) && (
                 <div className="mb-4">
@@ -38,22 +38,22 @@ export default function ChartUnlockPage() {
                         <div>
                             <h2 className="font-bold text-slate-900">{query.data.resident.fullName}</h2>
                             <p className="text-sm text-slate-600">
-                                Incident {query.data.id} · Current chart status: {query.data.resident.isChartLocked ? "Locked" : "Already unlocked"}
+                                Sự cố mã #{query.data.id} · Trạng thái hiện tại: {query.data.resident.isChartLocked ? "Đang bị khóa" : "Đã mở khóa"}
                             </p>
                         </div>
                     </div>
                     <div className="space-y-5">
                         <label className={labelClassName}>
-                            Reason for unlock *
+                            Lý do mở khóa bệnh án *
                             <textarea
                                 className={`${fieldClassName} min-h-28`}
                                 value={reason}
                                 onChange={(event) => setReason(event.target.value)}
-                                placeholder="Investigation completed and documentation reviewed..."
+                                placeholder="Quá trình xác minh nguyên nhân đã hoàn tất và tài liệu bổ sung đã được thẩm tra..."
                             />
                         </label>
                         <label className={labelClassName}>
-                            Password Confirmation *
+                            Mật khẩu xác thực Chữ ký số *
                             <input
                                 className={fieldClassName}
                                 type="password"
@@ -62,14 +62,15 @@ export default function ChartUnlockPage() {
                                 autoComplete="current-password"
                             />
                         </label>
-                        <Notice type="warning">Unlocking restores editing access and creates a permanent audit log entry. It does not automatically resolve the incident.</Notice>
+                        <Notice type="warning">Mở khóa sẽ khôi phục quyền ghi chép và tạo nhật ký kiểm toán vĩnh viễn. Hành động này không đồng nghĩa với việc đóng sự cố.</Notice>
                         <div className="flex justify-end gap-3">
-                            <SecondaryButton onClick={() => navigate(-1)}>Cancel</SecondaryButton>
+                            <SecondaryButton onClick={() => navigate(-1)}>Hủy bỏ</SecondaryButton>
                             <PrimaryButton
+                                className="bg-[#0F766E] hover:bg-[#115E59]"
                                 disabled={!query.data.resident.isChartLocked || !reason.trim() || !passwordConfirm || mutation.isPending}
                                 onClick={() => mutation.mutate()}
                             >
-                                {mutation.isPending ? "Unlocking..." : "Unlock Chart"}
+                                {mutation.isPending ? "Đang mở khóa..." : "Xác Nhận Mở Khóa"}
                             </PrimaryButton>
                         </div>
                     </div>
@@ -78,3 +79,4 @@ export default function ChartUnlockPage() {
         </WorkflowPage>
     );
 }
+

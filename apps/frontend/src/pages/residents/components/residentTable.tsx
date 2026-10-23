@@ -14,8 +14,8 @@ export function ResidentTable({ residents, isLoading }: ResidentTableProps) {
     if (isLoading) {
         return (
             <div className="empty-state">
-                <strong>Loading residents...</strong>
-                <span>Preparing the latest resident census.</span>
+                <strong>Đang tải danh sách bệnh nhân...</strong>
+                <span>Hệ thống đang đồng bộ dữ liệu hồ sơ bệnh án mới nhất.</span>
             </div>
         );
     }
@@ -23,8 +23,8 @@ export function ResidentTable({ residents, isLoading }: ResidentTableProps) {
     if (residents.length === 0) {
         return (
             <div className="empty-state">
-                <strong>No residents found</strong>
-                <span>Try adjusting the search text or filter criteria.</span>
+                <strong>Không tìm thấy bệnh nhân nào</strong>
+                <span>Vui lòng thử điều chỉnh lại từ khóa tìm kiếm hoặc tiêu chí lọc.</span>
             </div>
         );
     }
@@ -34,14 +34,14 @@ export function ResidentTable({ residents, isLoading }: ResidentTableProps) {
             <table>
                 <thead>
                     <tr>
-                        <th>Resident</th>
-                        <th>Age / Gender</th>
-                        <th>Room</th>
-                        <th>Care Level</th>
-                        <th>Assigned Team</th>
-                        <th>Admission Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>Bệnh nhân</th>
+                        <th>Tuổi / Giới tính</th>
+                        <th>Phòng / Giường</th>
+                        <th>Mức độ điều trị</th>
+                        <th>Bác sĩ & Điều dưỡng</th>
+                        <th>Ngày nhập viện</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,14 +63,14 @@ export function ResidentTable({ residents, isLoading }: ResidentTableProps) {
                                 </div>
                             </td>
                             <td>
-                                {calculateAge(resident.dateOfBirth)} / {GENDER_LABEL[resident.gender]}
+                                {calculateAge(resident.dateOfBirth)} tuổi / {GENDER_LABEL[resident.gender]}
                             </td>
-                            <td>{resident.roomNumber ?? "Unassigned"}</td>
+                            <td>{resident.roomNumber ?? "Chưa phân buồng"}</td>
                             <td>{CARE_LEVEL_LABEL[resident.careLevel]}</td>
                             <td>
                                 <div className="stacked-text">
-                                    <strong>{resident.assignedNurse ?? "Pending nurse"}</strong>
-                                    <span>{resident.assignedDoctor ?? "Pending physician"}</span>
+                                    <strong>{resident.assignedDoctor ?? "Chưa phân công BS"}</strong>
+                                    <span>{resident.assignedNurse ?? "Chưa phân công ĐD"}</span>
                                 </div>
                             </td>
                             <td>{resident.admissionDate}</td>
@@ -79,8 +79,8 @@ export function ResidentTable({ residents, isLoading }: ResidentTableProps) {
                             </td>
                             <td>
                                 <div className="table-actions">
-                                    <Link to={`${APP_ROUTES.RESIDENTS}/${resident.id}`}>View</Link>
-                                    <Link to={`${APP_ROUTES.RESIDENTS}/${resident.id}/edit`}>Edit</Link>
+                                    <Link to={`${APP_ROUTES.RESIDENTS}/${resident.id}`}>Xem hồ sơ</Link>
+                                    <Link to={`${APP_ROUTES.RESIDENTS}/${resident.id}/edit`}>Chỉnh sửa</Link>
                                 </div>
                             </td>
                         </tr>

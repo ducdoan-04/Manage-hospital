@@ -132,62 +132,38 @@ export class DemoDataService {
                     });
                 }
 
-                // 3. Create 20 sample Residents & Admissions
-                const residentsData = Array.from({ length: 20 }).map((_, idx) => {
-                    const firstNames = [
-                        "James",
-                        "Mary",
-                        "John",
-                        "Patricia",
-                        "Robert",
-                        "Jennifer",
-                        "Michael",
-                        "Linda",
-                        "William",
-                        "Elizabeth",
-                        "David",
-                        "Barbara",
-                        "Richard",
-                        "Susan",
-                        "Joseph",
-                        "Jessica",
-                        "Thomas",
-                        "Sarah",
-                        "Charles",
-                        "Karen",
-                    ];
-                    const lastNames = [
-                        "Smith",
-                        "Johnson",
-                        "Williams",
-                        "Brown",
-                        "Jones",
-                        "Garcia",
-                        "Miller",
-                        "Davis",
-                        "Rodriguez",
-                        "Martinez",
-                        "Hernandez",
-                        "Lopez",
-                        "Gonzalez",
-                        "Wilson",
-                        "Anderson",
-                        "Thomas",
-                        "Taylor",
-                        "Moore",
-                        "Jackson",
-                        "Martin",
-                    ];
+                // 3. Create 20 sample Vietnamese Hospital Patients & Admissions
+                const vietnamesePatients = [
+                    { lastName: "Nguyễn", firstName: "Văn An", birthYear: 1958, gender: "MALE" },
+                    { lastName: "Trần", firstName: "Thị Mai", birthYear: 1964, gender: "FEMALE" },
+                    { lastName: "Lê", firstName: "Hoàng Dũng", birthYear: 1952, gender: "MALE" },
+                    { lastName: "Phạm", firstName: "Thị Hương", birthYear: 1970, gender: "FEMALE" },
+                    { lastName: "Hoàng", firstName: "Văn Nam", birthYear: 1961, gender: "MALE" },
+                    { lastName: "Vũ", firstName: "Thị Lan", birthYear: 1948, gender: "FEMALE" },
+                    { lastName: "Đỗ", firstName: "Quốc Tuấn", birthYear: 1975, gender: "MALE" },
+                    { lastName: "Bùi", firstName: "Bích Ngọc", birthYear: 1982, gender: "FEMALE" },
+                    { lastName: "Đặng", firstName: "Thanh Tùng", birthYear: 1959, gender: "MALE" },
+                    { lastName: "Ngô", firstName: "Hồng Hạnh", birthYear: 1968, gender: "FEMALE" },
+                    { lastName: "Dương", firstName: "Minh Khôi", birthYear: 1990, gender: "MALE" },
+                    { lastName: "Lý", firstName: "Thu Trang", birthYear: 1985, gender: "FEMALE" },
+                    { lastName: "Mai", firstName: "Đức Thắng", birthYear: 1955, gender: "MALE" },
+                    { lastName: "Đinh", firstName: "Phương Linh", birthYear: 1993, gender: "FEMALE" },
+                    { lastName: "Lương", firstName: "Hữu Phước", birthYear: 1947, gender: "MALE" },
+                    { lastName: "Trịnh", firstName: "Khánh Vy", birthYear: 1998, gender: "FEMALE" },
+                    { lastName: "Hồ", firstName: "Thế Vinh", birthYear: 1963, gender: "MALE" },
+                    { lastName: "Phan", firstName: "Cẩm Tú", birthYear: 1979, gender: "FEMALE" },
+                    { lastName: "Võ", firstName: "Gia Huy", birthYear: 1988, gender: "MALE" },
+                    { lastName: "Chu", firstName: "Ánh Tuyết", birthYear: 1950, gender: "FEMALE" },
+                ];
 
-                    return {
-                        first_name: `${this.SAMPLE_PREFIX}${firstNames[idx % firstNames.length]}`,
-                        last_name: lastNames[idx % lastNames.length],
-                        date_of_birth: new Date(1940 + (idx % 10), idx % 12, (idx % 28) + 1),
-                        gender: idx % 2 === 0 ? "MALE" : "FEMALE",
-                        status: "ACTIVE",
-                        bed_id: beds[idx % beds.length].id,
-                    };
-                });
+                const residentsData = vietnamesePatients.map((p, idx) => ({
+                    first_name: `${this.SAMPLE_PREFIX}${p.firstName}`,
+                    last_name: p.lastName,
+                    date_of_birth: new Date(p.birthYear, idx % 12, (idx % 28) + 1),
+                    gender: p.gender,
+                    status: "ACTIVE",
+                    bed_id: beds[idx % beds.length].id,
+                }));
 
                 const createdResidents: Array<{ id: string; first_name: string }> = [];
                 for (const res of residentsData) {
@@ -210,14 +186,20 @@ export class DemoDataService {
                     createdResidents.push(resident);
                 }
 
-                // 4. Create 15 Care Plans
-                const goalsList = ["Maintain mobility", "Pain management", "Improve nutrition", "Social engagement", "Skin integrity"];
+                // 4. Create 15 Care Plans for Hospital Inpatients
+                const goalsList = [
+                    "Kiểm soát huyết áp mục tiêu < 130/80 mmHg",
+                    "Ổn định đường huyết lúc đói < 7.0 mmol/L",
+                    "Phục hồi vận động khớp gối và đi lại an toàn sau phẫu thuật",
+                    "Chăm sóc vô khuẩn vết mổ ngoại khoa, tránh nhiễm trùng bệnh viện",
+                    "Duy trì chỉ số SpO2 >= 96% khi thở khí phòng",
+                ];
                 const interventionsList = [
-                    "Walk with assistance",
-                    "Administer prescribed pain relief",
-                    "Encourage high-protein diet",
-                    "Participate in daily activities",
-                    "Reposition every 2 hours",
+                    "Đo chỉ số sinh tồn và huyết áp 2 lần/ngày (08:00 và 16:00)",
+                    "Thực hiện tiêm truyền tĩnh mạch theo y lệnh của bác sĩ điều trị",
+                    "Chế độ dinh dưỡng bệnh lý giảm muối, hạn chế đường đơn",
+                    "Tập vật lý trị liệu phục hồi chức năng 30 phút mỗi ngày",
+                    "Xoay trở tư thế người bệnh mỗi 2 giờ, theo dõi loét tì đè",
                 ];
 
                 for (let i = 0; i < 15; i++) {
@@ -256,8 +238,15 @@ export class DemoDataService {
                     severityIds[sev] = severity.id;
                 }
 
-                // 6. Create 8 Incidents
+                // 6. Create 8 Hospital Incidents
                 const incidentTypes = ["FALL", "MEDICATION_ERROR", "BEHAVIORAL", "WOUND_ISSUE"];
+                const incidentDescriptions = [
+                    "Bệnh nhân trượt ngã nhẹ khi di chuyển từ giường sang xe lăn, đã kiểm tra sinh hiệu ổn định.",
+                    "Chậm giờ cấp phát thuốc cữ sáng do bệnh nhân đang chụp CT Scanner, đã bổ sung cữ sau đó.",
+                    "Phát hiện mẩn ngứa nhẹ sau khi tiêm kháng sinh đường tĩnh mạch, đã dừng truyền và hội chẩn bác sĩ.",
+                    "Xước da nhẹ vùng cẳng tay do cọ xát thành giường, điều dưỡng đã vệ sinh sát khuẩn băng gạc.",
+                ];
+
                 for (let i = 0; i < 8; i++) {
                     const resident = createdResidents[i % createdResidents.length];
                     const severityName = i % 3 === 2 ? "HIGH" : i % 3 === 1 ? "MEDIUM" : "LOW";
@@ -265,7 +254,7 @@ export class DemoDataService {
                     await tx.incidents.create({
                         data: {
                             incident_type: incidentTypes[i % incidentTypes.length],
-                            description: `[Demo] Sample incident description for ${resident.first_name}.`,
+                            description: `[Demo] ${incidentDescriptions[i % incidentDescriptions.length]} (${resident.first_name})`,
                             resident_id: resident.id,
                             reported_by: userId,
                             severity_id: severityIds[severityName],
@@ -275,20 +264,31 @@ export class DemoDataService {
                     });
                 }
 
-                // 7. Create 40 Medications
-                const drugs = ["Aspirin", "Metformin", "Lisinopril", "Atorvastatin", "Amlodipine", "Levothyroxine", "Gabapentin", "Omeprazole", "Furosemide", "Metoprolol"];
-                const frequencies = ["Once daily", "Twice daily", "PRN (As needed)", "Every morning"];
+                // 7. Create 40 Hospital Inpatient Medication Orders
+                const drugs = [
+                    { name: "Paracetamol 500mg viên sủi", dose: "500 mg", route: "PO (Uống)", freq: "Uống 1 viên khi sốt > 38.5°C" },
+                    { name: "Augmentin 1g (Amoxicillin/Clavulanic)", dose: "1000 mg", route: "PO (Uống)", freq: "Uống 1 viên x 2 lần/ngày sau ăn" },
+                    { name: "Amlodipine 5mg", dose: "5 mg", route: "PO (Uống)", freq: "Uống 1 viên buổi sáng lúc 08:00" },
+                    { name: "Ceftriaxone 1g tiêm tĩnh mạch", dose: "1000 mg", route: "IV (Tiêm TM)", freq: "Tiêm tĩnh mạch chậm 1 lần/ngày lúc 08:00" },
+                    { name: "Omeprazole 20mg", dose: "20 mg", route: "PO (Uống)", freq: "Uống 1 viên trước ăn sáng 30 phút" },
+                    { name: "Metformin 500mg", dose: "500 mg", route: "PO (Uống)", freq: "Uống 1 viên x 2 lần/ngày cùng bữa ăn" },
+                    { name: "Atorvastatin 20mg", dose: "20 mg", route: "PO (Uống)", freq: "Uống 1 viên buổi tối trước khi đi ngủ" },
+                    { name: "Furosemide 40mg", dose: "40 mg", route: "PO (Uống)", freq: "Uống 1 viên buổi sáng" },
+                    { name: "Berberin 100mg", dose: "100 mg", route: "PO (Uống)", freq: "Uống 2 viên x 2 lần/ngày khi đau bụng" },
+                    { name: "NaCl 0.9% 500ml dịch truyền", dose: "500 ml", route: "IV (Truyền TM)", freq: "Truyền tĩnh mạch 30 giọt/phút" },
+                ];
 
                 for (let i = 0; i < 40; i++) {
                     const resident = createdResidents[i % createdResidents.length];
+                    const selectedDrug = drugs[i % drugs.length];
                     await tx.medication_orders.create({
                         data: {
                             resident_id: resident.id,
                             prescribed_by: userId,
-                            drug_name: drugs[i % drugs.length],
-                            dosage: `${((i % 3) + 1) * 5} mg`,
-                            route: "PO (Oral)",
-                            frequency: frequencies[i % frequencies.length],
+                            drug_name: selectedDrug.name,
+                            dosage: selectedDrug.dose,
+                            route: selectedDrug.route,
+                            frequency: selectedDrug.freq,
                             status: "ACTIVE",
                         },
                     });

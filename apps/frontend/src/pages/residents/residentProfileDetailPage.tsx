@@ -8,7 +8,7 @@ import type { Resident, ResidentStatus } from "./types";
 
 const residentStatuses: ResidentStatus[] = ["pending", "under_evaluation", "admitted", "discharged"];
 
-const displayValue = (value?: string | number) => (value === undefined || value === "" ? "Not recorded" : String(value));
+const displayValue = (value?: string | number) => (value === undefined || value === "" ? "Chưa ghi nhận" : String(value));
 
 export function ResidentProfileDetailPage() {
     const { id } = useParams();
@@ -19,7 +19,7 @@ export function ResidentProfileDetailPage() {
 
     useEffect(() => {
         if (!id) {
-            setErrorMessage("Resident ID is missing.");
+            setErrorMessage("Thiếu mã định danh bệnh nhân.");
             setIsLoading(false);
             return;
         }
@@ -36,7 +36,7 @@ export function ResidentProfileDetailPage() {
             })
             .catch(() => {
                 if (isActive) {
-                    setErrorMessage("Unable to load resident profile.");
+                    setErrorMessage("Không thể tải thông tin hồ sơ bệnh nhân.");
                 }
             })
             .finally(() => {
@@ -64,7 +64,7 @@ export function ResidentProfileDetailPage() {
             });
             setResident(updatedResident);
         } catch {
-            setErrorMessage("Unable to update resident status.");
+            setErrorMessage("Không thể cập nhật trạng thái bệnh nhân.");
         } finally {
             setIsUpdatingStatus(false);
         }
@@ -74,8 +74,8 @@ export function ResidentProfileDetailPage() {
         return (
             <main className="page-shell">
                 <div className="empty-state">
-                    <strong>Loading resident profile...</strong>
-                    <span>Fetching resident details.</span>
+                    <strong>Đang tải hồ sơ bệnh án...</strong>
+                    <span>Đang trích xuất dữ liệu lâm sàng của bệnh nhân.</span>
                 </div>
             </main>
         );
@@ -85,8 +85,8 @@ export function ResidentProfileDetailPage() {
         return (
             <main className="page-shell">
                 <div className="empty-state">
-                    <strong>Resident not found</strong>
-                    <span>{errorMessage || "The requested resident does not exist."}</span>
+                    <strong>Không tìm thấy bệnh nhân</strong>
+                    <span>{errorMessage || "Hồ sơ bệnh nhân được yêu cầu không tồn tại."}</span>
                 </div>
             </main>
         );
@@ -96,18 +96,18 @@ export function ResidentProfileDetailPage() {
         <main className="page-shell">
             <section className="page-header">
                 <div>
-                    <span className="eyebrow">Resident Profile</span>
+                    <span className="eyebrow">Hồ sơ Bệnh nhân</span>
                     <h1>{resident.fullName}</h1>
                     <p>
-                        {resident.residentCode} · Room {resident.roomNumber ?? "Unassigned"} · {CARE_LEVEL_LABEL[resident.careLevel]}
+                        Mã BN: {resident.residentCode} · Buồng/Giường: {resident.roomNumber ?? "Chưa phân phòng"} · {CARE_LEVEL_LABEL[resident.careLevel]}
                     </p>
                 </div>
                 <div className="header-actions">
                     <Link className="secondary-action" to={APP_ROUTES.RESIDENTS}>
-                        Back to List
+                        ← Quay lại danh sách
                     </Link>
                     <Link className="primary-action" to={`${APP_ROUTES.RESIDENTS}/${resident.id}/edit`}>
-                        Edit Resident
+                        Chỉnh sửa hồ sơ
                     </Link>
                 </div>
             </section>
@@ -125,7 +125,7 @@ export function ResidentProfileDetailPage() {
                 <div>
                     <h2>{resident.fullName}</h2>
                     <p>
-                        {calculateAge(resident.dateOfBirth)} years old · {GENDER_LABEL[resident.gender]} · Admitted {resident.admissionDate}
+                        {calculateAge(resident.dateOfBirth)} tuổi · {GENDER_LABEL[resident.gender]} · Ngày vào viện: {resident.admissionDate}
                     </p>
                 </div>
                 <ResidentStatusBadge status={resident.status} />
@@ -133,31 +133,31 @@ export function ResidentProfileDetailPage() {
 
             <section className="profile-grid">
                 <article className="detail-panel">
-                    <h2>Admission</h2>
+                    <h2>Thông tin Nhập viện</h2>
                     <dl className="detail-list">
                         <div>
-                            <dt>Room</dt>
+                            <dt>Buồng / Giường</dt>
                             <dd>{displayValue(resident.roomNumber)}</dd>
                         </div>
                         <div>
-                            <dt>Care level</dt>
+                            <dt>Mức độ điều trị</dt>
                             <dd>{CARE_LEVEL_LABEL[resident.careLevel]}</dd>
                         </div>
                         <div>
-                            <dt>Assigned nurse</dt>
+                            <dt>Điều dưỡng phụ trách</dt>
                             <dd>{displayValue(resident.assignedNurse)}</dd>
                         </div>
                         <div>
-                            <dt>Assigned physician</dt>
+                            <dt>Bác sĩ điều trị</dt>
                             <dd>{displayValue(resident.assignedDoctor)}</dd>
                         </div>
                     </dl>
                 </article>
 
                 <article className="detail-panel">
-                    <h2>Status</h2>
+                    <h2>Trạng thái Điều trị</h2>
                     <label className="field">
-                        <span>Resident status</span>
+                        <span>Cập nhật trạng thái</span>
                         <select value={resident.status} disabled={isUpdatingStatus} onChange={(event) => handleStatusChange(event.target.value as ResidentStatus)}>
                             {residentStatuses.map((status) => (
                                 <option key={status} value={status}>
@@ -169,18 +169,18 @@ export function ResidentProfileDetailPage() {
                 </article>
 
                 <article className="detail-panel">
-                    <h2>Emergency Contact</h2>
+                    <h2>Người liên hệ Khẩn cấp / Thân nhân</h2>
                     <dl className="detail-list">
                         <div>
-                            <dt>Name</dt>
+                            <dt>Họ và tên</dt>
                             <dd>{resident.emergencyContactName}</dd>
                         </div>
                         <div>
-                            <dt>Relationship</dt>
+                            <dt>Quan hệ</dt>
                             <dd>{displayValue(resident.emergencyContactRelationship)}</dd>
                         </div>
                         <div>
-                            <dt>Phone</dt>
+                            <dt>Điện thoại</dt>
                             <dd>{resident.emergencyContactPhone}</dd>
                         </div>
                         <div>
@@ -191,48 +191,48 @@ export function ResidentProfileDetailPage() {
                 </article>
 
                 <article className="detail-panel">
-                    <h2>Medical Summary</h2>
+                    <h2>Tóm tắt Lâm sàng & Bệnh học</h2>
                     <dl className="detail-list">
                         <div>
-                            <dt>Primary diagnosis</dt>
+                            <dt>Chẩn đoán chính</dt>
                             <dd>{displayValue(resident.primaryDiagnosis)}</dd>
                         </div>
                         <div>
-                            <dt>Allergies</dt>
+                            <dt>Tiền sử dị ứng</dt>
                             <dd>{displayValue(resident.allergies)}</dd>
                         </div>
                         <div>
-                            <dt>Current medications</dt>
+                            <dt>Thuốc đang dùng</dt>
                             <dd>{displayValue(resident.currentMedications)}</dd>
                         </div>
                         <div>
-                            <dt>Mobility</dt>
-                            <dd>{resident.mobilityStatus ? MOBILITY_STATUS_LABEL[resident.mobilityStatus] : "Not recorded"}</dd>
+                            <dt>Tình trạng vận động</dt>
+                            <dd>{resident.mobilityStatus ? MOBILITY_STATUS_LABEL[resident.mobilityStatus] : "Chưa ghi nhận"}</dd>
                         </div>
                     </dl>
                 </article>
 
                 <article className="detail-panel detail-panel--wide">
-                    <h2>Pre-admission Screening</h2>
+                    <h2>Đánh giá & Sàng lọc Ban đầu</h2>
                     <dl className="detail-list detail-list--three">
                         <div>
-                            <dt>Cognitive status</dt>
-                            <dd>{resident.cognitiveStatus ? COGNITIVE_STATUS_LABEL[resident.cognitiveStatus] : "Not recorded"}</dd>
+                            <dt>Tình trạng tri giác</dt>
+                            <dd>{resident.cognitiveStatus ? COGNITIVE_STATUS_LABEL[resident.cognitiveStatus] : "Chưa ghi nhận"}</dd>
                         </div>
                         <div>
-                            <dt>Fall risk</dt>
-                            <dd>{resident.fallRisk ? FALL_RISK_LABEL[resident.fallRisk] : "Not recorded"}</dd>
+                            <dt>Nguy cơ té ngã</dt>
+                            <dd>{resident.fallRisk ? FALL_RISK_LABEL[resident.fallRisk] : "Chưa ghi nhận"}</dd>
                         </div>
                         <div>
-                            <dt>Pain level</dt>
-                            <dd>{displayValue(resident.painLevel)}</dd>
+                            <dt>Thang điểm đau</dt>
+                            <dd>{displayValue(resident.painLevel)} / 10</dd>
                         </div>
                         <div>
-                            <dt>Nutrition notes</dt>
+                            <dt>Chế độ dinh dưỡng</dt>
                             <dd>{displayValue(resident.nutritionNotes)}</dd>
                         </div>
                         <div>
-                            <dt>Clinical notes</dt>
+                            <dt>Ghi chú lâm sàng</dt>
                             <dd>{displayValue(resident.clinicalNotes)}</dd>
                         </div>
                     </dl>

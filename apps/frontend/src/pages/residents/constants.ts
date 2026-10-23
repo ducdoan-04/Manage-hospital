@@ -8,41 +8,41 @@ import type {
 } from "./types";
 
 export const RESIDENT_STATUS_LABEL: Record<ResidentStatus, string> = {
-  pending: "Pending",
-  under_evaluation: "Under Evaluation",
-  admitted: "Admitted",
-  discharged: "Discharged",
+  pending: "Chờ tiếp nhận",
+  under_evaluation: "Đang khám / Đánh giá",
+  admitted: "Đang điều trị nội trú",
+  discharged: "Đã xuất viện",
 };
 
 export const CARE_LEVEL_LABEL: Record<CareLevel, string> = {
-  independent: "Independent",
-  assisted_living: "Assisted Living",
-  memory_care: "Memory Care",
-  skilled_nursing: "Skilled Nursing",
+  independent: "Điều trị ban ngày / Tự chủ",
+  assisted_living: "Chăm sóc cấp 3 (Hỗ trợ 1 phần)",
+  memory_care: "Khoa Thần kinh / Tâm thần",
+  skilled_nursing: "Chăm sóc cấp 1 (Hồi sức tích cực)",
 };
 
 export const GENDER_LABEL: Record<Gender, string> = {
-  male: "Male",
-  female: "Female",
-  other: "Other",
+  male: "Nam",
+  female: "Nữ",
+  other: "Khác",
 };
 
 export const MOBILITY_STATUS_LABEL: Record<MobilityStatus, string> = {
-  independent: "Independent",
-  walker: "Walker",
-  wheelchair: "Wheelchair",
-  bed_bound: "Bed Bound",
+  independent: "Tự đi lại bình thường",
+  walker: "Cần khung tập đi / người dìu",
+  wheelchair: "Di chuyển bằng xe lăn",
+  bed_bound: "Bất động tại giường bệnh",
 };
 
 export const COGNITIVE_STATUS_LABEL: Record<CognitiveStatus, string> = {
-  alert_oriented: "Alert & Oriented",
-  mild_impairment: "Mild Impairment",
-  moderate_impairment: "Moderate Impairment",
-  severe_impairment: "Severe Impairment",
+  alert_oriented: "Tỉnh táo, tiếp xúc tốt",
+  mild_impairment: "Suy giảm nhận thức nhẹ",
+  moderate_impairment: "Lú lẫn / Nhầm lẫn vừa",
+  severe_impairment: "Mê man / Suy giảm nặng",
 };
 
 export const FALL_RISK_LABEL: Record<FallRisk, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High",
+  low: "Thấp",
+  medium: "Trung bình",
+  high: "Cao",
 };

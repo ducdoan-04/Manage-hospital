@@ -46,50 +46,50 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     }> = [
         {
             items: [
-                { name: "Dashboard", path: "/dashboard/admin", icon: Home },
+                { name: "Bảng điều khiển", path: "/dashboard/admin", icon: Home },
                 {
-                    name: "Modules",
+                    name: "Phân hệ nghiệp vụ",
                     icon: Box,
                     subItems: [
-                        { name: "Resident Management", path: "/residents" },
-                        { name: "Resident Reception", path: "/residents/reception" },
-                        { name: "Doctor Schedule", path: "/doctor-schedule" },
-                        { name: "eMAR Medicine", path: "/emar" },
-                        { name: "Care Plans", path: "/care-plans" },
-                        { name: "Admission", path: "/admissions/new" },
-                        { name: "Assessments", path: "/assessments/history" },
-                        { name: "Daily Tasks", path: "/care-tasks/today" },
-                        { name: "Billing", path: "/billing/cost-panel" },
-                        { name: "Incident & Risk", path: "/incidents" },
+                        { name: "Quản lý Bệnh nhân", path: "/residents" },
+                        { name: "Tiếp đón Bệnh nhân", path: "/residents/reception" },
+                        { name: "Lịch trực Bác sĩ", path: "/doctor-schedule" },
+                        { name: "Cấp phát thuốc (eMAR)", path: "/emar" },
+                        { name: "Phác đồ điều trị", path: "/care-plans" },
+                        { name: "Hồ sơ nhập viện", path: "/admissions/new" },
+                        { name: "Khám & Đánh giá", path: "/assessments/history" },
+                        { name: "Y lệnh chăm sóc", path: "/care-tasks/today" },
+                        { name: "Viện phí & BHYT", path: "/billing/cost-panel" },
+                        { name: "Sự cố y khoa", path: "/incidents" },
                     ],
                 },
             ],
         },
         {
-            label: "USER & ROLE MANAGEMENT",
+            label: "QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN",
             items: [
-                { name: "Users", path: "/admin/users", icon: UserIcon },
-                { name: "Roles", path: "/admin/roles", icon: Shield },
+                { name: "Nhân viên & Bác sĩ", path: "/admin/users", icon: UserIcon },
+                { name: "Vai trò & Quyền hạn", path: "/admin/roles", icon: Shield },
             ],
         },
         {
-            label: "FACILITY & CONFIGURATION",
+            label: "CƠ SỞ & CẤU HÌNH BỆNH VIỆN",
             items: [
-                { name: "Facility", path: "/admin/facility", icon: Building2 },
-                { name: "LOC Rates", path: "/admin/loc-rates", icon: Banknote },
-                { name: "Staffing", path: "/admin/staffing", icon: Clock },
-                { name: "Equipment", path: "/admin/equipment", icon: Box },
-                { name: "Incident Severity", path: "/admin/incident-severity", icon: AlertTriangle },
-                { name: "SLA Config", path: "/admin/sla-config", icon: Settings },
+                { name: "Cơ sở bệnh viện", path: "/admin/facility", icon: Building2 },
+                { name: "Bảng giá điều trị", path: "/admin/loc-rates", icon: Banknote },
+                { name: "Định mức nhân sự", path: "/admin/staffing", icon: Clock },
+                { name: "Trang thiết bị y tế", path: "/admin/equipment", icon: Box },
+                { name: "Mức độ sự cố y khoa", path: "/admin/incident-severity", icon: AlertTriangle },
+                { name: "Cấu hình SLA xử lý", path: "/admin/sla-config", icon: Settings },
             ],
         },
         {
-            label: "DATA & SEEDING",
-            items: [{ name: "Data", path: "/admin/data", icon: Database }],
+            label: "DỮ LIỆU & KHỞI TẠO",
+            items: [{ name: "Dữ liệu mẫu", path: "/admin/data", icon: Database }],
         },
         {
-            label: "AUDIT & SECURITY",
-            items: [{ name: "Audit", path: "/admin/audit", icon: FileText }],
+            label: "NHẬT KÝ & BẢO MẬT",
+            items: [{ name: "Nhật ký hệ thống", path: "/admin/audit", icon: FileText }],
         },
     ];
 
@@ -101,12 +101,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 <div className="flex h-16 flex-shrink-0 items-center border-b border-transparent px-6">
                     <div className="flex items-center gap-2.5">
                         <div className="flex items-center gap-2">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3 12H21M3 6H21M3 18H21" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                            <span className="text-xl font-bold tracking-tight text-slate-900">NHMS</span>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-black text-sm">
+                                +
+                            </div>
+                            <span className="text-xl font-bold tracking-tight text-slate-900">BV-HMS</span>
                         </div>
-                        <span className="w-32 text-[10px] leading-tight font-medium text-slate-500">Nursing Home Management System</span>
+                        <span className="w-32 text-[10px] leading-tight font-medium text-slate-500">Quản lý Bệnh viện Đa khoa</span>
                     </div>
                 </div>
 
@@ -185,7 +185,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600"
                     >
                         <LogOut className="h-4 w-4 text-slate-400" />
-                        {isLoggingOut ? "Logging out..." : "Logout"}
+                        {isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
                     </button>
                 </div>
             </aside>

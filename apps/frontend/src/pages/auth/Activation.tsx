@@ -45,21 +45,21 @@ export function Activation() {
     const newErrors: typeof errors = {};
 
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = "Vui lòng nhập mật khẩu";
     } else if (!isPasswordStrong) {
-      newErrors.password = "Password does not meet all security requirements";
+      newErrors.password = "Mật khẩu chưa đáp ứng đầy đủ yêu cầu bảo mật";
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = "Vui lòng xác nhận lại mật khẩu";
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
     }
 
     if (!phoneNumber.trim()) {
-      newErrors.phoneNumber = "Phone number is required";
+      newErrors.phoneNumber = "Vui lòng nhập số điện thoại";
     } else if (!validatePhone(phoneNumber)) {
-      newErrors.phoneNumber = "Invalid phone number. Must be in E.164 format (e.g. +15551234567)";
+      newErrors.phoneNumber = "Số điện thoại không hợp lệ. Vui lòng nhập theo chuẩn E.164 (ví dụ: +84912345678)";
     }
 
     setErrors(newErrors);
@@ -70,7 +70,7 @@ export function Activation() {
     e.preventDefault();
 
     if (!hasValidInvite) {
-      setErrors({ api: "This invitation link is invalid or incomplete. Please request a new invitation from your administrator." });
+      setErrors({ api: "Liên kết kích hoạt không hợp lệ hoặc đã hết hạn. Vui lòng liên hệ Quản trị viên để nhận mã mới." });
       return;
     }
 
@@ -85,10 +85,10 @@ export function Activation() {
       if (response.success) {
         setIsSuccess(true);
       } else {
-        setErrors({ api: response.message || "Failed to activate account. The invitation link may have expired." });
+        setErrors({ api: response.message || "Kích hoạt tài khoản thất bại. Liên kết có thể đã hết hạn." });
       }
     } catch (err) {
-      setErrors({ api: "Failed to connect to authentication server. Please try again." });
+      setErrors({ api: "Không thể kết nối đến máy chủ xác thực. Vui lòng thử lại sau." });
     } finally {
       setIsLoading(false);
     }
@@ -101,15 +101,15 @@ export function Activation() {
           <div className="h-16 w-16 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-6 shadow-inner animate-bounce">
             <CheckCircle2 className="h-10 w-10" />
           </div>
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Account Activated Successfully</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Kích hoạt tài khoản thành công</h2>
           <p className="text-slate-500 text-sm mb-6 leading-relaxed">
-            Your account is now active. You can now sign in using your email address or phone number.
+            Tài khoản nhân viên y tế của bạn đã được kích hoạt thành công. Bạn có thể đăng nhập bằng email hoặc số điện thoại.
           </p>
           <button
             onClick={() => navigate("/login")}
             className="w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all cursor-pointer active:scale-95"
           >
-            Go to Login
+            Đến trang Đăng nhập
           </button>
         </div>
       </div>
@@ -124,14 +124,14 @@ export function Activation() {
         <div className="w-full lg:w-1/2 bg-blue-50/50 p-8 md:p-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-100">
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-lg">C</div>
-              <span className="font-bold text-slate-800 tracking-tight text-lg">CareSync</span>
+              <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-lg">+</div>
+              <span className="font-bold text-slate-800 tracking-tight text-lg">MedCare Hospital</span>
             </div>
             <h1 className="text-3xl font-extrabold text-slate-900 leading-tight mb-4">
-              Nursing Home Management System
+              Hệ thống Quản lý Bệnh viện Đa khoa
             </h1>
             <p className="text-slate-500 text-sm leading-relaxed max-w-md">
-              Secure, efficient administrative management platform designed specifically for nursing homes, care centers, and clinical facilities.
+              Nền tảng quản trị lâm sàng và nghiệp vụ y tế hiện đại, bảo mật cao cấp dành riêng cho đội ngũ y bác sĩ, điều dưỡng và nhân viên y tế.
             </p>
           </div>
 
@@ -144,18 +144,18 @@ export function Activation() {
           </div>
 
           <div className="flex items-center gap-4 text-xs font-semibold text-slate-400">
-            <span>Enterprise Grade Security</span>
+            <span>Tiêu chuẩn An toàn Dữ liệu Y tế</span>
             <span>•</span>
-            <span>2-Step Verification Ready</span>
+            <span>Xác thực OTP 2 Lớp (2FA)</span>
           </div>
         </div>
 
         {/* Right Side: Form Panel */}
         <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <div className="mb-6">
-            <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Activate Your Account</h2>
+            <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Kích hoạt Tài khoản Nhân viên</h2>
             <p className="text-slate-500 text-sm mt-1">
-              Complete your account setup to access the system.
+              Hoàn tất thiết lập thông tin cá nhân để bắt đầu làm việc trên hệ thống.
             </p>
           </div>
 
@@ -164,9 +164,9 @@ export function Activation() {
             <div className="mb-6 flex items-start gap-3 bg-rose-50 border border-rose-100 rounded-2xl p-4 text-rose-700">
               <ShieldAlert className="h-5 w-5 shrink-0 mt-0.5 text-rose-500" />
               <div>
-                <h4 className="font-bold text-sm">Invalid or Expired Activation Link</h4>
+                <h4 className="font-bold text-sm">Liên kết không hợp lệ hoặc đã hết hạn</h4>
                 <p className="text-xs text-rose-600/90 mt-0.5">
-                  The link you followed is missing required parameters or may have expired. Please verify your activation email or request a new one from your admin.
+                  Đường dẫn kích hoạt thiếu tham số cần thiết hoặc đã quá hạn sử dụng. Vui lòng kiểm tra email kích hoạt hoặc liên hệ Quản trị viên phòng CNTT.
                 </p>
               </div>
             </div>
@@ -182,31 +182,31 @@ export function Activation() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email (Read-Only) */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Email Address</label>
+              <label className="text-xs font-bold text-slate-700 block">Địa chỉ Email</label>
               <div className="relative">
                 <input
                   type="email"
                   readOnly
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-10 text-sm text-slate-500 outline-none cursor-not-allowed"
-                  value={email || "No invitation email provided"}
+                  value={email || "Chưa có email mời"}
                 />
                 <Mail className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 bg-slate-200/50 px-2 py-0.5 rounded-full">
-                  Read-only
+                  Chỉ đọc
                 </span>
               </div>
             </div>
 
             {/* New Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">New Password</label>
+              <label className="text-xs font-bold text-slate-700 block">Mật khẩu mới</label>
               <div className="relative">
                 <input
                   type="password"
                   className={`w-full rounded-xl border px-4 py-3 pl-10 text-sm transition-all outline-none focus:ring-2 ${
                     errors.password ? "border-rose-300 focus:ring-rose-100" : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
                   }`}
-                  placeholder="Enter a secure password"
+                  placeholder="Nhập mật khẩu an toàn"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading || !hasValidInvite}
@@ -218,14 +218,14 @@ export function Activation() {
 
             {/* Confirm Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Confirm Password</label>
+              <label className="text-xs font-bold text-slate-700 block">Xác nhận mật khẩu</label>
               <div className="relative">
                 <input
                   type="password"
                   className={`w-full rounded-xl border px-4 py-3 pl-10 text-sm transition-all outline-none focus:ring-2 ${
                     errors.confirmPassword ? "border-rose-300 focus:ring-rose-100" : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
                   }`}
-                  placeholder="Repeat your password"
+                  placeholder="Nhập lại mật khẩu"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isLoading || !hasValidInvite}
@@ -237,51 +237,51 @@ export function Activation() {
 
             {/* Password Requirements Panel */}
             <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Password Security Requirements</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Yêu cầu bảo mật mật khẩu</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex items-center gap-2">
                   <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center transition-all ${rules.length ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"}`}>
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
-                  <span className={`text-xs ${rules.length ? "text-slate-800 font-semibold" : "text-slate-400"}`}>Min 8 characters</span>
+                  <span className={`text-xs ${rules.length ? "text-slate-800 font-semibold" : "text-slate-400"}`}>Tối thiểu 8 ký tự</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center transition-all ${rules.uppercase ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"}`}>
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
-                  <span className={`text-xs ${rules.uppercase ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Uppercase letter</span>
+                  <span className={`text-xs ${rules.uppercase ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Ký tự in hoa</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center transition-all ${rules.lowercase ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"}`}>
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
-                  <span className={`text-xs ${rules.lowercase ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Lowercase letter</span>
+                  <span className={`text-xs ${rules.lowercase ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Ký tự thường</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center transition-all ${rules.number ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"}`}>
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
-                  <span className={`text-xs ${rules.number ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Number</span>
+                  <span className={`text-xs ${rules.number ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Chữ số</span>
                 </div>
                 <div className="flex items-center gap-2 md:col-span-2">
                   <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center transition-all ${rules.special ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"}`}>
                     <Check className="h-3 w-3 stroke-[3]" />
                   </div>
-                  <span className={`text-xs ${rules.special ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Special character (!@#$%^& etc.)</span>
+                  <span className={`text-xs ${rules.special ? "text-slate-800 font-semibold" : "text-slate-400"}`}>1 Ký tự đặc biệt (!@#$%^&...)</span>
                 </div>
               </div>
             </div>
 
             {/* Phone Number */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Phone Number</label>
+              <label className="text-xs font-bold text-slate-700 block">Số điện thoại di động</label>
               <div className="relative">
                 <input
                   type="text"
                   className={`w-full rounded-xl border px-4 py-3 pl-10 text-sm transition-all outline-none focus:ring-2 ${
                     errors.phoneNumber ? "border-rose-300 focus:ring-rose-100" : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
                   }`}
-                  placeholder="+15551234567"
+                  placeholder="+84912345678"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   disabled={isLoading || !hasValidInvite}
@@ -291,7 +291,7 @@ export function Activation() {
               {errors.phoneNumber ? (
                 <p className="text-[10px] font-bold text-rose-500">{errors.phoneNumber}</p>
               ) : (
-                <p className="text-[10px] text-slate-400 font-medium">Format: E.164 (e.g., +15551234567) - used for two-step OTP verification codes</p>
+                <p className="text-[10px] text-slate-400 font-medium">Định dạng E.164 (ví dụ: +84912345678) - dùng nhận mã xác thực OTP 2 bước</p>
               )}
             </div>
 
@@ -301,7 +301,7 @@ export function Activation() {
               disabled={isLoading || !hasValidInvite}
               className="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white shadow-md shadow-blue-500/10 hover:bg-blue-700 transition-all cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
-              {isLoading ? "Activating Account..." : "Activate Account"}
+              {isLoading ? "Đang kích hoạt tài khoản..." : "Kích hoạt tài khoản"}
             </button>
           </form>
 
@@ -312,7 +312,7 @@ export function Activation() {
               className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Back to Login
+              Quay lại Đăng nhập
             </button>
           </div>
         </div>

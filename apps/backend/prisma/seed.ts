@@ -14,23 +14,23 @@ const DEFAULT_FACILITY_CODE = "FAC-0042";
 const careLevelSeed = [
   {
     levelCode: "INDEPENDENT_LIVING",
-    levelName: "Tier 1 - Low",
-    dailyRate: 165,
+    levelName: "Cấp độ 1 - Tự chủ",
+    dailyRate: 150000,
   },
   {
     levelCode: "ASSISTED_LIVING",
-    levelName: "Tier 2 - Moderate",
-    dailyRate: 205,
+    levelName: "Cấp độ 2 - Hỗ trợ một phần",
+    dailyRate: 250000,
   },
   {
     levelCode: "MEMORY_CARE",
-    levelName: "Tier 3 - High",
-    dailyRate: 248,
+    levelName: "Cấp độ 3 - Chăm sóc tích cực",
+    dailyRate: 400000,
   },
   {
     levelCode: "SKILLED_NURSING",
-    levelName: "Tier 4 - Total",
-    dailyRate: 310,
+    levelName: "Cấp độ 4 - Chăm sóc toàn diện",
+    dailyRate: 600000,
   },
 ] as const;
 
@@ -46,24 +46,24 @@ const roomSeed = [
 ] as const;
 
 const roomRateSeed = [
-  { roomType: "Private", dailyRate: 220, effectiveFrom: "2026-01-01" },
-  { roomType: "Semi-private", dailyRate: 185, effectiveFrom: "2026-01-01" },
-  { roomType: "Ward", dailyRate: 150, effectiveFrom: "2026-01-01" },
+  { roomType: "Private", dailyRate: 500000, effectiveFrom: "2026-01-01" },
+  { roomType: "Semi-private", dailyRate: 350000, effectiveFrom: "2026-01-01" },
+  { roomType: "Ward", dailyRate: 200000, effectiveFrom: "2026-01-01" },
 ] as const;
 
 const clinicalCapabilitySeed = [
-  { capability: "Wound care / pressure ulcer management", supported: true },
-  { capability: "Physical / Occupational / Speech therapy", supported: true },
-  { capability: "Dementia or behavioral health management", supported: true },
+  { capability: "Chăm sóc vết thương / Điều trị loét tì đè", supported: true },
+  { capability: "Vật lý trị liệu / Phục hồi chức năng", supported: true },
+  { capability: "Sức khỏe tâm thần & Quản lý hành vi", supported: true },
   {
-    capability: "Bariatric care needs",
+    capability: "Điều trị bệnh nhân béo phì nặng",
     supported: false,
-    note: "Facility-wide bed weight limit: 300 lb (no bariatric-rated equipment on site).",
+    note: "Giới hạn tải trọng giường toàn viện: 150 kg (chưa trang bị giường chuyên dụng chịu tải lớn).",
   },
-  { capability: "IV therapy or complex medication administration", supported: true },
-  { capability: "Ventilator or respiratory support", supported: true },
-  { capability: "Hospice or palliative care coordination", supported: true },
-  { capability: "Isolation precautions (MRSA, C. diff, etc.)", supported: true },
+  { capability: "Truyền dịch IV / Quản lý phác đồ thuốc phức tạp", supported: true },
+  { capability: "Thở máy & Hỗ trợ hô hấp chuyên sâu", supported: true },
+  { capability: "Chăm sóc giảm nhẹ & Điều trị nâng đỡ", supported: true },
+  { capability: "Cách ly kiểm soát nhiễm khuẩn (MRSA, C. diff, v.v.)", supported: true },
 ] as const;
 
 function toDate(value: string) {
@@ -72,13 +72,13 @@ function toDate(value: string) {
 
 async function main() {
   const rolesData = [
-    { roleName: "Admission Staff", description: "Manages resident intake: pre-admission screening, admission forms, and profile creation. Full access to M1 registration." },
-    { roleName: "Nurse (RN/LPN)", description: "Performs clinical assessments, drafts and manages care plans, records bedside vitals. Cannot approve care plans (DON)." },
-    { roleName: "CNA", description: "Executes daily assigned tasks and records bedside vitals for assigned residents. Mobile-first view (NFR-04)." },
-    { roleName: "DON (Director of Nursing)", description: "Reviews/approves care plans, oversees incidents with SLA tracking, monitors staffing ratio + census/billing snapshot." },
-    { roleName: "System Admin", description: "Configures facility settings, rates, staffing thresholds, user accounts, and equipment inventory. No clinical access." },
-    { roleName: "Physician", description: "Limited-access external signer. Reviews care plans for residents under their care; e-signs M2-US-10 only." },
-    { roleName: "Dietary", description: "Limited-access external signer. Reviews nutrition-related care plan sections; e-signs M2-US-10 only." }
+    { roleName: "Admission Staff", description: "Tiếp đón bệnh nhân: sàng lọc ban đầu, tiếp nhận cấp cứu, lập hồ sơ bệnh án EMR." },
+    { roleName: "Nurse (RN/LPN)", description: "Đánh giá lâm sàng, theo dõi chỉ số sinh tồn tại giường, cấp phát thuốc eMAR và thực hiện y lệnh." },
+    { roleName: "CNA", description: "Hộ lý / Kỹ thuật viên: thực hiện các công việc chăm sóc thường quy và hỗ trợ người bệnh." },
+    { roleName: "DON (Director of Nursing)", description: "Điều dưỡng trưởng / Trưởng phòng Kế hoạch Tổng hợp: duyệt kế hoạch chăm sóc, giám sát sự cố y khoa và quản lý buồng giường." },
+    { roleName: "System Admin", description: "Quản trị hệ thống: cấu hình cơ sở y tế, định mức viện phí, tài khoản nhân viên và trang thiết bị." },
+    { roleName: "Physician", description: "Bác sĩ điều trị / Hội chẩn: lập phác đồ, duyệt kế hoạch chăm sóc đa chuyên khoa và ký số bệnh án điện tử." },
+    { roleName: "Dietary", description: "Chuyên gia Dinh dưỡng lâm sàng: xây dựng chế độ dinh dưỡng bệnh lý và ký xác nhận thực đơn điều trị." }
   ];
 
   const dbRoles: Record<string, any> = {};
@@ -193,20 +193,20 @@ async function main() {
   const facility = await prisma.facility.upsert({
     where: { facilityCode: DEFAULT_FACILITY_CODE },
     update: {
-      name: "NHMS Demo Skilled Nursing Facility",
-      licenseNumber: "CA-SNF-004821",
-      targetState: "CA",
-      timezone: "America/Los_Angeles (Pacific)",
-      phoneNumber: "+14155550142",
+      name: "Bệnh viện Đa khoa Quốc tế MedCare",
+      licenseNumber: "BYT-BV-004821",
+      targetState: "Hà Nội",
+      timezone: "Asia/Ho_Chi_Minh (GMT+7)",
+      phoneNumber: "+842435550142",
       isDeleted: false,
     },
     create: {
       facilityCode: DEFAULT_FACILITY_CODE,
-      name: "NHMS Demo Skilled Nursing Facility",
-      licenseNumber: "CA-SNF-004821",
-      targetState: "CA",
-      timezone: "America/Los_Angeles (Pacific)",
-      phoneNumber: "+14155550142",
+      name: "Bệnh viện Đa khoa Quốc tế MedCare",
+      licenseNumber: "BYT-BV-004821",
+      targetState: "Hà Nội",
+      timezone: "Asia/Ho_Chi_Minh (GMT+7)",
+      phoneNumber: "+842435550142",
     },
   });
 
@@ -333,21 +333,21 @@ async function main() {
   });
   const shiftBreakdownJson = JSON.stringify([
     {
-      shiftName: "Day",
+      shiftName: "Ca Sáng",
       startTime: "07:00",
       endTime: "15:00",
       requiredCnaHours: 1.5,
       requiredNurseHours: 0.9,
     },
     {
-      shiftName: "Evening",
+      shiftName: "Ca Chiều",
       startTime: "15:00",
       endTime: "23:00",
       requiredCnaHours: 0.7,
       requiredNurseHours: 0.5,
     },
     {
-      shiftName: "Night",
+      shiftName: "Ca Đêm",
       startTime: "23:00",
       endTime: "07:00",
       requiredCnaHours: 0.5,

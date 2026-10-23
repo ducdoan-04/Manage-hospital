@@ -20,7 +20,15 @@ export const CalendarHeader = ({
   onViewModeChange,
   onAddClick,
 }: CalendarHeaderProps) => {
-  const monthName = dayjs(currentMonth).format("MMMM YYYY");
+  const monthNum = dayjs(currentMonth).month() + 1;
+  const yearNum = dayjs(currentMonth).year();
+  const monthName = `Tháng ${monthNum}, ${yearNum}`;
+
+  const viewModeLabels: Record<ViewMode, string> = {
+    Day: "Ngày",
+    Week: "Tuần",
+    Month: "Tháng",
+  };
 
   return (
     <div className="mb-4 flex items-center justify-between px-2">
@@ -60,24 +68,25 @@ export const CalendarHeader = ({
                   : "text-slate-500 hover:bg-slate-200 hover:text-slate-900"
               }`}
             >
-              {view}
+              {viewModeLabels[view]}
             </button>
           ))}
         </div>
 
         {/* Desktop-only All Agenda */}
         <button className="hidden md:flex items-center gap-2 px-1 py-1.5 text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900">
-          All Agenda <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+          Tất cả lịch trực <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
         </button>
 
         {/* Add Schedule Button */}
         <button 
           onClick={onAddClick}
-          className="flex h-8 w-8 md:h-auto md:w-auto items-center justify-center gap-1.5 rounded-lg bg-[#1E293B] md:px-4 md:py-2 text-[13px] font-medium text-white transition-colors hover:bg-slate-800"
+          className="flex h-8 w-8 md:h-auto md:w-auto items-center justify-center gap-1.5 rounded-lg bg-[#0F766E] hover:bg-[#115E59] md:px-4 md:py-2 text-[13px] font-medium text-white transition-colors shadow-sm"
         >
-          <Plus className="h-4 w-4" /> <span className="hidden md:inline">Add Schedule</span>
+          <Plus className="h-4 w-4" /> <span className="hidden md:inline">Thêm ca trực</span>
         </button>
       </div>
     </div>
   );
 };
+

@@ -13,14 +13,14 @@ export function NurseDashboard() {
         });
     }, []);
 
-    if (!data) return <div className="p-8">Loading dashboard...</div>;
+    if (!data) return <div className="p-8 text-center text-slate-500">Đang tải dữ liệu ca trực...</div>;
 
     return (
         <div className="flex h-full flex-col bg-[#F8FAFC]">
             <div className="mb-6">
-                <h2 className="text-sm font-medium text-slate-500">Dashboard</h2>
-                <h1 className="mt-1 text-3xl font-bold text-slate-900">Good morning, {user?.firstName}</h1>
-                <p className="mt-2 text-sm text-slate-500">12 residents assigned to you — Day shift</p>
+                <h2 className="text-sm font-medium text-slate-500">Bảng Điều Khiển Điều Dưỡng</h2>
+                <h1 className="mt-1 text-3xl font-bold text-slate-900">Xin chào, {user?.firstName || "Điều dưỡng"}</h1>
+                <p className="mt-2 text-sm text-slate-500">Phân công theo dõi người bệnh — Ca trực hành chính / trực đêm</p>
             </div>
 
             <div className="mb-8 grid grid-cols-4 gap-6">
@@ -29,7 +29,7 @@ export function NurseDashboard() {
                         <FileText className="h-6 w-6 text-yellow-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Assessments Due</p>
+                        <p className="text-sm font-medium text-slate-500">Đánh giá Đến Hạn</p>
                         <p className="text-2xl font-bold text-slate-900">{data.assessmentsDue}</p>
                     </div>
                 </div>
@@ -39,7 +39,7 @@ export function NurseDashboard() {
                         <Layers className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">LOC Awaiting Confirm</p>
+                        <p className="text-sm font-medium text-slate-500">Cấp độ Chờ Xác nhận</p>
                         <p className="text-2xl font-bold text-slate-900">{data.locAwaitingConfirm}</p>
                     </div>
                 </div>
@@ -49,7 +49,7 @@ export function NurseDashboard() {
                         <Edit3 className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Care Plans To Submit</p>
+                        <p className="text-sm font-medium text-slate-500">Kế hoạch Cần Trình Duyệt</p>
                         <p className="text-2xl font-bold text-slate-900">{data.carePlansToSubmit}</p>
                     </div>
                 </div>
@@ -59,7 +59,7 @@ export function NurseDashboard() {
                         <Clock className="h-6 w-6 text-red-500" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Reassessments Due</p>
+                        <p className="text-sm font-medium text-slate-500">Tái Đánh Giá Lâm Sàng</p>
                         <p className="text-2xl font-bold text-slate-900">{data.reassessmentsDue}</p>
                     </div>
                 </div>
@@ -68,9 +68,9 @@ export function NurseDashboard() {
             <div className="grid grid-cols-2 gap-6">
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                     <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-                        <h3 className="font-bold text-slate-900">Assigned Residents — Due Soon</h3>
-                        <a href="/residents" className="text-sm font-medium text-blue-600 hover:underline">
-                            View all
+                        <h3 className="font-bold text-slate-900">Người Bệnh Phân Công — Cần Thực Hiện Sớm</h3>
+                        <a href="/residents" className="text-sm font-medium text-[#0F766E] hover:underline">
+                            Xem tất cả
                         </a>
                     </div>
                     <div className="divide-y divide-slate-200">
@@ -93,7 +93,7 @@ export function NurseDashboard() {
                                                 : "border-slate-200 bg-slate-100 text-slate-700"
                                     }`}
                                 >
-                                    {item.status}
+                                    {item.status === "Overdue" ? "Quá hạn" : item.status === "Due Soon" ? "Sắp đến giờ" : item.status}
                                 </span>
                             </div>
                         ))}
@@ -102,9 +102,9 @@ export function NurseDashboard() {
 
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                     <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-                        <h3 className="font-bold text-slate-900">Open Incidents</h3>
-                        <a href="/incidents" className="text-sm font-medium text-blue-600 hover:underline">
-                            View all
+                        <h3 className="font-bold text-slate-900">Sự Cố Y Khoa Cần Chú Ý</h3>
+                        <a href="/incidents" className="text-sm font-medium text-[#0F766E] hover:underline">
+                            Xem tất cả
                         </a>
                     </div>
                     <div className="divide-y divide-slate-200">
@@ -125,7 +125,7 @@ export function NurseDashboard() {
                                               : "border-slate-200 bg-slate-100 text-slate-500"
                                     }`}
                                 >
-                                    {inc.severity === "neutral" ? "soon" : inc.severity}
+                                    {inc.severity === "High" ? "Khẩn cấp" : inc.severity === "Medium" ? "Trung bình" : "Theo dõi"}
                                 </span>
                             </div>
                         ))}
@@ -135,3 +135,4 @@ export function NurseDashboard() {
         </div>
     );
 }
+

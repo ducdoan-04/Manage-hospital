@@ -38,19 +38,19 @@ export class FacilitiesService {
         const numericRoom = Number.parseInt(roomNumber, 10);
 
         if (numericRoom >= 220) {
-            return "Wing C";
+            return "Khu C (Ngoại - Phẫu thuật)";
         }
 
         if (numericRoom >= 200) {
-            return "Wing B";
+            return "Khu B (Nội tổng hợp)";
         }
 
-        return "Wing A";
+        return "Khu A (Cấp cứu - Hồi sức)";
     }
 
     private getOccupantNote(status: string, roomNumber: string) {
         if (status === "MAINTENANCE") {
-            return "Maintenance required";
+            return "Đang khử khuẩn / Bảo trì";
         }
 
         return ROOM_OCCUPANT_NOTES[roomNumber] ?? null;

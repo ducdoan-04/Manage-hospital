@@ -6,7 +6,12 @@ import { facilityService } from "../../services/facility";
 import { residentsService } from "../../services/residents";
 import { fieldClassName, labelClassName, LoadingState, Notice, Panel, PrimaryButton, SecondaryButton, WorkflowPage } from "../../components/workflow/WorkflowUi";
 
-const requiredConsents = ["Admission Agreement", "HIPAA Notice of Privacy Practices", "Financial Responsibility Agreement", "Advance Directive Acknowledgment"];
+const requiredConsents = [
+    "Giấy cam kết nhập viện và tuân thủ nội quy",
+    "Cam kết bảo mật thông tin bệnh án y khoa",
+    "Cam kết chi trả viện phí & đồng chi trả BHYT",
+    "Phiếu đồng ý phẫu thuật / thủ thuật can thiệp y tế",
+];
 
 export default function AdmissionFormPage() {
     const navigate = useNavigate();
@@ -48,7 +53,7 @@ export default function AdmissionFormPage() {
                 facilityId: facilityQuery.data!.id,
             }),
         onSuccess: (result) => {
-            setMessage("Admission confirmed. Resident status is now Active.");
+            setMessage("Tiếp nhận nhập viện thành công. Trạng thái bệnh nhân chuyển sang Đang điều trị nội trú.");
             const residentId = result?.data?.residentId ?? result?.residentId ?? form.residentId;
             window.setTimeout(() => navigate(`/residents/${residentId}`), 800);
         },
@@ -56,7 +61,7 @@ export default function AdmissionFormPage() {
 
     if (residentsQuery.isLoading || facilityQuery.isLoading) {
         return (
-            <WorkflowPage title="Admission Form">
+            <WorkflowPage title="Hồ sơ Nhập viện">
                 <Panel>
                     <LoadingState />
                 </Panel>
@@ -66,14 +71,14 @@ export default function AdmissionFormPage() {
 
     return (
         <WorkflowPage
-            breadcrumb="Residents  >  New Admission Flow"
-            title="Step 2: Admission Form"
-            description="Assign an available room, confirm payer details, and capture required consents."
+            breadcrumb="Bệnh nhân  >  Quy trình Nhập viện Điều trị"
+            title="Bước 2: Hồ sơ Nhập viện & Phân buồng"
+            description="Chỉ định buồng giường bệnh khả dụng, xác nhận thông tin BHYT và ghi nhận các cam kết y khoa."
         >
             <div className="mb-5 grid grid-cols-3 overflow-hidden rounded-lg border border-blue-200 text-center text-sm font-semibold">
-                <div className="bg-white px-4 py-3 text-blue-600">1&nbsp; Pre-Screening ✓</div>
-                <div className="bg-blue-600 px-4 py-3 text-white">2&nbsp; Admission Form</div>
-                <div className="bg-white px-4 py-3 text-slate-400">3&nbsp; Initial Assessment</div>
+                <div className="bg-white px-4 py-3 text-blue-600">1&nbsp; Sàng lọc ban đầu ✓</div>
+                <div className="bg-blue-600 px-4 py-3 text-white">2&nbsp; Hồ sơ Nhập viện</div>
+                <div className="bg-white px-4 py-3 text-slate-400">3&nbsp; Khám & Đánh giá lâm sàng</div>
             </div>
             {message && (
                 <div className="mb-4">
@@ -87,32 +92,32 @@ export default function AdmissionFormPage() {
             )}
             <div className="grid gap-6 lg:grid-cols-[1fr_310px]">
                 <div className="space-y-5">
-                    <Panel title="Resident">
+                    <Panel title="Thông tin Bệnh nhân">
                         <div className="grid gap-4 md:grid-cols-2">
                             <label className={labelClassName}>
-                                Resident *
+                                Chọn bệnh nhân *
                                 <select className={fieldClassName} value={form.residentId} onChange={(event) => setForm({ ...form, residentId: event.target.value })}>
                                     {residentsQuery.data?.map((resident) => (
                                         <option key={resident.id} value={resident.id}>
-                                            {resident.fullName} · {resident.roomNumber ?? "No room"}
+                                            {resident.fullName} · {resident.roomNumber ?? "Chưa phân phòng"}
                                         </option>
                                     ))}
                                 </select>
                             </label>
                             <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
-                                <strong className="block text-slate-900">{selectedResident?.fullName ?? "Select resident"}</strong>
+                                <strong className="block text-slate-900">{selectedResident?.fullName ?? "Chưa chọn bệnh nhân"}</strong>
                                 {selectedResident && (
                                     <>
-                                        DOB {selectedResident.dateOfBirth} · {selectedResident.residentCode}
+                                        Ngày sinh: {selectedResident.dateOfBirth} · Mã BN: {selectedResident.residentCode}
                                     </>
                                 )}
                             </div>
                         </div>
                     </Panel>
-                    <Panel title="Admission Details">
+                    <Panel title="Chi tiết Nhập viện">
                         <div className="grid gap-5 md:grid-cols-2">
                             <label className={labelClassName}>
-                                Admission Date *
+                                Ngày nhập viện *
                                 <input
                                     className={fieldClassName}
                                     type="date"
@@ -121,48 +126,48 @@ export default function AdmissionFormPage() {
                                 />
                             </label>
                             <label className={labelClassName}>
-                                Room Assignment *
+                                Phân buồng / Giường bệnh *
                                 <select className={fieldClassName} value={form.bedId} onChange={(event) => setForm({ ...form, bedId: event.target.value })}>
-                                    <option value="">Select an available room...</option>
+                                    <option value="">Chọn buồng giường còn trống...</option>
                                     {availableBeds.map((bed) => (
                                         <option key={bed.id} value={bed.id}>
-                                            {bed.room.roomNumber}-{bed.bedNumber} ({bed.room.roomType})
+                                            Phòng {bed.room.roomNumber} - Giường {bed.bedNumber} ({bed.room.roomType})
                                         </option>
                                     ))}
                                 </select>
                             </label>
                         </div>
                     </Panel>
-                    <Panel title="Payer Source">
+                    <Panel title="Đối tượng Chi trả & BHYT">
                         <div className="grid gap-5 md:grid-cols-2">
                             <label className={labelClassName}>
-                                Payer Source *
+                                Nguồn thanh toán / Bảo hiểm *
                                 <select className={fieldClassName} value={form.payerSource} onChange={(event) => setForm({ ...form, payerSource: event.target.value })}>
-                                    <option>Medicare</option>
-                                    <option>Medicaid</option>
-                                    <option>Private Pay</option>
-                                    <option>Insurance</option>
+                                    <option value="Medicare">Bảo hiểm Y tế (BHYT Nhà nước)</option>
+                                    <option value="Medicaid">Chính sách bảo trợ / Hộ nghèo</option>
+                                    <option value="Private Pay">Viện phí tự chi trả (Thu phí)</option>
+                                    <option value="Insurance">Bảo hiểm Sức khỏe / Thương mại</option>
                                 </select>
                             </label>
                             <label className={labelClassName}>
-                                Policy / Member Number
-                                <input className={fieldClassName} value={form.policyNumber} onChange={(event) => setForm({ ...form, policyNumber: event.target.value })} />
+                                Số thẻ BHYT / Mã hợp đồng bảo hiểm
+                                <input className={fieldClassName} placeholder="VD: DN4010123456789" value={form.policyNumber} onChange={(event) => setForm({ ...form, policyNumber: event.target.value })} />
                             </label>
                         </div>
                     </Panel>
-                    <Panel title="Care Team in Charge">
+                    <Panel title="Đội ngũ Y Bác sĩ phụ trách">
                         <div className="grid gap-5 md:grid-cols-2">
                             <label className={labelClassName}>
-                                Physician in Charge
-                                <input className={fieldClassName} value={form.primaryPhysician} onChange={(event) => setForm({ ...form, primaryPhysician: event.target.value })} />
+                                Bác sĩ điều trị chính
+                                <input className={fieldClassName} placeholder="BS.CKII. Nguyễn Văn Hùng" value={form.primaryPhysician} onChange={(event) => setForm({ ...form, primaryPhysician: event.target.value })} />
                             </label>
                             <label className={labelClassName}>
-                                Nurse in Charge
-                                <input className={fieldClassName} value={form.nurseInCharge} onChange={(event) => setForm({ ...form, nurseInCharge: event.target.value })} />
+                                Điều dưỡng phụ trách buồng
+                                <input className={fieldClassName} placeholder="ĐD. Trần Thu Hà" value={form.nurseInCharge} onChange={(event) => setForm({ ...form, nurseInCharge: event.target.value })} />
                             </label>
                         </div>
                     </Panel>
-                    <Panel title="Signed Consents" description="All required consents must be acknowledged before confirmation.">
+                    <Panel title="Văn bản Cam kết & Đồng thuận" description="Tất cả các cam kết y khoa bắt buộc phải được bệnh nhân hoặc thân nhân xác nhận trước khi hoàn tất nhập viện.">
                         <div className="grid gap-3 md:grid-cols-2">
                             {requiredConsents.map((consent) => (
                                 <label key={consent} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm font-medium text-slate-700">
@@ -174,29 +179,29 @@ export default function AdmissionFormPage() {
                                         }
                                     />
                                     {consent}
-                                    <span className="ml-auto text-xs text-slate-400">Required</span>
+                                    <span className="ml-auto text-xs text-red-500 font-semibold">Bắt buộc</span>
                                 </label>
                             ))}
                         </div>
                     </Panel>
                 </div>
                 <div className="space-y-5">
-                    <Panel title="Role">
-                        <p className="font-bold text-slate-900">Admission Staff</p>
-                        <p className="mt-2 text-sm text-slate-500">Completes admission, room assignment, payer source, and consent capture.</p>
+                    <Panel title="Bộ phận thực hiện">
+                        <p className="font-bold text-slate-900">Phòng Tiếp đón & Nhập viện</p>
+                        <p className="mt-2 text-sm text-slate-500">Hoàn tất thủ tục hành chính, phân buồng giường, kiểm tra thẻ BHYT và thu thập cam kết y tế.</p>
                     </Panel>
-                    <Panel title="Available Capacity">
+                    <Panel title="Công suất Giường bệnh">
                         <p className="text-3xl font-bold text-blue-600">{availableBeds.length}</p>
-                        <p className="text-sm text-slate-500">available beds across {facilityQuery.data?.rooms.length ?? 0} rooms</p>
+                        <p className="text-sm text-slate-500">giường bệnh còn trống trên tổng số {facilityQuery.data?.rooms.length ?? 0} buồng bệnh</p>
                     </Panel>
                 </div>
             </div>
             <div className="mt-6 flex justify-between border-t border-slate-200 pt-5">
-                <SecondaryButton onClick={() => navigate(-1)}>← Back</SecondaryButton>
+                <SecondaryButton onClick={() => navigate(-1)}>← Quay lại</SecondaryButton>
                 <div className="flex gap-3">
-                    <SecondaryButton onClick={() => setMessage("Draft retained in this browser session.")}>Save Draft</SecondaryButton>
+                    <SecondaryButton onClick={() => setMessage("Đã lưu bản nháp hồ sơ vào phiên làm việc.")}>Lưu bản nháp</SecondaryButton>
                     <PrimaryButton disabled={!canSubmit || mutation.isPending} onClick={() => mutation.mutate()}>
-                        {mutation.isPending ? "Confirming..." : "Confirm Admission"}
+                        {mutation.isPending ? "Đang xử lý..." : "Xác nhận Nhập viện"}
                     </PrimaryButton>
                 </div>
             </div>

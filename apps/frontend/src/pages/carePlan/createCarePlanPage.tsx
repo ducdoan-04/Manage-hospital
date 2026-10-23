@@ -110,15 +110,15 @@ export function CreateCarePlanPage() {
   const handleSubmit = async (targetStatus: string) => {
     // Basic validation
     if (!residentId) {
-      alert("Please select a resident.");
+      alert("Vui lòng chọn người bệnh.");
       return;
     }
     if (careAreas.length === 0) {
-      alert("Please add at least one Care Area.");
+      alert("Vui lòng thêm ít nhất một Mục tiêu Chăm sóc.");
       return;
     }
     if (careAreas.some((a) => !a.goal.trim())) {
-      alert("Please enter a Goal for all Care Areas.");
+      alert("Vui lòng nhập Mục tiêu cụ thể cho tất cả các lĩnh vực chăm sóc.");
       return;
     }
 
@@ -148,7 +148,7 @@ export function CreateCarePlanPage() {
         if (!checkRes.success) {
           const warning = checkRes.message + (checkRes.data?.length ? ": " + checkRes.data.join(", ") : "");
           setLocWarning(warning);
-          alert("LOC Gate Check Failed: " + checkRes.message);
+          alert("Kiểm tra Tiêu chuẩn Phân loại Chăm sóc chưa đạt: " + checkRes.message);
           setIsSubmitting(false);
           return;
         }
@@ -163,18 +163,18 @@ export function CreateCarePlanPage() {
       navigate(APP_ROUTES.CARE_PLANS);
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "An unexpected error occurred.");
+      alert(err.message || "Đã xảy ra lỗi không xác định.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const locRate = 150 + careAreas.length * 20;
-  const roomRate = 185;
-  const tier = careAreas.length > 3 ? "Tier 3" : careAreas.length > 1 ? "Tier 2" : "Tier 1";
+  const locRate = 350000;
+  const roomRate = 250000;
+  const tier = careAreas.length > 3 ? "Cấp độ III" : careAreas.length > 1 ? "Cấp độ II" : "Cấp độ I";
 
   if (isLoadingResidents || (isEditMode && isLoadingPlan)) {
-    return <div className="p-8 text-center text-slate-500">Loading...</div>;
+    return <div className="p-8 text-center text-slate-500">Đang tải dữ liệu...</div>;
   }
 
   return (
@@ -192,27 +192,27 @@ export function CreateCarePlanPage() {
           <div className="mb-6">
             <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
               <Link to={APP_ROUTES.CARE_PLANS} className="hover:underline">
-                Care Planning
+                Kế hoạch Điều trị
               </Link>
               <span>&gt;</span>
-              <span>{isEditMode ? "Edit Care Plan" : "New Care Plan"}</span>
+              <span>{isEditMode ? "Chỉnh sửa Kế hoạch" : "Tạo Kế hoạch Mới"}</span>
             </div>
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold text-slate-900">
-                {isEditMode ? "Edit Care Plan" : "New Care Plan"}
+                {isEditMode ? "Chỉnh sửa Kế hoạch Điều trị" : "Tạo Kế hoạch Điều trị Mới"}
               </h1>
               <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
-                Draft
+                Bản nháp
               </span>
             </div>
             <div className="mt-3 flex items-center gap-3">
-              <label className="text-sm font-bold text-slate-700">Resident:</label>
+              <label className="text-sm font-bold text-slate-700">Người bệnh:</label>
               <select
                 value={residentId}
                 onChange={(e) => setResidentId(e.target.value)}
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-[#0F766E]"
               >
-                <option value="" disabled>Select a Resident</option>
+                <option value="" disabled>Chọn Người bệnh</option>
                 {(residents as any[]).map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.firstName} {r.lastName}
@@ -227,7 +227,7 @@ export function CreateCarePlanPage() {
               <LocGateBanner tier={tier} />
 
               <div className="mb-4 text-sm font-bold text-slate-700">
-                Care Areas (Master Care Plan — §3.0)
+                Lĩnh vực Chăm sóc & Can thiệp Y tế (Kế hoạch Điều trị Toàn diện)
               </div>
 
               {careAreas.map((area) => (
@@ -242,9 +242,9 @@ export function CreateCarePlanPage() {
               <button
                 type="button"
                 onClick={handleAddArea}
-                className="mt-2 flex h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="mt-2 flex h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
               >
-                + Add Care Area
+                + Thêm Lĩnh vực Chăm sóc
               </button>
 
               <AssignedTasksTable tasks={tasks} onChange={setTasks} />
@@ -266,18 +266,19 @@ export function CreateCarePlanPage() {
             disabled={isSubmitting}
             className="h-10 rounded-md border border-slate-200 bg-white px-6 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           >
-            Save Draft
+            Lưu bản nháp
           </button>
           <button
             type="button"
             onClick={() => handleSubmit("Pending Review")}
             disabled={isSubmitting}
-            className="h-10 rounded-md bg-blue-600 px-6 text-sm font-bold !text-white hover:bg-blue-700 disabled:opacity-50"
+            className="h-10 rounded-md bg-[#0F766E] px-6 text-sm font-bold !text-white hover:bg-[#115E59] disabled:opacity-50"
           >
-            {isSubmitting ? "Submitting..." : "Submit for Review"}
+            {isSubmitting ? "Đang gửi..." : "Gửi Trưởng khoa Duyệt"}
           </button>
         </div>
       </footer>
     </div>
   );
 }
+

@@ -42,20 +42,20 @@ const cognitiveOptions: CognitiveStatus[] = ["alert_oriented", "mild_impairment"
 const fallRiskOptions: FallRisk[] = ["low", "medium", "high"];
 
 const formSchema = z.object({
-    fullName: z.string().trim().min(2, "Full name is required."),
-    dateOfBirth: z.string().min(1, "Date of birth is required."),
-    gender: z.enum(["male", "female", "other"], "Gender is required."),
+    fullName: z.string().trim().min(2, "Vui lòng nhập họ và tên bệnh nhân."),
+    dateOfBirth: z.string().min(1, "Vui lòng chọn ngày sinh."),
+    gender: z.enum(["male", "female", "other"], "Vui lòng chọn giới tính."),
     phone: z.string(),
     address: z.string(),
-    admissionDate: z.string().min(1, "Admission date is required."),
+    admissionDate: z.string().min(1, "Vui lòng chọn ngày tiếp nhận khám."),
     roomNumber: z.string(),
-    careLevel: z.enum(["independent", "assisted_living", "memory_care", "skilled_nursing"], "Care level is required."),
+    careLevel: z.enum(["independent", "assisted_living", "memory_care", "skilled_nursing"], "Vui lòng chọn mức độ điều trị."),
     assignedNurse: z.string(),
     assignedDoctor: z.string(),
-    emergencyContactName: z.string().trim().min(2, "Emergency contact name is required."),
+    emergencyContactName: z.string().trim().min(2, "Vui lòng nhập tên người liên hệ khẩn cấp."),
     emergencyContactRelationship: z.string(),
-    emergencyContactPhone: z.string().trim().min(7, "Emergency contact phone is required."),
-    emergencyContactEmail: z.string().email("Enter a valid email address.").or(z.literal("")),
+    emergencyContactPhone: z.string().trim().min(7, "Số điện thoại liên hệ phải từ 7 chữ số trở lên."),
+    emergencyContactEmail: z.string().email("Địa chỉ email người liên hệ không hợp lệ.").or(z.literal("")),
     primaryDiagnosis: z.string(),
     allergies: z.string(),
     currentMedications: z.string(),
@@ -182,7 +182,7 @@ export function ResidentReceptionPage() {
 
         try {
             const resident = await residentRepository.createPreScreening(toPayload(form));
-            setSuccessMessage(mode === "draft" ? `Draft saved for ${resident.fullName}.` : `${resident.fullName} is ready for clinical review.`);
+            setSuccessMessage(mode === "draft" ? `Đã lưu bản nháp tiếp đón cho bệnh nhân ${resident.fullName}.` : `Bệnh nhân ${resident.fullName} đã sẵn sàng cho bước khám & đánh giá lâm sàng.`);
         } finally {
             setIsSubmitting(false);
         }
@@ -192,19 +192,19 @@ export function ResidentReceptionPage() {
         <main className="page-shell">
             <section className="page-header">
                 <div>
-                    <span className="eyebrow">Reception & Evaluation</span>
-                    <h1>Pre-admission Screening</h1>
-                    <p>Capture admission details, emergency contact, medical background, and the initial nursing evaluation.</p>
+                    <span className="eyebrow">Tiếp đón & Phân loại Sàng lọc</span>
+                    <h1>Tiếp nhận & Sàng lọc Ban đầu</h1>
+                    <p>Thu thập thông tin hành chính, người liên hệ khẩn cấp, bệnh sử và đánh giá ban đầu của điều dưỡng.</p>
                 </div>
                 <Link className="secondary-action" to={APP_ROUTES.RESIDENTS}>
-                    Back to List
+                    ← Quay lại danh sách
                 </Link>
             </section>
 
             <section className="intake-summary">
                 <div>
-                    <strong>{completionScore}% complete</strong>
-                    <span>Required intake information</span>
+                    <strong>{completionScore}% hoàn tất</strong>
+                    <span>Thông tin tiếp nhận bắt buộc</span>
                 </div>
                 <div className="progress-track">
                     <div style={{ width: `${completionScore}%` }} />
@@ -218,22 +218,22 @@ export function ResidentReceptionPage() {
                     <div className="form-card__header">
                         <span>01</span>
                         <div>
-                            <h2>Personal Information</h2>
-                            <p>Basic demographic and contact details.</p>
+                            <h2>Thông tin Cá nhân & Hành chính</h2>
+                            <p>Thông tin định danh và số điện thoại liên lạc.</p>
                         </div>
                     </div>
                     <div className="form-grid">
-                        <TextInput label="Full name" value={form.fullName} error={errors.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
+                        <TextInput label="Họ và tên bệnh nhân *" value={form.fullName} error={errors.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
                         <TextInput
-                            label="Date of birth"
+                            label="Ngày sinh *"
                             type="date"
                             value={form.dateOfBirth}
                             error={errors.dateOfBirth}
                             onChange={(event) => updateField("dateOfBirth", event.target.value)}
                         />
-                        <ReceptionField label="Gender" error={errors.gender}>
+                        <ReceptionField label="Giới tính *" error={errors.gender}>
                             <select value={form.gender} onChange={(event) => updateField("gender", event.target.value as Gender | "")}>
-                                <option value="">Select gender</option>
+                                <option value="">Chọn giới tính</option>
                                 {genderOptions.map((gender) => (
                                     <option key={gender} value={gender}>
                                         {GENDER_LABEL[gender]}
@@ -241,8 +241,8 @@ export function ResidentReceptionPage() {
                                 ))}
                             </select>
                         </ReceptionField>
-                        <TextInput label="Phone" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} />
-                        <TextArea label="Home address" value={form.address} onChange={(event) => updateField("address", event.target.value)} />
+                        <TextInput label="Số điện thoại" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} />
+                        <TextArea label="Địa chỉ thường trú" value={form.address} onChange={(event) => updateField("address", event.target.value)} />
                     </div>
                 </section>
 
@@ -250,22 +250,22 @@ export function ResidentReceptionPage() {
                     <div className="form-card__header">
                         <span>02</span>
                         <div>
-                            <h2>Admission Information</h2>
-                            <p>Assign the resident to the right care workflow.</p>
+                            <h2>Thông tin Nhập viện Dự kiến</h2>
+                            <p>Phân luồng chăm sóc và chỉ định bác sĩ tiếp nhận.</p>
                         </div>
                     </div>
                     <div className="form-grid">
                         <TextInput
-                            label="Admission date"
+                            label="Ngày tiếp nhận *"
                             type="date"
                             value={form.admissionDate}
                             error={errors.admissionDate}
                             onChange={(event) => updateField("admissionDate", event.target.value)}
                         />
-                        <TextInput label="Room number" placeholder="A-104" value={form.roomNumber} onChange={(event) => updateField("roomNumber", event.target.value)} />
-                        <ReceptionField label="Care level" error={errors.careLevel}>
+                        <TextInput label="Dự kiến buồng / phòng" placeholder="P-104" value={form.roomNumber} onChange={(event) => updateField("roomNumber", event.target.value)} />
+                        <ReceptionField label="Mức độ điều trị *" error={errors.careLevel}>
                             <select value={form.careLevel} onChange={(event) => updateField("careLevel", event.target.value as CareLevel | "")}>
-                                <option value="">Select care level</option>
+                                <option value="">Chọn mức độ điều trị</option>
                                 {careLevelOptions.map((level) => (
                                     <option key={level} value={level}>
                                         {CARE_LEVEL_LABEL[level]}
@@ -274,14 +274,14 @@ export function ResidentReceptionPage() {
                             </select>
                         </ReceptionField>
                         <TextInput
-                            label="Assigned nurse"
-                            placeholder="Sarah Johnson, RN"
+                            label="Điều dưỡng phụ trách"
+                            placeholder="ĐD. Trần Thu Hà"
                             value={form.assignedNurse}
                             onChange={(event) => updateField("assignedNurse", event.target.value)}
                         />
                         <TextInput
-                            label="Assigned physician"
-                            placeholder="Dr. Michael Brown"
+                            label="Bác sĩ tiếp nhận"
+                            placeholder="BS.CKII. Nguyễn Văn Hùng"
                             value={form.assignedDoctor}
                             onChange={(event) => updateField("assignedDoctor", event.target.value)}
                         />
@@ -292,31 +292,31 @@ export function ResidentReceptionPage() {
                     <div className="form-card__header">
                         <span>03</span>
                         <div>
-                            <h2>Emergency Contact</h2>
-                            <p>Primary contact for consent and urgent communication.</p>
+                            <h2>Người liên hệ Khẩn cấp / Thân nhân</h2>
+                            <p>Người giám hộ hoặc thân nhân liên hệ khi cần thiết.</p>
                         </div>
                     </div>
                     <div className="form-grid">
                         <TextInput
-                            label="Contact name"
+                            label="Họ tên người thân *"
                             value={form.emergencyContactName}
                             error={errors.emergencyContactName}
                             onChange={(event) => updateField("emergencyContactName", event.target.value)}
                         />
                         <TextInput
-                            label="Relationship"
-                            placeholder="Daughter"
+                            label="Mối quan hệ"
+                            placeholder="Con gái / Vợ / Chồng"
                             value={form.emergencyContactRelationship}
                             onChange={(event) => updateField("emergencyContactRelationship", event.target.value)}
                         />
                         <TextInput
-                            label="Phone"
+                            label="Số điện thoại liên hệ *"
                             value={form.emergencyContactPhone}
                             error={errors.emergencyContactPhone}
                             onChange={(event) => updateField("emergencyContactPhone", event.target.value)}
                         />
                         <TextInput
-                            label="Email"
+                            label="Email liên hệ"
                             type="email"
                             value={form.emergencyContactEmail}
                             error={errors.emergencyContactEmail}
@@ -329,15 +329,15 @@ export function ResidentReceptionPage() {
                     <div className="form-card__header">
                         <span>04</span>
                         <div>
-                            <h2>Medical Summary</h2>
-                            <p>Clinical background for the receiving care team.</p>
+                            <h2>Tóm tắt Bệnh lý & Lâm sàng</h2>
+                            <p>Bệnh sử và các ghi nhận y tế ban đầu của bệnh nhân.</p>
                         </div>
                     </div>
                     <div className="form-grid">
-                        <TextInput label="Primary diagnosis" value={form.primaryDiagnosis} onChange={(event) => updateField("primaryDiagnosis", event.target.value)} />
-                        <ReceptionField label="Mobility status">
+                        <TextInput label="Lý do khám / Chẩn đoán sơ bộ" value={form.primaryDiagnosis} onChange={(event) => updateField("primaryDiagnosis", event.target.value)} />
+                        <ReceptionField label="Tình trạng vận động">
                             <select value={form.mobilityStatus} onChange={(event) => updateField("mobilityStatus", event.target.value as MobilityStatus | "")}>
-                                <option value="">Select mobility status</option>
+                                <option value="">Chọn khả năng vận động</option>
                                 {mobilityOptions.map((status) => (
                                     <option key={status} value={status}>
                                         {MOBILITY_STATUS_LABEL[status]}
@@ -345,8 +345,8 @@ export function ResidentReceptionPage() {
                                 ))}
                             </select>
                         </ReceptionField>
-                        <TextArea label="Known allergies" value={form.allergies} onChange={(event) => updateField("allergies", event.target.value)} />
-                        <TextArea label="Current medications" value={form.currentMedications} onChange={(event) => updateField("currentMedications", event.target.value)} />
+                        <TextArea label="Tiền sử dị ứng (thuốc, thức ăn)" value={form.allergies} onChange={(event) => updateField("allergies", event.target.value)} />
+                        <TextArea label="Các loại thuốc đang sử dụng" value={form.currentMedications} onChange={(event) => updateField("currentMedications", event.target.value)} />
                     </div>
                 </section>
 
@@ -354,14 +354,14 @@ export function ResidentReceptionPage() {
                     <div className="form-card__header">
                         <span>05</span>
                         <div>
-                            <h2>Initial Evaluation</h2>
-                            <p>Risk screening and nursing notes at admission.</p>
+                            <h2>Sàng lọc & Đánh giá Ban đầu</h2>
+                            <p>Sàng lọc nguy cơ ngã, tri giác và ghi chú của điều dưỡng.</p>
                         </div>
                     </div>
                     <div className="form-grid">
-                        <ReceptionField label="Cognitive status">
+                        <ReceptionField label="Tình trạng nhận thức / tri giác">
                             <select value={form.cognitiveStatus} onChange={(event) => updateField("cognitiveStatus", event.target.value as CognitiveStatus | "")}>
-                                <option value="">Select cognitive status</option>
+                                <option value="">Chọn tình trạng tri giác</option>
                                 {cognitiveOptions.map((status) => (
                                     <option key={status} value={status}>
                                         {COGNITIVE_STATUS_LABEL[status]}
@@ -369,9 +369,9 @@ export function ResidentReceptionPage() {
                                 ))}
                             </select>
                         </ReceptionField>
-                        <ReceptionField label="Fall risk">
+                        <ReceptionField label="Nguy cơ té ngã">
                             <select value={form.fallRisk} onChange={(event) => updateField("fallRisk", event.target.value as FallRisk | "")}>
-                                <option value="">Select fall risk</option>
+                                <option value="">Chọn mức độ nguy cơ ngã</option>
                                 {fallRiskOptions.map((risk) => (
                                     <option key={risk} value={risk}>
                                         {FALL_RISK_LABEL[risk]}
@@ -380,25 +380,25 @@ export function ResidentReceptionPage() {
                             </select>
                         </ReceptionField>
                         <TextInput
-                            label="Pain level (0-10)"
+                            label="Thang điểm đau (0 - 10)"
                             type="number"
                             min={0}
                             max={10}
                             value={form.painLevel}
                             onChange={(event) => updateField("painLevel", Number(event.target.value))}
                         />
-                        <TextArea label="Nutrition notes" value={form.nutritionNotes} onChange={(event) => updateField("nutritionNotes", event.target.value)} />
-                        <TextArea label="Clinical notes" value={form.clinicalNotes} onChange={(event) => updateField("clinicalNotes", event.target.value)} />
+                        <TextArea label="Ghi chú chế độ ăn / dinh dưỡng" value={form.nutritionNotes} onChange={(event) => updateField("nutritionNotes", event.target.value)} />
+                        <TextArea label="Ghi chú nhận định ban đầu của điều dưỡng" value={form.clinicalNotes} onChange={(event) => updateField("clinicalNotes", event.target.value)} />
                     </div>
                 </section>
             </form>
 
             <footer className="sticky-actions">
                 <button className="secondary-action" type="button" disabled={isSubmitting} onClick={() => handleSubmit("draft")}>
-                    Save Draft
+                    Lưu bản nháp
                 </button>
                 <button className="primary-action" type="button" disabled={isSubmitting} onClick={() => handleSubmit("submit")}>
-                    {isSubmitting ? "Saving..." : "Submit Evaluation"}
+                    {isSubmitting ? "Đang lưu..." : "Xác nhận & Chuyển khám"}
                 </button>
             </footer>
         </main>

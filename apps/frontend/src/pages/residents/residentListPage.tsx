@@ -74,16 +74,16 @@ export function ResidentListPage() {
         <main className="page-shell">
             <section className="page-header">
                 <div>
-                    <span className="eyebrow">Residents</span>
-                    <h1>Resident List</h1>
-                    <p>Search, filter, and review residents across admission and care workflows.</p>
+                    <span className="eyebrow">Hồ sơ Bệnh nhân</span>
+                    <h1>Danh sách Bệnh nhân</h1>
+                    <p>Tra cứu, lọc và theo dõi hồ sơ bệnh án, phòng bệnh và tiến trình điều trị nội trú.</p>
                 </div>
                 <div className="header-actions">
                     <Link className="secondary-action" to={APP_ROUTES.PRE_ADMISSION_SCREENING}>
-                        Pre-screening
+                        Tiếp đón & Sàng lọc
                     </Link>
                     <Link className="primary-action" to={APP_ROUTES.RESIDENT_CREATE}>
-                        Create Resident
+                        + Tiếp nhận Bệnh nhân
                     </Link>
                 </div>
             </section>

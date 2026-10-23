@@ -32,13 +32,13 @@ export function CarePlanListPage() {
     <div className="min-h-screen bg-white p-6 md:p-8">
       <div className="mb-6">
         <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
-          <span>Care Planning</span>
+          <span>Kế hoạch Điều trị</span>
           <span>&gt;</span>
-          <span>List</span>
+          <span>Danh sách Phác đồ</span>
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Care Plans</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Phác đồ Điều trị & Chăm sóc</h1>
         <p className="mt-1 text-sm text-slate-500">
-          {total} plans across your assigned residents
+          Tổng số {total} phác đồ của các bệnh nhân nội trú được phân công
         </p>
       </div>
 

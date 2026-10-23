@@ -39,12 +39,13 @@ export const DoctorsSchedulePage = () => {
       </div>
 
       <footer className="mt-4 mb-2 flex flex-col items-center justify-between gap-4 text-xs font-medium text-slate-400 sm:flex-row px-4">
-        <p>Copyright © 2026 WellNest</p>
+        <p>Bản quyền © 2026 BV Đa Khoa - Hệ thống Quản lý Y tế</p>
         <div className="flex items-center gap-6">
-          <a href="#" className="hover:text-slate-600 transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-slate-600 transition-colors">Terms and Conditions</a>
-          <a href="#" className="hover:text-slate-600 transition-colors">Contact</a>
+          <a href="#" className="hover:text-slate-600 transition-colors">Chính sách Bảo mật</a>
+          <a href="#" className="hover:text-slate-600 transition-colors">Điều khoản Sử dụng</a>
+          <a href="#" className="hover:text-slate-600 transition-colors">Liên hệ Hỗ trợ</a>
         </div>
+
         <div className="flex items-center gap-3">
           <a href="#" className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 hover:bg-slate-100 transition-colors text-slate-400">
             <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.64l.36-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>

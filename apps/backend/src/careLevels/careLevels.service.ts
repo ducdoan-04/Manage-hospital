@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateCareLevelDto } from './dto/updateCareLevel.dto.js';
 
 const DEFAULT_FACILITY_CODE = 'FAC-0042';
-const DEFAULT_LAST_UPDATED_BY = 'Victor Alvarez, Admin';
+const DEFAULT_LAST_UPDATED_BY = 'Nguyễn Văn Quản, Ban Giám đốc';
 
 const CARE_LEVEL_SCORE_RANGES: Record<string, { scoreMin: number; scoreMax: number }> = {
     INDEPENDENT_LIVING: { scoreMin: 0, scoreMax: 8 },
@@ -35,7 +35,7 @@ export class CareLevelsService {
         });
 
         if (!facility) {
-            throw new NotFoundException('Facility not found. Please run the Prisma seed first.');
+            throw new NotFoundException('Không tìm thấy cơ sở bệnh viện. Vui lòng nạp dữ liệu ban đầu (seed).');
         }
 
         return facility;

@@ -17,56 +17,56 @@ import {
 const featureCards = [
   {
     icon: Users,
-    title: "Resident 360°",
+    title: "Bệnh nhân 360°",
     description:
-      "Quản lý hồ sơ cư dân, trạng thái nhập viện, mức độ chăm sóc và thông tin liên hệ trong một màn hình.",
+      "Quản lý toàn diện hồ sơ bệnh án điện tử, phân loại cấp cứu Triage, buồng giường nội trú và thông tin BHYT.",
   },
   {
     icon: ClipboardList,
-    title: "Care Plan",
+    title: "Kế hoạch Điều trị & Chăm sóc",
     description:
-      "Theo dõi vấn đề sức khỏe, mục tiêu điều trị, can thiệp chăm sóc và ghi chú quan sát hằng ngày.",
+      "Theo dõi chẩn đoán lâm sàng, phác đồ điều trị, can thiệp điều dưỡng chuyên sâu và hội chẩn đa chuyên khoa.",
   },
   {
     icon: Pill,
-    title: "eMAR Medicine",
+    title: "eMAR Quản lý Cấp phát thuốc",
     description:
-      "Kiểm soát lịch dùng thuốc, trạng thái cấp phát và cảnh báo an toàn cho điều dưỡng.",
+      "Quy trình phát thuốc 5 đúng, đối chiếu liều dùng, tương tác thuốc và cảnh báo dị ứng tức thì cho điều dưỡng.",
   },
   {
     icon: Calendar,
-    title: "Doctor Schedule",
+    title: "Lịch trực & Khám bệnh",
     description:
-      "Lên lịch bác sĩ, quản lý ca khám, cuộc hẹn và phân bổ nguồn lực theo ngày/tuần.",
+      "Điều phối ca trực bác sĩ, lịch khám chuyên khoa, phân bổ điều dưỡng chăm sóc theo tỷ lệ định biên an toàn.",
   },
 ];
 
 const workflowSteps = [
-  "Resident Intake",
-  "Assessment",
-  "Care Planning",
-  "Medication Record",
-  "Family & Compliance",
+  "Tiếp nhận & Cấp cứu",
+  "Đánh giá lâm sàng ban đầu",
+  "Lập phác đồ & Chăm sóc",
+  "Y lệnh & Cấp phát thuốc",
+  "Xuất viện & Quyết toán BHYT",
 ];
 
 const stats = [
-  { value: "24/7", label: "care visibility" },
-  { value: "5+", label: "core modules" },
-  { value: "HIPAA", label: "ready mindset" },
+  { value: "24/7", label: "Giám sát lâm sàng liên tục" },
+  { value: "100%", label: "Chuẩn Bệnh án điện tử (EMR)" },
+  { value: "BHYT", label: "Liên thông viện phí thông minh" },
 ];
 
 const roleCards = [
   {
-    title: "Administrator",
-    description: "Tổng quan vận hành, cư dân, lịch, báo cáo và phân quyền người dùng.",
+    title: "Ban Giám đốc & Trưởng khoa",
+    description: "Giám sát tổng quan công suất buồng giường, phê duyệt phác đồ chuyên môn, kiểm soát viện phí và an toàn người bệnh.",
   },
   {
-    title: "Nurse / Care Staff",
-    description: "Cập nhật chăm sóc, thuốc, quan sát, cảnh báo và tình trạng cư dân.",
+    title: "Bác sĩ Chuyên khoa / Hội chẩn",
+    description: "Khám bệnh, chỉ định cận lâm sàng, lập kế hoạch điều trị, ký số hồ sơ bệnh án và duyệt chỉ định thuốc.",
   },
   {
-    title: "Doctor / Physician",
-    description: "Theo dõi lịch khám, hồ sơ lâm sàng, kế hoạch chăm sóc và chỉ định.",
+    title: "Điều dưỡng & Kỹ thuật viên",
+    description: "Ghi nhận chỉ số sinh tồn tại giường, thực hiện quy trình cấp thuốc eMAR, chăm sóc người bệnh và báo cáo sự cố.",
   },
 ];
 
@@ -79,23 +79,23 @@ export function LandingPage() {
             <HeartPulse size={24} />
           </span>
           <span>
-            <strong>WellNest</strong>
-            <small>Nursing Home Management</small>
+            <strong>MedCare Hospital</strong>
+            <small>Hệ thống Quản lý Bệnh viện Đa khoa</small>
           </span>
         </Link>
 
         <div className="landing-nav__links">
-          <a href="#features">Features</a>
-          <a href="#workflow">Workflow</a>
-          <a href="#roles">Roles</a>
+          <a href="#features">Tính năng</a>
+          <a href="#workflow">Quy trình</a>
+          <a href="#roles">Phân quyền</a>
         </div>
 
         <div className="landing-nav__actions">
           <Link className="landing-nav__login" to={APP_ROUTES.LOGIN}>
-            Login
+            Đăng nhập
           </Link>
           <Link className="landing-nav__signup" to={APP_ROUTES.REGISTER}>
-            Register
+            Đăng ký
           </Link>
         </div>
       </nav>
@@ -104,17 +104,17 @@ export function LandingPage() {
         <div className="landing-hero__content">
           <span className="landing-eyebrow">
             <ShieldAlert size={16} />
-            Modern care operations platform
+            Nền tảng Y tế Số & Quản trị Bệnh viện
           </span>
 
           <h1>
-            Quản lý viện dưỡng lão thông minh, an toàn và dễ sử dụng hơn.
+            Quản lý Bệnh viện Đa khoa thông minh, chuẩn y khoa và an toàn người bệnh.
           </h1>
 
           <p>
-            Landing page này được thiết kế theo phong cách healthcare SaaS hiện
-            đại: bố cục sạch, màu xanh y tế, thẻ thông tin nổi, CTA rõ ràng và
-            phù hợp với hệ thống Nursing Home Management System của nhóm.
+            Nền tảng quản lý bệnh viện hiện đại chuẩn hóa toàn diện quy trình tiếp nhận,
+            hồ sơ bệnh án điện tử (EMR), quản lý buồng giường, quy trình cấp phát thuốc eMAR,
+            giám sát chỉ số sinh tồn và quyết toán viện phí BHYT.
           </p>
 
           <div className="landing-hero__actions">
@@ -123,7 +123,7 @@ export function LandingPage() {
               <ArrowRight size={18} />
             </Link>
             <Link className="landing-secondary-btn" to={APP_ROUTES.DASHBOARD}>
-              Xem dashboard demo
+              Xem bảng điều khiển
             </Link>
           </div>
 
@@ -141,10 +141,10 @@ export function LandingPage() {
           <div className="landing-dashboard-card landing-dashboard-card--main">
             <div className="landing-card-header">
               <div>
-                <span>Today overview</span>
-                <strong>Resident Care Command</strong>
+                <span>Giám sát thời gian thực</span>
+                <strong>Trung tâm Điều hành Bệnh viện</strong>
               </div>
-              <span className="landing-live-pill">Live</span>
+              <span className="landing-live-pill">Trực tuyến</span>
             </div>
 
             <div className="landing-care-row landing-care-row--active">
@@ -152,8 +152,8 @@ export function LandingPage() {
                 <Users size={18} />
               </span>
               <div>
-                <strong>128 residents</strong>
-                <small>12 pending assessments</small>
+                <strong>128 bệnh nhân nội trú</strong>
+                <small>12 ca chờ phân luồng cấp cứu</small>
               </div>
               <b>+8%</b>
             </div>
@@ -163,10 +163,10 @@ export function LandingPage() {
                 <Pill size={18} />
               </span>
               <div>
-                <strong>Medication rounds</strong>
-                <small>34 scheduled today</small>
+                <strong>Phiên cấp thuốc eMAR</strong>
+                <small>34 lượt theo giờ y lệnh hôm nay</small>
               </div>
-              <b>92%</b>
+              <b>98%</b>
             </div>
 
             <div className="landing-care-row">
@@ -174,16 +174,16 @@ export function LandingPage() {
                 <Calendar size={18} />
               </span>
               <div>
-                <strong>Doctor visits</strong>
-                <small>7 appointments</small>
+                <strong>Ca trực Bác sĩ & Khám chuyên khoa</strong>
+                <small>7 phiên hội chẩn liên viện</small>
               </div>
-              <b>On track</b>
+              <b>Đúng tiến độ</b>
             </div>
 
             <div className="landing-progress-panel">
               <div>
-                <span>Care plan completion</span>
-                <strong>84%</strong>
+                <span>Tiến độ hoàn thành kế hoạch chăm sóc</span>
+                <strong>89%</strong>
               </div>
               <div className="landing-progress-track">
                 <span />
@@ -193,23 +193,23 @@ export function LandingPage() {
 
           <div className="landing-floating-card landing-floating-card--top">
             <Lock size={17} />
-            <span>Secure role-based access</span>
+            <span>Bảo mật dữ liệu y tế & Phân quyền RBAC</span>
           </div>
 
           <div className="landing-floating-card landing-floating-card--bottom">
             <CheckCircle size={17} />
-            <span>Daily care tasks synced</span>
+            <span>Đồng bộ chỉ số sinh tồn tại giường</span>
           </div>
         </div>
       </section>
 
       <section className="landing-section" id="features">
         <div className="landing-section__heading">
-          <span className="landing-eyebrow">Core modules</span>
-          <h2>Các chức năng chính đã sẵn sàng để vào hệ thống</h2>
+          <span className="landing-eyebrow">Phân hệ chuyên môn</span>
+          <h2>Giải pháp quản lý y tế toàn diện cho các khoa phòng</h2>
           <p>
-            Landing page đóng vai trò cửa ngõ trước đăng nhập, giúp người dùng
-            hiểu nhanh hệ thống có gì trước khi vào các module nội bộ.
+            Tích hợp đầy đủ các luồng nghiệp vụ từ phòng tiếp đón cấp cứu, các khoa nội trú,
+            khoa ngoại phẫu thuật, dược lâm sàng cho đến ban điều hành.
           </p>
         </div>
 
@@ -232,11 +232,11 @@ export function LandingPage() {
 
       <section className="landing-workflow" id="workflow">
         <div>
-          <span className="landing-eyebrow">Simple workflow</span>
-          <h2>Quy trình chăm sóc rõ ràng từ tiếp nhận đến theo dõi</h2>
+          <span className="landing-eyebrow">Quy trình chuẩn hóa</span>
+          <h2>Luồng điều trị khép kín từ tiếp nhận đến xuất viện</h2>
           <p>
-            Giao diện được chia thành các bước nghiệp vụ quen thuộc để BA, DEV,
-            Tester và người dùng cuối dễ hiểu khi demo dự án.
+            Được chuẩn hóa theo các quy chế chuyên môn của Bộ Y tế, giúp đội ngũ y bác sĩ
+            và điều dưỡng thao tác nhanh chóng, chính xác.
           </p>
         </div>
 
@@ -252,8 +252,8 @@ export function LandingPage() {
 
       <section className="landing-section landing-section--roles" id="roles">
         <div className="landing-section__heading">
-          <span className="landing-eyebrow">Role based access</span>
-          <h2>Phù hợp cho nhiều vai trò trong viện dưỡng lão</h2>
+          <span className="landing-eyebrow">Phân quyền chuyên môn</span>
+          <h2>Tối ưu trải nghiệm cho từng vị trí công tác y tế</h2>
         </div>
 
         <div className="landing-role-grid">
@@ -271,20 +271,19 @@ export function LandingPage() {
 
       <section className="landing-cta">
         <div>
-          <span className="landing-eyebrow">Ready to start</span>
-          <h2>Bắt đầu sử dụng WellNest NHMS</h2>
+          <span className="landing-eyebrow">Sẵn sàng vận hành</span>
+          <h2>Bắt đầu cùng MedCare Hospital System</h2>
           <p>
-            Vào trang đăng nhập để tiếp tục hoặc mở dashboard demo để xem nhanh
-            các module đã được gộp trong project.
+            Truy cập cổng đăng nhập nhân viên y tế hoặc mở bảng điều khiển quản trị để trải nghiệm hệ thống.
           </p>
         </div>
         <div className="landing-cta__actions">
           <Link className="landing-primary-btn" to={APP_ROUTES.LOGIN}>
-            Đăng nhập
+            Đăng nhập hệ thống
             <ArrowRight size={18} />
           </Link>
           <Link className="landing-secondary-btn landing-secondary-btn--light" to={APP_ROUTES.DASHBOARD}>
-            Xem demo
+            Xem bảng điều khiển
           </Link>
         </div>
       </section>

@@ -6,7 +6,15 @@ import { incidentsService } from "../../services/incidents";
 import { residentsService } from "../../services/residents";
 import { fieldClassName, labelClassName, LoadingState, Notice, Panel, PrimaryButton, SecondaryButton, WorkflowPage } from "../../components/workflow/WorkflowUi";
 
-const incidentTypes = ["Fall", "Medication Error", "Elopement", "Abuse Allegation", "Injury", "Behavioral Event", "Other"];
+const incidentTypes = [
+    "Ngã / Té ngã",
+    "Sai sót dùng thuốc / Y lệnh",
+    "Rời khoa / đi lạc không phép",
+    "Khiếu nại hành vi / ngược đãi",
+    "Chấn thương y tế phát sinh",
+    "Bất thường hành vi / kích động",
+    "Khác"
+];
 
 export default function ReportIncidentPage() {
     const navigate = useNavigate();
@@ -14,7 +22,7 @@ export default function ReportIncidentPage() {
     const severityQuery = useQuery({ queryKey: ["incident-severities"], queryFn: incidentSeverityService.getAll });
     const [form, setForm] = useState({
         residentId: "",
-        incidentType: "Fall",
+        incidentType: "Ngã / Té ngã",
         severityId: "",
         occurredAt: new Date().toISOString().slice(0, 16),
         location: "",
@@ -36,7 +44,7 @@ export default function ReportIncidentPage() {
     });
     if (residentsQuery.isLoading || severityQuery.isLoading)
         return (
-            <WorkflowPage title="Report New Incident">
+            <WorkflowPage title="Báo cáo Sự cố Y khoa Mới">
                 <Panel>
                     <LoadingState />
                 </Panel>
@@ -44,9 +52,9 @@ export default function ReportIncidentPage() {
         );
     return (
         <WorkflowPage
-            breadcrumb="Incident & Risk  >  Report Incident"
-            title="Report New Incident"
-            description="Complete all required fields. Severity configuration determines the SLA and chart-lock workflow."
+            breadcrumb="An toàn & Sự cố  >  Lập Biên Bản Sự Cố"
+            title="Báo cáo Sự cố Y khoa Mới"
+            description="Điền đầy đủ các trường thông tin bắt buộc. Mức độ rủi ro sẽ tự động kích hoạt thời hạn xử lý (SLA) và quy trình phong tỏa bệnh án nếu nghiêm trọng."
         >
             {mutation.error && (
                 <div className="mb-4">
@@ -54,20 +62,20 @@ export default function ReportIncidentPage() {
                 </div>
             )}
             <div className="grid gap-6 lg:grid-cols-[1fr_310px]">
-                <Panel title="Incident Details">
+                <Panel title="Thông tin Chi tiết Sự cố">
                     <div className="grid gap-5 md:grid-cols-2">
                         <label className={labelClassName}>
-                            Resident *
+                            Người bệnh liên quan *
                             <select className={fieldClassName} value={selectedResidentId} onChange={(event) => setForm({ ...form, residentId: event.target.value })}>
                                 {residentsQuery.data?.map((resident) => (
                                     <option key={resident.id} value={resident.id}>
-                                        {resident.fullName} · Room {resident.roomNumber ?? "—"}
+                                        {resident.fullName} · Phòng {resident.roomNumber ?? "—"}
                                     </option>
                                 ))}
                             </select>
                         </label>
                         <label className={labelClassName}>
-                            Incident Type *
+                            Loại sự cố y khoa *
                             <select className={fieldClassName} value={form.incidentType} onChange={(event) => setForm({ ...form, incidentType: event.target.value })}>
                                 {incidentTypes.map((type) => (
                                     <option key={type}>{type}</option>
@@ -75,18 +83,18 @@ export default function ReportIncidentPage() {
                             </select>
                         </label>
                         <label className={labelClassName}>
-                            Severity *
+                            Mức độ nghiêm trọng *
                             <select className={fieldClassName} value={selectedSeverityId} onChange={(event) => setForm({ ...form, severityId: event.target.value })}>
                                 {severityQuery.data?.map((severity: any) => (
                                     <option key={severity.id} value={severity.id}>
                                         {severity.levelName}
-                                        {severity.chartLockTrigger ? " · chart lock" : ""}
+                                        {severity.chartLockTrigger ? " · Tự động khóa bệnh án" : ""}
                                     </option>
                                 ))}
                             </select>
                         </label>
                         <label className={labelClassName}>
-                            Date / Time of Incident *
+                            Thời gian xảy ra sự cố *
                             <input
                                 className={fieldClassName}
                                 type="datetime-local"
@@ -95,58 +103,61 @@ export default function ReportIncidentPage() {
                             />
                         </label>
                         <label className={`${labelClassName} md:col-span-2`}>
-                            Location *
+                            Địa điểm xảy ra sự cố *
                             <input
                                 className={fieldClassName}
                                 value={form.location}
                                 onChange={(event) => setForm({ ...form, location: event.target.value })}
-                                placeholder="Room 204B — bathroom"
+                                placeholder="Ví dụ: Phòng P-204B — khu vực nhà vệ sinh"
                             />
                         </label>
                         <label className={`${labelClassName} md:col-span-2`}>
-                            Description *
+                            Mô tả chi tiết diễn biến sự cố *
                             <textarea
                                 className={`${fieldClassName} min-h-28`}
                                 value={form.description}
                                 onChange={(event) => setForm({ ...form, description: event.target.value })}
+                                placeholder="Mô tả cụ thể người bệnh đang làm gì, sự việc diễn ra thế nào..."
                             />
                         </label>
                         <label className={`${labelClassName} md:col-span-2`}>
-                            Witnesses (optional)
-                            <input className={fieldClassName} value={form.witnesses} onChange={(event) => setForm({ ...form, witnesses: event.target.value })} />
+                            Nhân chứng / Người có mặt (tùy chọn)
+                            <input className={fieldClassName} value={form.witnesses} onChange={(event) => setForm({ ...form, witnesses: event.target.value })} placeholder="ĐD. Nguyễn Thị Thảo, Hộ lý Lê Văn Nam" />
                         </label>
                         <label className={`${labelClassName} md:col-span-2`}>
-                            Immediate Action Taken *
+                            Biện pháp xử trí y tế tức thì *
                             <textarea
                                 className={`${fieldClassName} min-h-24`}
                                 value={form.immediateAction}
                                 onChange={(event) => setForm({ ...form, immediateAction: event.target.value })}
+                                placeholder="Đã sơ cứu, đo lại dấu hiệu sinh tồn, báo cáo bác sĩ trực ca..."
                             />
                         </label>
                     </div>
                 </Panel>
                 <div className="space-y-5">
-                    <Panel title="Reporting Party">
-                        <p className="font-bold text-slate-900">Captured from current login</p>
-                        <p className="mt-2 text-sm text-slate-500">Immutable report timestamp: {new Date().toLocaleString()}</p>
+                    <Panel title="Người Báo Cáo">
+                        <p className="font-bold text-slate-900">Ghi nhận từ tài khoản đăng nhập</p>
+                        <p className="mt-2 text-sm text-slate-500">Dấu thời gian bất biến: {new Date().toLocaleString('vi-VN')}</p>
                     </Panel>
-                    <Panel title="What happens next">
+                    <Panel title="Quy trình Tiếp theo">
                         <ol className="space-y-2 text-sm text-slate-600">
-                            <li>1. Severity and SLA policy are evaluated.</li>
-                            <li>2. DON/Admin is notified.</li>
-                            <li>3. Critical chart-lock policy is applied.</li>
-                            <li>4. Incident enters the review queue.</li>
+                            <li>1. Đánh giá mức độ nghiêm trọng & kích hoạt SLA.</li>
+                            <li>2. Gửi thông báo khẩn cấp tới Trưởng khoa / DON.</li>
+                            <li>3. Tự động phong tỏa bệnh án nếu mức độ nguy cấp.</li>
+                            <li>4. Sự cố đưa vào hàng đợi xác minh nguyên nhân gốc rễ.</li>
                         </ol>
                     </Panel>
-                    <Notice type="warning">High-severity incidents can automatically lock the resident chart until DON review is complete.</Notice>
+                    <Notice type="warning">Sự cố mức độ nghiêm trọng cao sẽ tự động khóa hồ sơ bệnh án để bảo toàn tính minh bạch cho đến khi lãnh đạo phê duyệt mở khóa.</Notice>
                 </div>
             </div>
             <div className="mt-6 flex justify-end gap-3 border-t border-slate-200 pt-5">
-                <SecondaryButton onClick={() => navigate(-1)}>Cancel</SecondaryButton>
-                <PrimaryButton disabled={!requiredComplete || mutation.isPending} onClick={() => mutation.mutate()}>
-                    {mutation.isPending ? "Reporting..." : "Report Incident"}
+                <SecondaryButton onClick={() => navigate(-1)}>Hủy bỏ</SecondaryButton>
+                <PrimaryButton className="bg-[#0F766E] hover:bg-[#115E59]" disabled={!requiredComplete || mutation.isPending} onClick={() => mutation.mutate()}>
+                    {mutation.isPending ? "Đang gửi báo cáo..." : "Gửi Báo Cáo Sự Cố"}
                 </PrimaryButton>
             </div>
         </WorkflowPage>
     );
 }
+

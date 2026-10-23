@@ -16,16 +16,16 @@ export function Login() {
         const newErrors: { email?: string; password?: string } = {};
 
         if (!emailOrPhone.trim()) {
-            newErrors.email = "Email or Phone number is required";
+            newErrors.email = "Vui lòng nhập Email hoặc Số điện thoại";
         } else if (emailOrPhone.includes("@")) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(emailOrPhone)) {
-                newErrors.email = "Email format must be valid";
+                newErrors.email = "Định dạng email không hợp lệ";
             }
         }
 
         if (!password) {
-            newErrors.password = "Password is required";
+            newErrors.password = "Vui lòng nhập mật khẩu";
         }
 
         setErrors(newErrors);
@@ -74,10 +74,10 @@ export function Login() {
                     );
                 }
             } else {
-                setErrors({ api: response.message || "Invalid email or password" });
+                setErrors({ api: response.message || "Email/Số điện thoại hoặc mật khẩu không chính xác" });
             }
         } catch (err) {
-            setErrors({ api: "Failed to connect to authentication server. Please try again." });
+            setErrors({ api: "Không thể kết nối đến máy chủ xác thực. Vui lòng thử lại sau." });
         } finally {
             setIsLoading(false);
         }
@@ -86,28 +86,28 @@ export function Login() {
     return (
         <AuthLayout>
             <div className="mb-6 w-full text-center">
-                <h2 className="text-xl font-bold tracking-tight text-slate-800">Sign in to NHMS</h2>
-                <p className="mt-1 text-xs font-medium text-slate-400">Nursing Home Management System</p>
+                <h2 className="text-xl font-bold tracking-tight text-slate-800">Đăng nhập Hệ thống Bệnh viện</h2>
+                <p className="mt-1 text-xs font-medium text-slate-400">Cổng thông tin Y tế Bệnh viện Đa khoa</p>
             </div>
 
             {errors.api && <div className="mb-4 w-full rounded-xl border border-red-100 bg-red-50 p-3 text-center text-xs font-semibold text-red-600">{errors.api}</div>}
 
             {demoCode && (
                 <div className="mb-4 w-full rounded-xl border border-green-100 bg-green-50 p-3 text-center text-xs font-semibold text-green-700">
-                    Demo OTP Code: <span className="font-mono text-sm tracking-widest">{demoCode}</span> (Redirecting...)
+                    Mã xác thực OTP thử nghiệm: <span className="font-mono text-sm tracking-widest">{demoCode}</span> (Đang chuyển tiếp...)
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
                 {/* Email or Phone field */}
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs font-bold text-slate-700">Email or Phone</label>
+                    <label className="text-xs font-bold text-slate-700">Email hoặc Số điện thoại</label>
                     <input
                         type="text"
                         className={`w-full rounded-xl border px-4 py-3 text-sm transition-all outline-none focus:ring-2 ${
                             errors.email ? "border-red-300 focus:ring-red-100" : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
                         }`}
-                        placeholder="name@facility.org or +1 555 000 1234"
+                        placeholder="bacsi@benhvien.vn hoặc 0912 345 678"
                         value={emailOrPhone}
                         onChange={(e) => setEmailOrPhone(e.target.value)}
                         disabled={isLoading}
@@ -118,9 +118,9 @@ export function Login() {
                 {/* Password field */}
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center justify-between">
-                        <label className="text-xs font-bold text-slate-700">Password</label>
+                        <label className="text-xs font-bold text-slate-700">Mật khẩu</label>
                         <a href="#" className="text-xs font-semibold text-blue-600 hover:underline">
-                            Forgot password?
+                            Quên mật khẩu?
                         </a>
                     </div>
                     <input
@@ -142,17 +142,17 @@ export function Login() {
                     disabled={isLoading}
                     className="mt-2 w-full rounded-xl bg-[#2563EB] py-3.5 text-sm font-bold text-white shadow-md shadow-blue-500/10 transition-all hover:bg-blue-700 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"
                 >
-                    {isLoading ? "Signing In..." : "Sign In"}
+                    {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
                 </button>
             </form>
 
             {/* Footer Info */}
             <div className="mt-8 px-2 text-center text-[10px] leading-relaxed font-medium text-slate-400">
-                Accounts are provisioned by your administrator.
+                Tài khoản nhân viên do Quản trị viên Bệnh viện cấp.
                 <br />
-                Need access?{" "}
+                Cần hỗ trợ?{" "}
                 <a href="#" className="font-bold text-blue-600 hover:underline">
-                    Contact your NHMS admin.
+                    Liên hệ phòng CNTT Bệnh viện.
                 </a>
             </div>
         </AuthLayout>

@@ -13,17 +13,17 @@ export function CarePlanPage() {
   // Use React Query instead of manual fetch + useEffect
   const { data: carePlan, isLoading, isError } = useCarePlan(id);
 
-  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (isLoading) return <div className="p-8 text-center text-slate-500">Đang tải kế hoạch điều trị...</div>;
   if (isError || !carePlan) {
     return (
       <div className="p-8 text-center">
-        <p className="text-red-500 mb-4">Failed to load care plan. Please try again.</p>
+        <p className="text-red-500 mb-4">Không thể tải kế hoạch điều trị. Vui lòng thử lại.</p>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-md bg-[#0F766E] px-4 py-2 text-sm font-medium text-white hover:bg-[#115E59]"
         >
-          Retry
+          Thử lại
         </button>
       </div>
     );
@@ -31,7 +31,7 @@ export function CarePlanPage() {
 
   const residentName = carePlan.resident
     ? `${carePlan.resident.firstName} ${carePlan.resident.lastName}`
-    : "Unknown Resident";
+    : "Người bệnh chưa xác định";
 
   // Map backend goals to UI care areas
   const mappedCareAreas = carePlan.goals?.map((g: any, index: number) => {
@@ -40,11 +40,11 @@ export function CarePlanPage() {
       parsed = JSON.parse(g.description);
       if (!parsed.goal) throw new Error("not json");
     } catch {
-      parsed = { goal: g.description, title: `Care Area ${index + 1}` };
+      parsed = { goal: g.description, title: `Lĩnh vực chăm sóc ${index + 1}` };
     }
     return {
-      title: parsed.title || `Care Area ${index + 1}`,
-      badge: { text: "Active", variant: "green" as const },
+      title: parsed.title || `Lĩnh vực chăm sóc ${index + 1}`,
+      badge: { text: "Đang áp dụng", variant: "green" as const },
       goal: parsed.goal,
       measure: parsed.measure,
       target: parsed.target,
@@ -53,8 +53,8 @@ export function CarePlanPage() {
 
   const tasks = carePlan.interventions?.map((i: any) => ({
     task: i.description,
-    freq: "Daily",
-    owner: i.assignedRole || "CNA",
+    freq: "Hàng ngày",
+    owner: i.assignedRole || "Điều dưỡng",
   })) || [];
 
   return (
@@ -64,49 +64,49 @@ export function CarePlanPage() {
           <div className="mb-6">
             <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
               <Link to={APP_ROUTES.CARE_PLANS} className="hover:underline">
-                Care Planning
+                Kế hoạch Điều trị
               </Link>
               <span>&gt;</span>
-              <span>Detail</span>
+              <span>Chi tiết</span>
               <span>&gt;</span>
               <span>{residentName}</span>
             </div>
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold text-slate-900">
-                Care Plan — {residentName}
+                Kế hoạch Điều trị — {residentName}
               </h1>
               <span className="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 uppercase">
                 {carePlan.status}
               </span>
             </div>
             <p className="mt-1 text-sm text-slate-500">
-              Room 204B · LOC Tier 3 · Created on {new Date(carePlan.createdAt).toLocaleDateString()}
+              Phòng P-204 · Cấp độ chăm sóc III · Ngày lập: {new Date(carePlan.createdAt).toLocaleDateString('vi-VN')}
             </p>
           </div>
 
           <div className="mb-8 border-b border-slate-200">
             <nav className="-mb-px flex space-x-8">
-              <button type="button" className="border-b-2 border-blue-600 px-1 py-4 text-sm font-bold text-blue-600">
-                Overview
+              <button type="button" className="border-b-2 border-[#0F766E] px-1 py-4 text-sm font-bold text-[#0F766E]">
+                Tổng quan
               </button>
               <button type="button" className="border-b-2 border-transparent px-1 py-4 text-sm font-medium text-slate-500 hover:border-slate-300 hover:text-slate-700">
-                Activity
+                Lịch sử hoạt động
               </button>
               <button type="button" className="border-b-2 border-transparent px-1 py-4 text-sm font-medium text-slate-500 hover:border-slate-300 hover:text-slate-700">
-                Cost
+                Dự toán chi phí
               </button>
             </nav>
           </div>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
             <div className="min-w-0">
-              <div className="mb-4 text-sm font-bold text-slate-700">Care Areas</div>
+              <div className="mb-4 text-sm font-bold text-slate-700">Mục tiêu & Chuyên khoa Điều trị</div>
 
               {mappedCareAreas.length > 0
                 ? mappedCareAreas.map((area: any, idx: number) => (
                     <CareAreaViewCard key={idx} {...area} />
                   ))
-                : <div className="text-sm text-slate-500 italic mb-4">No care areas defined.</div>}
+                : <div className="text-sm text-slate-500 italic mb-4">Chưa có mục tiêu điều trị nào được xác định.</div>}
 
               <ActivityTimeline tasks={tasks} />
             </div>
@@ -121,3 +121,4 @@ export function CarePlanPage() {
     </div>
   );
 }
+

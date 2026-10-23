@@ -17,14 +17,17 @@ export const CalendarDay = ({ currentMonth }: CalendarDayProps) => {
     };
   }, [currentMonth]);
 
-  const dateName = dayjs(dayData.date).format("dddd, MMMM D, YYYY");
+  const dayNum = dayData.date.getDate();
+  const monthNum = dayData.date.getMonth() + 1;
+  const yearNum = dayData.date.getFullYear();
+  const dateName = `Ngày ${dayNum} tháng ${monthNum}, năm ${yearNum}`;
 
   return (
     <div className="flex h-full flex-col rounded-xl border border-slate-200 bg-white overflow-hidden p-6">
       <div className="border-b border-slate-200 pb-4 mb-4">
-
+        <h2 className="text-xl font-bold text-slate-800">{dateName}</h2>
         <p className="text-sm text-slate-500 mt-1">
-          {dayData.schedules.length} schedule{dayData.schedules.length !== 1 ? "s" : ""} today
+          Có tổng cộng {dayData.schedules.length} lịch khám & ca trực trong ngày
         </p>
       </div>
 
@@ -36,9 +39,10 @@ export const CalendarDay = ({ currentMonth }: CalendarDayProps) => {
             </div>
           ))
         ) : (
-          <div className="text-slate-500 text-sm mt-4">No schedules for this day.</div>
+          <div className="text-slate-500 text-sm mt-4">Không có lịch trực nào trong ngày này.</div>
         )}
       </div>
     </div>
   );
 };
+

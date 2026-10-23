@@ -190,14 +190,14 @@ export function TwoStepVerification() {
     <AuthLayout>
       <div className="mb-6 w-full text-center">
         <h2 className="text-xl font-bold tracking-tight text-slate-800">
-          Two-step verification
+          Xác thực hai bước (OTP)
         </h2>
         <p className="mt-2 px-4 text-xs leading-relaxed font-semibold text-slate-400">
-          Enter the 6-digit code sent to your phone
+          Nhập mã xác thực gồm 6 chữ số gửi đến số điện thoại
           {phoneHint && (
             <>
               {" "}
-              ending in{" "}
+              đuôi{" "}
               <span className="font-bold text-slate-700">{phoneHint}</span>
             </>
           )}
@@ -257,10 +257,10 @@ export function TwoStepVerification() {
 
         {/* Resend — AC3 */}
         <div className="mt-3 mb-6 text-center text-xs font-bold text-slate-400">
-          Didn't get a code?{" "}
+          Chưa nhận được mã?{" "}
           {timer > 0 ? (
             <span className="cursor-not-allowed text-[#2563EB]">
-              Resend code ({formatTime(timer)})
+              Gửi lại mã ({formatTime(timer)})
             </span>
           ) : (
             <button
@@ -269,7 +269,7 @@ export function TwoStepVerification() {
               disabled={isResending}
               className="text-[#2563EB] hover:underline disabled:opacity-50"
             >
-              {isResending ? "Sending..." : "Resend code"}
+              {isResending ? "Đang gửi..." : "Gửi lại mã"}
             </button>
           )}
         </div>
@@ -280,7 +280,7 @@ export function TwoStepVerification() {
           disabled={isLoading || otp.join("").length !== 6}
           className="mb-5 w-full rounded-xl bg-[#2563EB] py-3.5 text-sm font-bold text-white shadow-md shadow-blue-500/10 transition-all hover:bg-blue-700 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50"
         >
-          {isLoading ? "Verifying..." : "Verify"}
+          {isLoading ? "Đang xác thực..." : "Xác thực & Tiếp tục"}
         </button>
 
         {/* Use different account */}
@@ -289,7 +289,7 @@ export function TwoStepVerification() {
           onClick={() => navigate("/login", { replace: true })}
           className="text-xs font-bold text-blue-600 hover:underline"
         >
-          Use a different account
+          Đăng nhập bằng tài khoản khác
         </button>
       </form>
     </AuthLayout>

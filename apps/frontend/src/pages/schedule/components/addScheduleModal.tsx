@@ -19,7 +19,7 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-md rounded-xl bg-white shadow-xl overflow-hidden flex flex-col">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <div className="text-xl font-bold text-[#233955]">Add New Schedule</div>
+          <div className="text-xl font-bold text-[#233955]">Thêm Lịch Trực / Lịch Khám</div>
           <button
             onClick={onClose}
             className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors -mr-1.5"
@@ -31,19 +31,19 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
         <div className="p-6 flex-1 overflow-y-auto">
           <div className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-sm font-bold text-[#233955]">Doctor Name</label>
+              <label className="mb-1.5 block text-sm font-bold text-[#233955]">Họ và tên Bác sĩ / Điều dưỡng</label>
               <input
                 type="text"
                 value={doctorName}
                 onChange={(e) => setDoctorName(e.target.value)}
-                placeholder="e.g. Dr. John Davis"
+                placeholder="Ví dụ: BSCKII. Nguyễn Văn Hùng"
                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 shadow-sm"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1.5 block text-sm font-bold text-[#233955]">Date</label>
+                <label className="mb-1.5 block text-sm font-bold text-[#233955]">Ngày trực</label>
                 <input
                   type="date"
                   value={date}
@@ -59,7 +59,7 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-bold text-[#233955]">Time</label>
+                <label className="mb-1.5 block text-sm font-bold text-[#233955]">Giờ bắt đầu</label>
                 <input
                   type="time"
                   value={time}
@@ -77,18 +77,18 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-bold text-[#233955]">Description</label>
+              <label className="mb-1.5 block text-sm font-bold text-[#233955]">Nội dung phân công / Bệnh nhân</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Optional description"
+                placeholder="Nhập thông tin chuyên khoa, phòng bệnh hoặc mô tả ca trực..."
                 rows={3}
                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 resize-none shadow-sm"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-[#233955]">Color Variant</label>
+              <label className="mb-2 block text-sm font-bold text-[#233955]">Màu thẻ ca trực</label>
               <div className="flex gap-6">
                 <label className="flex cursor-pointer items-center gap-2.5">
                   <input
@@ -100,7 +100,7 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
                     className="peer sr-only"
                   />
                   <span className="block h-5 w-5 rounded-full bg-[#A2F2EE] ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-[#A2F2EE]" />
-                  <span className="text-sm font-medium text-[#4B4D4F]">Teal</span>
+                  <span className="text-sm font-medium text-[#4B4D4F]">Xanh ngọc (Teal)</span>
                 </label>
                 <label className="flex cursor-pointer items-center gap-2.5">
                   <input
@@ -112,7 +112,7 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
                     className="peer sr-only"
                   />
                   <span className="block h-5 w-5 rounded-full bg-[#DFF8F9] ring-2 ring-transparent ring-offset-2 transition-all peer-checked:ring-[#DFF8F9] border border-slate-200" />
-                  <span className="text-sm font-medium text-[#4B4D4F]">Blue</span>
+                  <span className="text-sm font-medium text-[#4B4D4F]">Xanh da trời (Blue)</span>
                 </label>
               </div>
             </div>
@@ -124,16 +124,17 @@ export const AddScheduleModal = ({ isOpen, onClose }: AddScheduleModalProps) => 
             onClick={onClose}
             className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 transition-colors"
           >
-            Cancel
+            Hủy
           </button>
           <button
             onClick={onClose}
-            className="rounded-lg bg-[#1E293B] px-6 py-2 text-sm font-medium text-white hover:bg-slate-800 transition-colors shadow-sm"
+            className="rounded-lg bg-[#0F766E] px-6 py-2 text-sm font-medium text-white hover:bg-[#115E59] transition-colors shadow-sm"
           >
-            Add Schedule
+            Lưu ca trực
           </button>
         </div>
       </div>
     </div>
   );
 };
+

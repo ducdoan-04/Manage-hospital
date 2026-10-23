@@ -13,15 +13,15 @@ export function CnaDashboard() {
         });
     }, []);
 
-    if (!data) return <div className="p-8">Loading dashboard...</div>;
+    if (!data) return <div className="p-8 text-center text-slate-500">Đang tải bảng công việc...</div>;
 
     return (
         <div className="flex h-full flex-col bg-[#F8FAFC]">
             <div className="mb-6">
-                <h2 className="text-sm font-medium text-slate-500">Dashboard</h2>
-                <h1 className="mt-1 text-3xl font-bold text-slate-900">Good morning, {user?.firstName}</h1>
+                <h2 className="text-sm font-medium text-slate-500">Bảng Phân Công Hộ Lý &amp; Trợ Lý Chăm Sóc</h2>
+                <h1 className="mt-1 text-3xl font-bold text-slate-900">Xin chào, {user?.firstName || "Nhân viên hỗ trợ"}</h1>
                 <p className="mt-2 text-sm text-slate-500">
-                    {data.shiftInfo} · {data.shiftTime}
+                    {data.shiftInfo || "Ca trực sáng"} · {data.shiftTime || "07:00 - 15:30"}
                 </p>
             </div>
 
@@ -31,7 +31,7 @@ export function CnaDashboard() {
                         <FileText className="h-6 w-6 text-blue-500" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Today's Tasks</p>
+                        <p className="text-sm font-medium text-slate-500">Nhiệm Vụ Hôm Nay</p>
                         <p className="text-2xl font-bold text-slate-900">
                             {data.todaysTasks?.completed} / {data.todaysTasks?.total}
                         </p>
@@ -43,7 +43,7 @@ export function CnaDashboard() {
                         <AlertCircle className="h-6 w-6 text-red-500" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Abnormal Flags Reported</p>
+                        <p className="text-sm font-medium text-slate-500">Cảnh Báo Dấu Hiệu Bất Thường</p>
                         <p className="text-2xl font-bold text-slate-900">{data.abnormalFlagsReported}</p>
                     </div>
                 </div>
@@ -53,7 +53,7 @@ export function CnaDashboard() {
                         <UserIcon className="h-6 w-6 text-green-500" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-slate-500">Assigned Residents</p>
+                        <p className="text-sm font-medium text-slate-500">Người Bệnh Phụ Trách</p>
                         <p className="text-2xl font-bold text-slate-900">{data.assignedResidents}</p>
                     </div>
                 </div>
@@ -61,18 +61,18 @@ export function CnaDashboard() {
 
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-                    <h3 className="font-bold text-slate-900">Upcoming Tasks</h3>
-                    <a href="/care-tasks/today" className="text-sm font-medium text-blue-600 hover:underline">
-                        Go to Daily Task List
+                    <h3 className="font-bold text-slate-900">Công Việc Sắp Tới Trong Ca</h3>
+                    <a href="/care-tasks/today" className="text-sm font-medium text-[#0F766E] hover:underline">
+                        Đến Danh Sách Công Việc Hàng Ngày
                     </a>
                 </div>
                 <table className="w-full">
                     <thead className="border-b border-slate-200 bg-slate-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Resident</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Task</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Due</th>
-                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Người bệnh</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Nhiệm vụ chăm sóc</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Thời hạn</th>
+                            <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200">
@@ -93,7 +93,7 @@ export function CnaDashboard() {
                                                   : "border-slate-200 bg-slate-100 text-slate-700"
                                         }`}
                                     >
-                                        {task.status}
+                                        {task.status === "Done" ? "Đã xong" : task.status === "Missed" ? "Bỏ lỡ" : "Chờ thực hiện"}
                                     </span>
                                 </td>
                             </tr>
@@ -104,3 +104,4 @@ export function CnaDashboard() {
         </div>
     );
 }
+

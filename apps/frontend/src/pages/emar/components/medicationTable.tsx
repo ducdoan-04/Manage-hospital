@@ -3,36 +3,47 @@ import { Pill, Clock, CheckCircle, XCircle } from "lucide-react";
 export const medications = [
   {
     id: "m1",
-    name: "Amoxicillin",
-    dosage: "500mg",
-    route: "PO (Oral)",
-    frequency: "TID (3 times/day)",
-    schedule: ["08:00", "14:00", "20:00"],
-    status: { "08:00": "administered", "14:00": "pending", "20:00": "pending" },
-    notes: "Take with food",
+    name: "Amoxicillin + Acid Clavulanic (Augmentin)",
+    dosage: "1000mg (1g)",
+    route: "Đường uống (PO)",
+    frequency: "2 lần / ngày (08:00 - 20:00)",
+    schedule: ["08:00", "20:00"],
+    status: { "08:00": "administered", "20:00": "pending" },
+    notes: "Uống ngay trước bữa ăn để giảm khó chịu dạ dày",
     type: "antibiotic"
   },
   {
     id: "m2",
-    name: "Lisinopril",
-    dosage: "10mg",
-    route: "PO (Oral)",
-    frequency: "QD (Daily)",
+    name: "Amlodipine Besylate",
+    dosage: "5mg",
+    route: "Đường uống (PO)",
+    frequency: "1 lần / ngày (08:00)",
     schedule: ["08:00"],
     status: { "08:00": "missed" },
-    notes: "Monitor blood pressure",
+    notes: "Đo huyết áp trước khi cho người bệnh uống (ngưng nếu HA < 90/60 mmHg)",
     type: "cardiac"
   },
   {
     id: "m3",
-    name: "Morphine Sulfate",
-    dosage: "4mg",
-    route: "IV",
-    frequency: "Q4H PRN",
+    name: "Paracetamol (Efferalgan)",
+    dosage: "500mg sủi",
+    route: "Đường uống (PO)",
+    frequency: "Mỗi 4 - 6 giờ khi cần (PRN)",
     schedule: ["PRN"],
     status: { "PRN": "pending" },
-    notes: "For severe pain > 7/10",
+    notes: "Dùng khi sốt cao >= 38.5°C hoặc đau vừa",
     type: "analgesic"
+  },
+  {
+    id: "m4",
+    name: "Ceftriaxone",
+    dosage: "1g",
+    route: "Tiêm tĩnh mạch chậm (IV)",
+    frequency: "1 lần / ngày (14:00)",
+    schedule: ["14:00"],
+    status: { "14:00": "pending" },
+    notes: "Đã thử phản ứng kháng sinh âm tính lúc 09:30",
+    type: "antibiotic"
   }
 ];
 
@@ -49,11 +60,11 @@ export const MedicationTable = () => {
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'administered': 
-        return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 border border-emerald-200">Given</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Đã cấp</span>;
       case 'missed': 
-        return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">Missed</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">Bỏ lỡ</span>;
       case 'pending': 
-        return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">Due</span>;
+        return <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Đến giờ</span>;
       default: return null;
     }
   };
@@ -64,11 +75,11 @@ export const MedicationTable = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/3">Medication Details</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">08:00</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">14:00</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">20:00</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">PRN</th>
+              <th className="py-4 px-6 text-xs font-bold text-slate-600 uppercase tracking-wider w-1/3">Tên thuốc & Y lệnh liều dùng</th>
+              <th className="py-4 px-6 text-xs font-bold text-slate-600 uppercase tracking-wider text-center">08:00 (Sáng)</th>
+              <th className="py-4 px-6 text-xs font-bold text-slate-600 uppercase tracking-wider text-center">14:00 (Chiều)</th>
+              <th className="py-4 px-6 text-xs font-bold text-slate-600 uppercase tracking-wider text-center">20:00 (Tối)</th>
+              <th className="py-4 px-6 text-xs font-bold text-slate-600 uppercase tracking-wider text-center">PRN (Khi cần)</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
@@ -83,10 +94,10 @@ export const MedicationTable = () => {
                       <h3 className="text-base font-bold text-slate-900 group-hover:text-[#0F766E] transition-colors">{med.name}</h3>
                       <p className="text-sm font-medium text-slate-600 mt-1">{med.dosage} • {med.route}</p>
                       <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> {med.frequency}
+                        <Clock className="w-3.5 h-3.5" /> {med.frequency}
                       </p>
                       {med.notes && (
-                        <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-100 inline-block mt-2 font-medium">
+                        <p className="text-xs text-amber-800 bg-amber-50 px-2.5 py-1.5 rounded-lg border border-amber-200 inline-block mt-2 font-medium">
                           {med.notes}
                         </p>
                       )}
@@ -96,7 +107,7 @@ export const MedicationTable = () => {
                 
                 {/* Time Slots */}
                 {["08:00", "14:00", "20:00", "PRN"].map((time) => {
-                  const status = med.status[time as keyof typeof med.status];
+                  const status = (med.status as Record<string, string | undefined>)[time];
                   const isScheduled = med.schedule.includes(time);
                   
                   return (
@@ -107,11 +118,11 @@ export const MedicationTable = () => {
                           {getStatusBadge(status)}
                           {status === 'pending' && (
                             <button className="mt-2 px-3 py-1.5 bg-[#0F766E] hover:bg-[#115E59] text-white text-xs font-semibold rounded-lg shadow-sm transition-all active:scale-95">
-                              Administer
+                              Cấp thuốc
                             </button>
                           )}
                           {status === 'missed' && (
-                            <span className="text-xs text-slate-400 mt-1">Reason required</span>
+                            <span className="text-xs text-rose-500 font-medium mt-1">Cần ghi lý do</span>
                           )}
                         </div>
                       ) : (
@@ -130,3 +141,4 @@ export const MedicationTable = () => {
     </div>
   );
 };
+

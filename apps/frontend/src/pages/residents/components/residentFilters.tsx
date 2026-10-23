@@ -33,25 +33,25 @@ export function ResidentFilters({
   onCareLevelChange,
 }: ResidentFiltersProps) {
   return (
-    <section className="filter-panel" aria-label="Resident filters">
+    <section className="filter-panel" aria-label="Bộ lọc tìm kiếm bệnh nhân">
       <label className="field field--search">
-        <span>Search residents</span>
+        <span>Tìm kiếm bệnh nhân</span>
         <input
           value={search}
-          placeholder="Search by name, ID, or room"
+          placeholder="Tìm theo họ tên, mã BN hoặc số phòng..."
           onChange={(event) => onSearchChange(event.target.value)}
         />
       </label>
 
       <label className="field">
-        <span>Status</span>
+        <span>Trạng thái điều trị</span>
         <select
           value={status}
           onChange={(event) =>
             onStatusChange(event.target.value as ResidentStatus | "all")
           }
         >
-          <option value="all">All statuses</option>
+          <option value="all">Tất cả trạng thái</option>
           {residentStatuses.map((residentStatus) => (
             <option key={residentStatus} value={residentStatus}>
               {RESIDENT_STATUS_LABEL[residentStatus]}
@@ -61,14 +61,14 @@ export function ResidentFilters({
       </label>
 
       <label className="field">
-        <span>Care level</span>
+        <span>Mức độ chăm sóc</span>
         <select
           value={careLevel}
           onChange={(event) =>
             onCareLevelChange(event.target.value as CareLevel | "all")
           }
         >
-          <option value="all">All care levels</option>
+          <option value="all">Tất cả các mức độ</option>
           {careLevels.map((level) => (
             <option key={level} value={level}>
               {CARE_LEVEL_LABEL[level]}
