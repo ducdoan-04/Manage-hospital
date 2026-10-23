@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Bell, HelpCircle, Home, User as UserIcon, Shield, Building2, Banknote, Clock, Box, AlertTriangle, Settings, Database, FileText, LogOut, ChevronDown } from "lucide-react";
+import { Bell, HelpCircle, Home, User as UserIcon, Shield, Building2, Banknote, Clock, Box, AlertTriangle, Settings, Database, FileText, LogOut, ChevronDown, Sparkles } from "lucide-react";
 import { authService } from "../services/auth";
 import { session } from "../utils/session";
 import type { User } from "../types/auth";
+import { AiCopilotWidget } from "../components/ai/AiCopilotWidget";
+import { UserAccountMenu } from "../components/UserAccountMenu";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
@@ -47,6 +49,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         {
             items: [
                 { name: "Bảng điều khiển", path: "/dashboard/admin", icon: Home },
+                { name: "Trợ lý Y tế AI (Copilot)", path: "/ai-assistant", icon: Sparkles },
                 {
                     name: "Phân hệ nghiệp vụ",
                     icon: Box,
@@ -208,26 +211,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
                         <div className="h-8 w-px bg-slate-200"></div>
 
-                        {user && (
-                            <div className="group flex cursor-pointer items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-slate-100 bg-slate-50 text-sm font-bold text-slate-600 transition-colors group-hover:border-blue-100">
-                                    <UserIcon className="h-4 w-4" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-slate-700">
-                                        {user.firstName} {user.lastName}
-                                    </span>
-                                    <span className="text-[11px] font-medium text-slate-500">{user.roleName ?? "System Admin"}</span>
-                                </div>
-                                <ChevronDown className="ml-1 h-4 w-4 text-slate-400 group-hover:text-slate-600" />
-                            </div>
-                        )}
+                        <UserAccountMenu variant="admin" />
                     </div>
                 </header>
 
                 {/* Page Content */}
                 <main className="no-scrollbar flex-1 overflow-y-auto p-8">{children}</main>
             </div>
+
+            <AiCopilotWidget />
         </div>
     );
 }

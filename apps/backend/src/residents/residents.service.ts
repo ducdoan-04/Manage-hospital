@@ -12,7 +12,8 @@ export class ResidentsService {
 
     private serializeResident(resident: any) {
         // Vietnamese naming order: Họ + Đệm + Tên
-        const fullName = [resident.last_name, resident.middle_name, resident.first_name].filter(Boolean).join(" ");
+        const cleanFirstName = String(resident.first_name || "").replace(/^Sample\s+/i, "").trim();
+        const fullName = [resident.last_name, resident.middle_name, cleanFirstName].filter(Boolean).join(" ");
         const roomNumber = resident.beds?.rooms?.room_number ?? undefined;
 
         return {

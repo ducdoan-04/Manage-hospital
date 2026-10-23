@@ -9,6 +9,19 @@ SET NOCOUNT ON;
 GO
 
 -- ----------------------------------------------------------------------------------------------------
+-- 0. TỰ ĐỘNG KHỞI TẠO VÀ CHUYỂN SANG CƠ SỞ DỮ LIỆU: HospitalManagement
+-- ----------------------------------------------------------------------------------------------------
+
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'HospitalManagement')
+BEGIN
+    CREATE DATABASE [HospitalManagement] COLLATE Vietnamese_CI_AS;
+END
+GO
+
+USE [HospitalManagement];
+GO
+
+-- ----------------------------------------------------------------------------------------------------
 -- 1. PHÂN HỆ NGƯỜI DÙNG, VAI TRÒ & PHÂN QUYỀN TRUY CẬP (RBAC & SECURITY)
 -- ----------------------------------------------------------------------------------------------------
 

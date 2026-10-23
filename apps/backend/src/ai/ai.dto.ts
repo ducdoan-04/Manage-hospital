@@ -110,3 +110,27 @@ export class AiChatDto {
     @IsNumber()
     residentId?: number;
 }
+
+export class SaveEmrDto {
+    @IsOptional()
+    @IsString()
+    residentId?: string;
+
+    @IsString()
+    chiefComplaint!: string;
+
+    @IsString()
+    clinicalNote!: string;
+
+    @IsOptional()
+    @IsArray()
+    suggestedIcd10?: any[];
+
+    @IsOptional()
+    @IsArray()
+    suggestedOrders?: any[];
+
+    @IsOptional()
+    @IsArray()
+    suggestedMedications?: any[];
+}

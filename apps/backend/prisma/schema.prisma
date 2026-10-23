@@ -91,7 +91,7 @@ model Facility {
   facilityCode                   String                           @unique(map: "UQ__faciliti__EC22450ACDDC1848") @map("facility_code") @db.NVarChar(50)
   name                           String                           @db.NVarChar(200)
   licenseNumber                  String                           @map("license_number") @db.NVarChar(100)
-  targetState                    String                           @map("target_state") @db.Char(2)
+  targetState                    String                           @map("target_state") @db.NVarChar(50)
   phoneNumber                    String?                          @map("phone_number") @db.NVarChar(20)
   isDeleted                      Boolean                          @default(false, map: "DF__facilitie__is_de__5CD6CB2B") @map("is_deleted")
   createdAt                      DateTime                         @default(dbgenerated("sysdatetimeoffset()"), map: "DF__facilitie__creat__5DCAEF64") @map("created_at") @db.DateTimeOffset

@@ -1,10 +1,13 @@
-import { Calendar, ClipboardCheck, ClipboardList, FilePlus2, HeartPulse, LayoutDashboard, Receipt, Stethoscope, UserRound, Users, ShieldAlert } from "lucide-react";
+import { Calendar, ClipboardCheck, ClipboardList, FilePlus2, HeartPulse, LayoutDashboard, Receipt, Stethoscope, UserRound, Users, ShieldAlert, Sparkles } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { APP_ROUTES } from "../constants/appRoutes";
 import { session } from "../utils/session";
+import { AiCopilotWidget } from "../components/ai/AiCopilotWidget";
+import { UserAccountMenu } from "../components/UserAccountMenu";
 
 const navigationItems = [
     { label: "Tổng quan", to: APP_ROUTES.DASHBOARD, icon: LayoutDashboard, end: true },
+    { label: "Trợ lý Y tế AI", to: "/ai-assistant", icon: Sparkles, end: true },
     { label: "Quản lý Bệnh nhân", to: APP_ROUTES.RESIDENTS, icon: Users, end: false },
     { label: "Tiếp đón & Sàng lọc", to: APP_ROUTES.PRE_ADMISSION_SCREENING, icon: ClipboardList, end: true },
     { label: "Hồ sơ Nhập viện", to: APP_ROUTES.ADMISSION_CREATE, icon: FilePlus2, end: true },
@@ -68,16 +71,13 @@ export function AppLayout() {
                         <span className="alert-chip alert-chip--neutral">Nguy cơ ngã cao</span>
                     </div>
 
-                    <div className="user-chip">
-                        <span>
-                            <UserRound size={16} />
-                        </span>
-                        <strong>{displayName}</strong>
-                    </div>
+                    <UserAccountMenu variant="clinical" />
                 </header>
 
                 <Outlet />
             </div>
+
+            <AiCopilotWidget />
         </div>
     );
 }

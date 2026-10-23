@@ -13,6 +13,22 @@ export class UsersService {
         return JSON.parse(JSON.stringify(obj, (_key, value) => (typeof value === "bigint" ? value.toString() : value)));
     }
 
+    private formatVietnamesePhone(phone?: string): string | undefined {
+        if (!phone) return undefined;
+        let clean = phone.replace(/[\s\-.()]/g, "");
+        if (clean.startsWith("0")) {
+            clean = "+84" + clean.slice(1);
+        } else if (clean.startsWith("84")) {
+            clean = "+" + clean;
+        } else if (!clean.startsWith("+84") && clean.startsWith("+")) {
+            // Keep if already e164 or convert
+            return clean;
+        } else if (!clean.startsWith("+")) {
+            clean = "+84" + clean;
+        }
+        return clean;
+    }
+
     async findAll(page = 1, limit = 10, search?: string) {
         const skip = (page - 1) * limit;
 
@@ -89,7 +105,7 @@ export class UsersService {
                 firstName: createUserDto.firstName,
                 lastName: createUserDto.lastName,
                 email: createUserDto.email.toLowerCase(),
-                phoneNumber: createUserDto.phoneNumber,
+                phoneNumber: this.formatVietnamesePhone(createUserDto.phoneNumber),
                 status: createUserDto.status,
                 roleId: BigInt(createUserDto.roleId),
                 passwordHash: placeholderHash,
@@ -131,7 +147,7 @@ export class UsersService {
                 firstName: updateUserDto.firstName,
                 lastName: updateUserDto.lastName,
                 email: updateUserDto.email?.toLowerCase(),
-                phoneNumber: updateUserDto.phoneNumber,
+                phoneNumber: updateUserDto.phoneNumber !== undefined ? this.formatVietnamesePhone(updateUserDto.phoneNumber) : undefined,
                 status: updateUserDto.status,
                 ...(updateUserDto.roleId && { roleId: BigInt(updateUserDto.roleId) }),
                 ...(updateUserDto.facilityId !== undefined

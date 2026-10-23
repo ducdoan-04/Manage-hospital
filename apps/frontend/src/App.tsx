@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminLayout } from "./layouts/AdminLayout";
 import { AppLayout } from "./layouts/appLayout";
+import AiAssistantPage from "./pages/ai/AiAssistantPage";
 import DemoSeeder from "./pages/admin/DemoSeeder";
 import AdmissionFormPage from "./pages/admissions/AdmissionFormPage";
 import AssessmentHistoryPage from "./pages/assessments/AssessmentHistoryPage";
@@ -183,6 +184,7 @@ function App() {
                     </ProtectedRoute>
                 }
             >
+                <Route path="/ai-assistant" element={<AiAssistantPage />} />
                 <Route path="/residents" element={<ResidentListPage />} />
                 <Route path="/residents/create" element={<ResidentFormPage />} />
                 <Route path="/residents/reception" element={<ResidentReceptionPage />} />

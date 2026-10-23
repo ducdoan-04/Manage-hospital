@@ -157,7 +157,7 @@ export class DemoDataService {
                 ];
 
                 const residentsData = vietnamesePatients.map((p, idx) => ({
-                    first_name: `${this.SAMPLE_PREFIX}${p.firstName}`,
+                    first_name: p.firstName,
                     last_name: p.lastName,
                     date_of_birth: new Date(p.birthYear, idx % 12, (idx % 28) + 1),
                     gender: p.gender,

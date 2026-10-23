@@ -14,16 +14,16 @@ import { roleService } from "@/services/role";
 import { facilityService } from "@/services/facility";
 
 const userSchema = z.object({
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    email: z.string().min(1, "Email is required").email("Must be a valid email (RFC-5322)"),
+    firstName: z.string().min(1, "Vui lòng nhập tên"),
+    lastName: z.string().min(1, "Vui lòng nhập họ và tên đệm"),
+    email: z.string().min(1, "Vui lòng nhập email").email("Email không đúng định dạng chuẩn"),
     phone: z
         .string()
         .optional()
-        .refine((val) => !val || /^\+[1-9]\d{1,14}$/.test(val), {
-            message: "Must be a valid E.164 phone number (e.g. +14155550100)",
+        .refine((val) => !val || /^(\+84|0)[35789]\d{8}$/.test(val.replace(/[\s\-.()]/g, "")), {
+            message: "Số điện thoại phải đúng định dạng chuẩn Việt Nam (+84 hoặc đầu 0, VD: +84 912 345 678 hoặc 0912345678)",
         }),
-    role: z.string().min(1, "Role is required"),
+    role: z.string().min(1, "Vui lòng chọn vai trò y tế"),
     facilityId: z.string().optional(),
 });
 
@@ -57,7 +57,7 @@ export default function UserForm() {
         handleSubmit,
         control,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<UserFormValues>({
         resolver: zodResolver(userSchema),
         defaultValues: {
@@ -91,17 +91,28 @@ export default function UserForm() {
             navigate("/admin/users", { replace: true });
         },
         onError: (err: any) => {
-            setErrorMsg(err.message || "An error occurred");
+            setErrorMsg(err.message || "Đã xảy ra lỗi khi lưu thông tin");
         },
     });
 
     const onSubmit = async (data: UserFormValues) => {
         setErrorMsg("");
+        let phoneFormatted = data.phone?.trim();
+        if (phoneFormatted) {
+            phoneFormatted = phoneFormatted.replace(/[\s\-.()]/g, "");
+            if (phoneFormatted.startsWith("0")) {
+                phoneFormatted = "+84" + phoneFormatted.slice(1);
+            } else if (phoneFormatted.startsWith("84")) {
+                phoneFormatted = "+" + phoneFormatted;
+            } else if (!phoneFormatted.startsWith("+84") && !phoneFormatted.startsWith("+")) {
+                phoneFormatted = "+84" + phoneFormatted;
+            }
+        }
         const payload = {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
-            phoneNumber: data.phone || undefined,
+            phoneNumber: phoneFormatted || undefined,
             roleId: parseInt(data.role, 10),
             status: isEditMode ? userData?.status : "INACTIVE",
             facilityId: data.facilityId === "None" ? undefined : data.facilityId,
@@ -109,27 +120,29 @@ export default function UserForm() {
         mutation.mutate(payload as any);
     };
 
-    const statusValue = isEditMode ? userData?.status || "Loading..." : "INACTIVE";
+    const statusValue = isEditMode ? userData?.status || "Đang tải..." : "INACTIVE";
 
     if ((isEditMode && isUserLoading) || !roles || !facilities) {
-        return <div className="p-8 text-center text-slate-500">Loading data...</div>;
+        return <div className="p-8 text-center text-slate-500">Đang tải dữ liệu...</div>;
     }
 
     return (
-        <div className="mx-auto max-w-6xl font-sans">
+        <div className="mx-auto max-w-5xl">
             <div className="mb-6">
                 <div className="mb-1 text-sm font-medium text-slate-500">
                     <Link to="/admin/users" className="hover:text-slate-700">
-                        Admin
+                        Quản trị
                     </Link>{" "}
                     &gt;{" "}
                     <Link to="/admin/users" className="hover:text-slate-700">
-                        Users
+                        Nhân viên y tế
                     </Link>{" "}
-                    &gt; <span className="text-slate-900">{isEditMode ? "Edit User" : "Add User"}</span>
+                    &gt; <span className="text-slate-900">{isEditMode ? "Chỉnh sửa tài khoản" : "Thêm người dùng mới"}</span>
                 </div>
-                <h1 className="mb-2 text-3xl font-bold tracking-tight text-slate-900">{isEditMode ? "Edit User" : "Add User"}</h1>
-                {!isEditMode && <p className="text-sm text-slate-500">New accounts start as Invited — user completes activation via emailed link (§5G)</p>}
+                <h1 className="mb-2 text-3xl font-bold tracking-tight text-slate-900">
+                    {isEditMode ? "Chỉnh sửa tài khoản Cán bộ Y tế" : "Thêm Cán bộ Y tế Mới"}
+                </h1>
+                {!isEditMode && <p className="text-sm text-slate-500">Tài khoản mới sẽ ở trạng thái chờ kích hoạt qua email / số điện thoại (+84)</p>}
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -138,51 +151,51 @@ export default function UserForm() {
                     {/* ── Left Card (Account Details) ── */}
                     <Card className="border-slate-200 shadow-sm lg:col-span-2">
                         <CardContent className="p-6">
-                            <h2 className="mb-6 text-lg font-bold text-slate-900">Account Details</h2>
+                            <h2 className="mb-6 text-lg font-bold text-slate-900">Thông tin tài khoản</h2>
 
                             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                                 {/* First Name */}
                                 <div>
                                     <Label className="mb-2 block font-semibold text-slate-700">
-                                        First Name <span className="text-red-500">*</span>
+                                        Tên (First Name) <span className="text-red-500">*</span>
                                     </Label>
-                                    <Input {...register("firstName")} placeholder="e.g. Priya" className={errors.firstName ? "border-red-500 focus:ring-red-100" : ""} />
+                                    <Input {...register("firstName")} placeholder="VD: An, Mai, Dũng" className={errors.firstName ? "border-red-500 focus:ring-red-100" : ""} />
                                     {errors.firstName && <p className="mt-1.5 text-sm font-medium text-red-500">{errors.firstName.message}</p>}
                                 </div>
 
                                 {/* Last Name */}
                                 <div>
                                     <Label className="mb-2 block font-semibold text-slate-700">
-                                        Last Name <span className="text-red-500">*</span>
+                                        Họ và tên đệm (Last Name) <span className="text-red-500">*</span>
                                     </Label>
-                                    <Input {...register("lastName")} placeholder="e.g. Shah" className={errors.lastName ? "border-red-500 focus:ring-red-100" : ""} />
+                                    <Input {...register("lastName")} placeholder="VD: Nguyễn Văn, Trần Thị" className={errors.lastName ? "border-red-500 focus:ring-red-100" : ""} />
                                     {errors.lastName && <p className="mt-1.5 text-sm font-medium text-red-500">{errors.lastName.message}</p>}
                                 </div>
 
                                 {/* Email */}
                                 <div>
                                     <Label className="mb-2 block font-semibold text-slate-700">
-                                        Email <span className="text-red-500">*</span>
+                                        Email y tế <span className="text-red-500">*</span>
                                     </Label>
-                                    <Input {...register("email")} placeholder="name@nhms.io" className={errors.email ? "border-red-500 focus:ring-red-100" : ""} />
+                                    <Input {...register("email")} placeholder="bs.nguyenvanan@medcare.vn" className={errors.email ? "border-red-500 focus:ring-red-100" : ""} />
                                     {errors.email && <p className="mt-1.5 text-sm font-medium text-red-500">{errors.email.message}</p>}
                                 </div>
 
                                 {/* Phone */}
                                 <div>
-                                    <Label className="mb-2 block font-semibold text-slate-700">Phone (E.164)</Label>
-                                    <Input {...register("phone")} placeholder="+1 415-555-0100" className={errors.phone ? "border-red-500 focus:ring-red-100" : ""} />
+                                    <Label className="mb-2 block font-semibold text-slate-700">Số điện thoại (+84 chuẩn E.164)</Label>
+                                    <Input {...register("phone")} placeholder="+84 912 345 678" className={errors.phone ? "border-red-500 focus:ring-red-100" : ""} />
                                     {errors.phone ? (
                                         <p className="mt-1.5 text-sm font-medium text-red-500">{errors.phone.message}</p>
                                     ) : (
-                                        <p className="mt-1.5 text-xs text-slate-500">Optional now — required when user activates account (§5G.2).</p>
+                                        <p className="mt-1.5 text-xs text-slate-500">Chuẩn Việt Nam: +84912345678 (hoặc 0912345678 để nhận OTP 2FA qua SMS).</p>
                                     )}
                                 </div>
 
                                 {/* Role */}
                                 <div>
                                     <Label className="mb-2 block font-semibold text-slate-700">
-                                        Role <span className="text-red-500">*</span>
+                                        Vai trò y tế <span className="text-red-500">*</span>
                                     </Label>
                                     <Controller
                                         control={control}
@@ -190,7 +203,7 @@ export default function UserForm() {
                                         render={({ field }) => (
                                             <Select value={field.value} onValueChange={field.onChange}>
                                                 <SelectTrigger className={errors.role ? "border-red-500 focus:ring-red-100" : ""}>
-                                                    <SelectValue placeholder="Select role..." />
+                                                    <SelectValue placeholder="Chọn vai trò..." />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {roles?.map((r: any) => (
@@ -207,26 +220,26 @@ export default function UserForm() {
 
                                 {/* Status */}
                                 <div>
-                                    <Label className="mb-2 block font-semibold text-slate-700">Status</Label>
+                                    <Label className="mb-2 block font-semibold text-slate-700">Trạng thái tài khoản</Label>
                                     <Input value={statusValue} disabled className="bg-slate-50 font-medium text-slate-500" />
                                     <p className="mt-1.5 text-xs text-slate-500">
-                                        {isEditMode ? "Current account status." : "System-set on creation — becomes Active after user completes activation (AD-00b)."}
+                                        {isEditMode ? "Trạng thái tài khoản hiện tại trong hệ thống." : "Hệ thống tự động kích hoạt sau khi xác thực 2 bước (2FA)."}
                                     </p>
                                 </div>
 
                                 {/* Assigned Facility */}
                                 <div>
-                                    <Label className="mb-2 block font-semibold text-slate-700">Assigned Facility (optional)</Label>
+                                    <Label className="mb-2 block font-semibold text-slate-700">Cơ sở khám chữa bệnh</Label>
                                     <Controller
                                         control={control}
                                         name="facilityId"
                                         render={({ field }) => (
                                             <Select value={field.value} onValueChange={field.onChange}>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="None" />
+                                                    <SelectValue placeholder="Mặc định" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="None">None</SelectItem>
+                                                    <SelectItem value="None">Chưa phân công</SelectItem>
                                                     {facilities?.map((f: any) => (
                                                         <SelectItem key={f.id} value={f.id}>
                                                             {f.name}
@@ -241,8 +254,7 @@ export default function UserForm() {
 
                             <div className="border-t border-slate-100 pt-6">
                                 <p className="text-xs text-slate-400">
-                                    Identity field contract (§5G.2): Email must be unique and RFC-5322 valid; Phone must be E.164 and unique once set. Same fields, same validation
-                                    across AD-00/00b/01.
+                                    Quy chuẩn an toàn y tế: Email phải là duy nhất; Số điện thoại phải đúng định dạng chuẩn E.164 Việt Nam (+84) để nhận mã xác thực OTP bảo mật.
                                 </p>
                             </div>
                         </CardContent>
@@ -251,17 +263,17 @@ export default function UserForm() {
                     {/* ── Right Card (What happens next) ── */}
                     <Card className="h-fit border-slate-200 shadow-sm">
                         <CardContent className="p-6">
-                            <h2 className="mb-6 text-lg font-bold text-slate-900">What happens next</h2>
+                            <h2 className="mb-6 text-lg font-bold text-slate-900">Quy trình kích hoạt</h2>
 
                             <div className="mb-6 space-y-4 text-sm text-slate-700">
-                                <p>1. User receives an invite link by email</p>
-                                <p>2. Sets password + confirms phone (AD-00b)</p>
-                                <p>3. 2FA status becomes Enabled</p>
-                                <p>4. Status changes Invited &rarr; Active</p>
+                                <p>1. Cán bộ y tế nhận email / SMS kích hoạt</p>
+                                <p>2. Đặt mật khẩu và xác thực số điện thoại (+84)</p>
+                                <p>3. Kích hoạt bảo mật xác thực 2 bước (2FA)</p>
+                                <p>4. Tài khoản chuyển trạng thái Hoạt động (ACTIVE)</p>
                             </div>
 
                             <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                                <p className="text-sm font-semibold text-blue-700">Login accepts whichever identifier was registered — Email OR Phone (§5G Q3).</p>
+                                <p className="text-sm font-semibold text-blue-700">Đăng nhập hỗ trợ bằng cả Email hoặc Số điện thoại (+84) đã đăng ký.</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -270,10 +282,10 @@ export default function UserForm() {
                 {/* ── Bottom Action Bar ── */}
                 <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-6 pb-10">
                     <Button type="button" variant="outline" className="border-slate-300 px-6 text-slate-700 hover:bg-slate-50" onClick={() => navigate("/admin/users")}>
-                        Cancel
+                        Hủy
                     </Button>
-                    <Button type="submit" disabled={mutation.isPending} className="bg-blue-600 px-6 text-white hover:bg-blue-700">
-                        {mutation.isPending ? "Saving..." : isEditMode ? "Update User" : "Create User"}
+                    <Button type="submit" disabled={mutation.isPending} className="bg-blue-600 px-6 text-white hover:bg-blue-700 font-bold">
+                        {mutation.isPending ? "Đang lưu..." : isEditMode ? "Cập nhật người dùng" : "Thêm người dùng"}
                     </Button>
                 </div>
             </form>

@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AiModule } from "./ai/ai.module.js";
 import { AdmissionsModule } from "./admissions/admissions.module.js";
 import { AppController } from "./app.controller.js";
 import { AppService } from "./app.service.js";
@@ -44,6 +45,7 @@ import { VitalsModule } from "./vitals/vitals.module.js";
         VitalsModule,
         BillingModule,
         EquipmentSuppliesModule,
+        AiModule,
     ],
     controllers: [AppController],
     providers: [AppService],

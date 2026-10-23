@@ -18,7 +18,7 @@ export function Pagination({
   return (
     <div className="pagination">
       <span>
-        Showing {firstItem}-{lastItem} of {total} residents
+        Hiển thị {firstItem} - {lastItem} trên tổng số {total} bệnh nhân
       </span>
       <div>
         <button
@@ -26,17 +26,17 @@ export function Pagination({
           disabled={page === 1}
           onClick={() => onPageChange(page - 1)}
         >
-          Previous
+          Trang trước
         </button>
         <strong>
-          Page {page} of {totalPages}
+          Trang {page} / {totalPages}
         </strong>
         <button
           type="button"
           disabled={page === totalPages}
           onClick={() => onPageChange(page + 1)}
         >
-          Next
+          Trang sau
         </button>
       </div>
     </div>
