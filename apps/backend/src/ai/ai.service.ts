@@ -19,10 +19,47 @@ export class AiService {
     constructor(private readonly prisma: PrismaService) {}
 
     /**
-     * TRUY VẤN MÔ HÌNH Y KHOA GOOGLE MEDGEMMA 1.5 4B
-     * (Hỗ trợ cả Colab GPU Endpoint qua Cloudflare/Ngrok và Hugging Face API)
+     * TRUY VẤN MÔ HÌNH Y KHOA GOOGLE MEDGEMMA 1.5 4B / LOCAL OLLAMA GPU
+     * (Hỗ trợ Local Ollama RTX 3050, Colab GPU Endpoint qua Cloudflare/Ngrok và Hugging Face API)
      */
     private async queryMedGemmaRaw(prompt: string, systemPrompt?: string): Promise<string | null> {
+        // 0. Thử gọi Local Ollama GPU (chạy trực tiếp trên máy RTX 3050 qua Vulkan)
+        const ollamaUrl = process.env.OLLAMA_API_URL || "http://127.0.0.1:11434/api/generate";
+        const ollamaModel = process.env.OLLAMA_MODEL || "gemma2:2b";
+        try {
+            const ollamaRes = await fetch(ollamaUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: ollamaModel,
+                    prompt: prompt,
+                    system:
+                        systemPrompt ||
+                        "Bạn là MedCare AI Copilot dựa trên mô hình y khoa Google MedGemma / Gemma. Trả lời tư vấn y khoa lâm sàng chính xác, khoa học, tuân thủ phác đồ điều trị của Bộ Y tế và Dược thư Quốc gia Việt Nam bằng tiếng Việt.",
+                    stream: false,
+                    options: {
+                        temperature: 0.2,
+                        num_predict: 1024,
+                    },
+                }),
+                signal: AbortSignal.timeout(20000),
+            });
+            if (ollamaRes.ok) {
+                const ollamaData = (await ollamaRes.json()) as any;
+                if (ollamaData && ollamaData.response) {
+                    let clean = String(ollamaData.response).trim();
+                    clean = clean.replace(/<unused\d+>thought[\s\S]*?(?:<\/thought>|<unused\d+>|$)/gi, "");
+                    clean = clean.replace(/<thought>[\s\S]*?(?:<\/thought>|$)/gi, "");
+                    clean = clean.replace(/^thought\s+[\s\S]*?(?=\*\*|Phân tích|Bệnh nhân|\n\n)/i, "");
+                    if (clean.length > 20) {
+                        return clean.trim();
+                    }
+                }
+            }
+        } catch {
+            // Local Ollama chưa online -> tiếp tục chuyển sang Colab GPU / Hugging Face
+        }
+
         // 1. Kiểm tra Colab GPU Endpoint từ biến môi trường
         let customColabUrl = process.env.MEDGEMMA_API_URL;
         const candidatePaths = [
@@ -1252,6 +1289,48 @@ Hãy đóng vai trò Trợ lý Y khoa Nhân văn MedGemma:
                 sources: ["Đồng hồ Hệ thống Bệnh viện", "Google MedGemma 1.5 4B Copilot"],
                 timestamp: now.toISOString(),
             };
+        }
+
+        // 0. Thử gọi Local Ollama GPU (chạy trực tiếp trên RTX 3050 Laptop qua Vulkan)
+        const ollamaUrl = process.env.OLLAMA_API_URL || "http://127.0.0.1:11434/api/generate";
+        const ollamaModel = process.env.OLLAMA_MODEL || "gemma2:2b";
+        try {
+            const ollamaRes = await fetch(ollamaUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: ollamaModel,
+                    prompt: dto.message,
+                    system:
+                        "Bạn là Bác sĩ Trưởng khoa MedCare AI Copilot sử dụng mô hình Google MedGemma / Gemma. Trả lời tư vấn y khoa lâm sàng chính xác, khoa học, tuân thủ phác đồ điều trị của Bộ Y tế và Dược thư Quốc gia Việt Nam bằng tiếng Việt rõ ràng, dùng bullet point và markdown chuẩn y khoa.",
+                    stream: false,
+                    options: {
+                        temperature: 0.3,
+                        num_predict: 1024,
+                    },
+                }),
+                signal: AbortSignal.timeout(20000),
+            });
+            if (ollamaRes.ok) {
+                const ollamaData = (await ollamaRes.json()) as any;
+                if (ollamaData && ollamaData.response) {
+                    let cleanReply = String(ollamaData.response).trim();
+                    cleanReply = cleanReply.replace(/<unused\d+>thought[\s\S]*?(?:<\/thought>|<unused\d+>|$)/gi, "");
+                    cleanReply = cleanReply.replace(/<thought>[\s\S]*?(?:<\/thought>|$)/gi, "");
+                    cleanReply = cleanReply.replace(/<[^>]+>/g, "").trim();
+
+                    if (cleanReply.length >= 30) {
+                        return {
+                            success: true,
+                            reply: cleanReply,
+                            sources: [`Local GPU RTX 3050 (${ollamaModel})`, "Dược thư Quốc gia Việt Nam", "Bộ Y tế"],
+                            timestamp: new Date().toISOString(),
+                        };
+                    }
+                }
+            }
+        } catch {
+            // Local Ollama chưa online -> tiếp tục chuyển sang Colab / HuggingFace
         }
 
         if (customColabUrl) {
