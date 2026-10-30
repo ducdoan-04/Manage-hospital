@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import {
     AuditBhytDto,
     CalculateNews2Dto,
@@ -13,6 +13,16 @@ import { AiService } from "./ai.service.js";
 @Controller(["api/ai", "ai"])
 export class AiController {
     constructor(private readonly aiService: AiService) {}
+
+    @Get("saved-emr/:residentId")
+    async getSavedEmrByResident(@Param("residentId") residentId: string) {
+        return this.aiService.getSavedEmrByResident(residentId);
+    }
+
+    @Get("saved-emr")
+    async getRecentSavedEmr() {
+        return this.aiService.getRecentSavedEmr();
+    }
 
     @Post("extract-emr")
     async extractEmr(@Body() dto: ExtractEmrDto) {

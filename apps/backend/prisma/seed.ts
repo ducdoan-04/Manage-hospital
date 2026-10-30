@@ -173,6 +173,23 @@ async function main() {
     },
   });
 
+  // Active DON (Director of Nursing)
+  await prisma.user.upsert({
+    where: { email: "don@facility.org" },
+    update: {},
+    create: {
+      employeeCode: "EMP_DON",
+      email: "don@facility.org",
+      passwordHash: hashedPassword,
+      firstName: "Sarah",
+      lastName: "Nguyễn",
+      phoneNumber: "+84912345670",
+      status: "ACTIVE",
+      mfaEnabled: true,
+      roleId: dbRoles["DON (Director of Nursing)"].id,
+    },
+  });
+
   // Invited (pending activation) nurse
   await prisma.user.upsert({
     where: { email: "new.nurse@facility.org" },

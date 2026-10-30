@@ -1,0 +1,31 @@
+Tài khoản	Email đăng nhập	Số điện thoại (+84)	Mật khẩu	Mã OTP 2FA	Vai trò
+Admin chính
+admin@facility.org
++84912345678
+Password123!
+123456
+Quản trị viên hệ thống
+
+
+Admin 2
+wuan1604@gmail.com
++84988776655
+Password123!
+123456
+Quản trị viên hệ thống
+
+
+Điều dưỡng
+j.rivera@facility.org
++84903456789
+Password123!
+123456
+Điều dưỡng khoa
+
+
+DON (Director of Nursing - Trưởng phòng Điều dưỡng)
+don@facility.org
++84912345670
+Password123!
+123456
+DON (Director of Nursing)

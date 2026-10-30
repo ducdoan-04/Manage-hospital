@@ -25,6 +25,18 @@ export interface EmrExtractedResult {
     engine?: string;
 }
 
+export interface SavedEmrRecord {
+    id: string;
+    residentId: string;
+    residentName: string;
+    chiefComplaint: string;
+    clinicalNote: string;
+    suggestedIcd10: Array<{ code: string; nameVi: string; confidence?: number; rationale?: string }>;
+    suggestedOrders: Array<{ type: string; name: string; priority: string }>;
+    suggestedMedications: Array<{ drugName: string; dosage?: string; route?: string; frequency?: string }>;
+    createdAt: string;
+}
+
 export interface PrescriptionSafetyResult {
     safetyStatus: "SAFE" | "WARNING" | "DANGEROUS";
     totalAlerts: number;
@@ -35,6 +47,12 @@ export interface PrescriptionSafetyResult {
         message: string;
         recommendation: string;
         source: string;
+    }>;
+    aiAnalysis?: string;
+    suggestedAlternatives?: Array<{
+        originalDrug: string;
+        replacement: string;
+        reason: string;
     }>;
     checkedAt: string;
 }
@@ -47,6 +65,8 @@ export interface News2Result {
     clinicalResponse: string;
     monitoringFrequency: string;
     breakdown: Record<string, { value: any; score: number; note: string }>;
+    aiClinicalImpression?: string;
+    emergencyProtocol?: string[];
     calculatedAt: string;
 }
 
@@ -55,6 +75,7 @@ export interface BhytAuditResult {
     totalFlagged: number;
     totalEstimatedLossVnd: number;
     auditStatus: string;
+    complianceScore?: number;
     flaggedItems: Array<{
         item: string;
         type: "MEDICATION" | "PROCEDURE";
@@ -63,6 +84,8 @@ export interface BhytAuditResult {
         potentialLossVnd: number;
         recommendation: string;
     }>;
+    aiAuditSummary?: string;
+    suggestedIcdCodesToAdd?: string[];
     auditedAt: string;
 }
 
@@ -72,6 +95,7 @@ export interface PatientExplanationResult {
     keyPoints: string[];
     lifestyleRecommendations: string[];
     emergencyNotice: string;
+    encouragement?: string;
     generatedAt: string;
 }
 
@@ -103,6 +127,12 @@ export const aiService = {
         suggestedMedications?: any[];
     }): Promise<{ success: boolean; recordId: string; message: string }> {
         const res = await apiClient.post<{ success: boolean; recordId: string; message: string }>("/ai/save-emr", payload, { timeout: 60000 });
+        return res.data;
+    },
+
+    async getSavedEmr(residentId?: string): Promise<SavedEmrRecord[]> {
+        const endpoint = residentId ? `/ai/saved-emr/${residentId}` : "/ai/saved-emr";
+        const res = await apiClient.get<SavedEmrRecord[]>(endpoint);
         return res.data;
     },
 

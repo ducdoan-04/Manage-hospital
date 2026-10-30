@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Thực Tập Tốt Nghiệp — Hồ Đức Đoàn — VKU</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; overflow: hidden; }
+    .slide { display: none; width: 100vw; height: 100vh; padding: 3rem 4.5rem; flex-direction: column; justify-content: space-between; position: relative; }
+    .slide.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+  </style>
+</head>
+<body class="select-none">
+
+  <!-- SLIDE 1: BÌA BÁO CÁO -->
+  <div class="slide active bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950" id="slide-1">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div class="flex items-center space-x-3">
+        <span class="badge bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">VKU — KHOA KHOA HỌC MÁY TÍNH</span>
+        <span class="text-xs text-slate-400">ĐẠI HỌC ĐÀ NẴNG</span>
+      </div>
+      <span class="text-xs font-mono text-slate-500">BÁO CÁO THỰC TẬP TỐT NGHIỆP 2026</span>
+    </div>
+
+    <div class="my-auto py-4">
+      <p class="text-indigo-400 font-semibold tracking-wider text-sm uppercase mb-2">ĐỀ TÀI THỰC TẬP TỐT NGHIỆP</p>
+      <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        THỰC TẬP SINH JAVASCRIPT FULLSTACK TẠI <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400">CÔNG TY TNHH CÔNG NGHỆ SỐ VIỆT TRÍ ĐẠO</span>
+      </h1>
+      <p class="text-lg text-slate-300 max-w-4xl font-normal leading-relaxed">
+        Xây dựng Hệ thống Quản lý Bệnh viện Đa khoa — <strong class="text-cyan-400">MedCare Hospital Management System (HIS / EMR)</strong> với React, NestJS, Prisma ORM, SQL Server và Tích hợp Trợ lý Trí tuệ Nhân tạo AI.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur">
+      <div>
+        <p class="text-xs text-slate-500 uppercase font-medium">Sinh viên thực hiện</p>
+        <p class="text-sm font-bold text-white mt-0.5">HỒ ĐỨC ĐOÀN</p>
+        <p class="text-xs text-indigo-400 font-mono">MSV: 22IT044 — Lớp: 22SE2</p>
+      </div>
+      <div>
+        <p class="text-xs text-slate-500 uppercase font-medium">Giảng viên hướng dẫn</p>
+        <p class="text-sm font-bold text-white mt-0.5">THS. NGUYỄN ANH TUẤN</p>
+        <p class="text-xs text-slate-400">Khoa Khoa học Máy tính</p>
+      </div>
+      <div>
+        <p class="text-xs text-slate-500 uppercase font-medium">Đơn vị thực tập</p>
+        <p class="text-sm font-bold text-white mt-0.5">CÔNG TY TNHH CÔNG NGHỆ SỐ VIỆT TRÍ ĐẠO</p>
+        <p class="text-xs text-slate-400">Đà Nẵng, Việt Nam</p>
+      </div>
+      <div>
+        <p class="text-xs text-slate-500 uppercase font-medium">Người hướng dẫn</p>
+        <p class="text-sm font-bold text-white mt-0.5">NGUYỄN TẤN HUY</p>
+        <p class="text-xs text-emerald-400">Giám đốc Kỹ thuật</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: NỘI DUNG TRÌNH BÀY (AGENDA) -->
+  <div class="slide bg-slate-950" id="slide-2">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">NỘI DUNG TRÌNH BÀY (AGENDA)</h2>
+      <span class="text-xs text-slate-400">Slide 02 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="space-y-4">
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 transition">
+          <span class="badge bg-indigo-500/20 text-indigo-400">PHẦN 1</span>
+          <h3 class="text-base font-bold text-white mt-2">Tổng quan Đơn vị Thực tập & Vị trí đảm nhiệm</h3>
+          <p class="text-xs text-slate-400 mt-1">Giới thiệu Công ty Việt Trí Đạo, văn hóa Agile/Scrum và vai trò Fullstack Intern.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 transition">
+          <span class="badge bg-cyan-500/20 text-cyan-400">PHẦN 2</span>
+          <h3 class="text-base font-bold text-white mt-2">Cơ sở Công nghệ & Quy trình Kỹ thuật</h3>
+          <p class="text-xs text-slate-400 mt-1">Hệ sinh thái React, TypeScript, NestJS, Prisma, SQL Server, Docker, 2FA OTP & Git Flow.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 transition">
+          <span class="badge bg-emerald-500/20 text-emerald-400">PHẦN 3</span>
+          <h3 class="text-base font-bold text-white mt-2">Tổng quan Dự án MedCare HIS / EMR</h3>
+          <p class="text-xs text-slate-400 mt-1">Bối cảnh y tế số, mục tiêu, kiến trúc Monorepo và ma trận phân quyền 6 vai trò.</p>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 transition">
+          <span class="badge bg-amber-500/20 text-amber-400">PHẦN 4</span>
+          <h3 class="text-base font-bold text-white mt-2">Các Phân hệ Nghiệp vụ Cốt lõi Đã Triển khai</h3>
+          <p class="text-xs text-slate-400 mt-1">Hiện thực hóa 44 màn hình: Tiếp nhận, EMR 360°, Kế hoạch điều trị, Vitals, Viện phí BHYT.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-rose-500/50 transition">
+          <span class="badge bg-rose-500/20 text-rose-400">PHẦN 5</span>
+          <h3 class="text-base font-bold text-white mt-2">Điểm sáng Kỹ thuật & Ràng buộc Y tế Sống còn</h3>
+          <p class="text-xs text-slate-400 mt-1">Cổng kiểm soát LOC Gate, Khóa bệnh án tự động (Chart Lock), E-Signature và AI Copilot.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 transition">
+          <span class="badge bg-purple-500/20 text-purple-400">PHẦN 6</span>
+          <h3 class="text-base font-bold text-white mt-2">Kết quả Đạt được, Bài học & Hướng phát triển</h3>
+          <p class="text-xs text-slate-400 mt-1">Đánh giá xuất sắc 9.5/10 từ doanh nghiệp, bài học kỹ sư phần mềm và định hướng tương lai.</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>VKU — Khoa Khoa học Máy tính</span>
+      <span>Sử dụng phím mũi tên [←] [→] để chuyển slide</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: ĐƠN VỊ THỰC TẬP & VỊ TRÍ ĐẢM NHIỆM -->
+  <div class="slide bg-slate-950" id="slide-3">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">ĐƠN VỊ THỰC TẬP & VỊ TRÍ ĐẢM NHIỆM</h2>
+      <span class="text-xs text-slate-400">Slide 03 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h3 class="text-base font-bold text-cyan-400 flex items-center space-x-2">
+          <span>🏢 CÔNG TY TNHH CÔNG NGHỆ SỐ VIỆT TRÍ ĐẠO</span>
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Thành lập tại Đà Nẵng (MST: <strong>0402030808</strong>) — Giám đốc đại diện: <strong>Nguyễn Tấn Huy</strong>. Trụ sở: 27 Xuân Hòa 2, Thanh Khê Đông, Thanh Khê, Đà Nẵng.
+        </p>
+        <div class="space-y-2 text-xs text-slate-300">
+          <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+            <strong class="text-white">Lĩnh vực hoạt động:</strong> Phát triển phần mềm theo đơn đặt hàng, giải pháp chuyển đổi số y tế (HIS/EMR), đào tạo nhân lực CNTT chất lượng cao.
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+            <strong class="text-white">Văn hóa & Môi trường:</strong> Mô hình Agile/Scrum tinh gọn, khuyến khích phản biện kỹ thuật, duy trì Tech Talks và quy trình Cross-Code Review chéo hàng tuần.
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h3 class="text-base font-bold text-indigo-400 flex items-center space-x-2">
+          <span>💻 VỊ TRÍ THỰC TẬP: JAVASCRIPT FULLSTACK INTERN</span>
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Thành viên nòng cốt nhóm dự án <strong>MockProject_Group6</strong>, đảm nhiệm trọn vẹn chu trình phát triển Web App y tế:
+        </p>
+        <ul class="space-y-2 text-xs text-slate-300">
+          <li class="flex items-start space-x-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong>Frontend:</strong> Lập trình giao diện SPA với React, Vite, TypeScript và hệ thống Design System y tế Tailwind CSS v4.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong>Backend:</strong> Xây dựng RESTful API chuẩn trên NestJS, Prisma ORM, kiểm chuẩn dữ liệu DTO và xác thực bảo mật 2FA OTP.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong>Database & DevOps:</strong> Quản trị SQL Server 2022 trên Docker, viết test tự động, tài liệu hóa API qua Swagger.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Cơ quan tiếp nhận: Công ty TNHH Công nghệ số Việt Trí Đạo</span>
+      <span>Thời gian: 06/07/2026 – 06/10/2026</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: HỆ SINH THÁI CÔNG NGHỆ (TECH STACK) -->
+  <div class="slide bg-slate-950" id="slide-4">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">HỆ SINH THÁI CÔNG NGHỆ CHUẨN DOANH NGHIỆP</h2>
+      <span class="text-xs text-slate-400">Slide 04 / 13</span>
+    </div>
+    <div class="grid grid-cols-3 gap-5 my-auto">
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <span class="badge bg-cyan-500/20 text-cyan-400">FRONTEND ARCHITECTURE</span>
+        <h4 class="text-sm font-bold text-white">React 18/19 + TypeScript + Vite</h4>
+        <ul class="text-xs text-slate-300 space-y-1.5">
+          <li>• <strong>Vite Bundler:</strong> Khởi động &lt;300ms, HMR tức thì.</li>
+          <li>• <strong>TypeScript Strict Mode:</strong> Loại bỏ lỗi runtime.</li>
+          <li>• <strong>Tailwind CSS v4 & Lucide:</strong> Design tokens y tế.</li>
+          <li>• <strong>Zustand:</strong> Quản lý Client State gọn nhẹ (~1.5KB).</li>
+          <li>• <strong>TanStack React Query v5:</strong> Caching & Revalidate.</li>
+        </ul>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <span class="badge bg-indigo-500/20 text-indigo-400">BACKEND ARCHITECTURE</span>
+        <h4 class="text-sm font-bold text-white">NestJS v11 + Prisma ORM</h4>
+        <ul class="text-xs text-slate-300 space-y-1.5">
+          <li>• <strong>Modular Architecture:</strong> Module hóa chuẩn mực.</li>
+          <li>• <strong>Dependency Injection:</strong> Tách biệt Controller/Service.</li>
+          <li>• <strong>Prisma ORM:</strong> Tự sinh Type-safe truy vấn CSDL.</li>
+          <li>• <strong>Validation Pipe:</strong> Class-validator & DTOs an toàn.</li>
+          <li>• <strong>Swagger UI:</strong> Sinh tài liệu tự động tại /api/docs.</li>
+        </ul>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <span class="badge bg-emerald-500/20 text-emerald-400">DATABASE & SECURITY</span>
+        <h4 class="text-sm font-bold text-white">SQL Server 2022 + 2FA + RBAC</h4>
+        <ul class="text-xs text-slate-300 space-y-1.5">
+          <li>• <strong>Docker Container:</strong> Đồng bộ môi trường cho team.</li>
+          <li>• <strong>2FA OTP:</strong> Gửi mã qua eSMS Brandname / Nodemailer.</li>
+          <li>• <strong>JWT Access / Refresh:</strong> Phiên làm việc bảo mật.</li>
+          <li>• <strong>Bcrypt Salt Rounds = 10:</strong> Băm mật khẩu an toàn.</li>
+          <li>• <strong>RBAC Guards:</strong> Ma trận phân quyền 6 vai trò y tế.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Tech Stack Decisions: Thống nhất bởi Nhóm dự án & Tech Lead Việt Trí Đạo</span>
+      <span>Runtime: Node.js LTS v24 / npm Workspaces</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: QUY TRÌNH PHÁT TRIỂN & CHUẨN MỰC MÃ NGUỒN -->
+  <div class="slide bg-slate-950" id="slide-5">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">QUY TRÌNH PHÁT TRIỂN & CHUẨN MỰC MÃ NGUỒN</h2>
+      <span class="text-xs text-slate-400">Slide 05 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h3 class="text-sm font-bold text-cyan-400">🔄 MÔ HÌNH GIT FLOW & CODE REVIEW CHÉO</h3>
+        <div class="space-y-2 text-xs text-slate-300">
+          <p>• <strong>Phân nhánh nghiêm ngặt:</strong> Nhánh <code>main</code> (Production), <code>dev</code> (Integration), các nhánh tính năng <code>feat/*</code>, <code>fix/*</code>.</p>
+          <p>• <strong>Conventional Commits:</strong> Định danh rõ ràng (<code>feat(auth): ...</code>, <code>fix(vitals): ...</code>) phục vụ tự động tạo changelog.</p>
+          <p>• <strong>Cross-Code Review:</strong> Quy chế phân công review chéo bắt buộc giữa 8 thành viên. Không ai tự merge code của chính mình.</p>
+          <p>• <strong>Squash and Merge:</strong> Gộp toàn bộ commit thử nghiệm thành 1 commit hoàn chỉnh, giữ cho cây lịch sử Git luôn sạch và tuyến tính.</p>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h3 class="text-sm font-bold text-indigo-400">⚡ AGILE/SCRUM & TỰ ĐỘNG HÓA CHẤT LƯỢNG</h3>
+        <div class="space-y-2 text-xs text-slate-300">
+          <p>• <strong>Vận hành Sprint 2 tuần:</strong> Quản trị toàn bộ User Stories SC_001–SC_044 qua Jira Software, Daily Standup 15 phút mỗi sáng.</p>
+          <p>• <strong>Phân tích tĩnh ESLint & Prettier:</strong> Tự động format on save, kiểm tra cú pháp và loại trừ biến rác, đảm bảo tính thẩm mỹ của code.</p>
+          <p>• <strong>Kiểm thử Jest & Swagger:</strong> Viết Unit Test cho tầng Service, dùng Swagger OpenAPI kiểm thử trực tiếp các luồng dữ liệu trước khi đẩy PR.</p>
+          <p>• <strong>Nguyên tắc Clean Code & DRY:</strong> Tối ưu hàm, trừu tượng hóa các logic dùng chung thành Custom Hooks và Shared Utilities.</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Tuân thủ tài liệu Coding Standards & Guidelines của Group 6</span>
+      <span>0 lỗi Critical / High khi kết thúc dự án</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: TỔNG QUAN DỰ ÁN MEDCARE HIS / EMR -->
+  <div class="slide bg-slate-950" id="slide-6">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">TỔNG QUAN DỰ ÁN: MEDCARE HOSPITAL MANAGEMENT SYSTEM</h2>
+      <span class="text-xs text-slate-400">Slide 06 / 13</span>
+    </div>
+    <div class="grid grid-cols-3 gap-5 my-auto">
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <span class="badge bg-rose-500/20 text-rose-400">BỐI CẢNH THỰC TIỄN</span>
+        <h4 class="text-sm font-bold text-white">Nhu cầu Chuyển đổi số Y tế</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Bệnh án giấy truyền thống tiềm ẩn nguy cơ thất lạc thông tin, sai sót y lệnh thuốc, khó khăn trong việc theo dõi liên tục chỉ số sinh tồn và thiếu sự phối hợp liên chuyên khoa.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <span class="badge bg-cyan-500/20 text-cyan-400">MỤC TIÊU DỰ ÁN</span>
+        <h4 class="text-sm font-bold text-white">Hệ sinh thái HIS / EMR Toàn diện</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Số hóa 100% quy trình tiếp nhận, sàng lọc cấp cứu, quản lý hồ sơ bệnh án 360°, phác đồ điều trị, cấp phát thuốc nội trú eMAR, quản lý buồng giường và quyết toán viện phí BHYT.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+        <span class="badge bg-indigo-500/20 text-indigo-400">KIẾN TRÚC MONOREPO</span>
+        <h4 class="text-sm font-bold text-white">Tách biệt Frontend & Backend</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Sử dụng npm Workspaces gồm <code>apps/frontend</code> (React/Vite) và <code>apps/backend</code> (NestJS/Prisma), chia sẻ types và cấu hình chung, tối ưu hóa quá trình tích hợp.
+        </p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+      <div><strong>6 Đối tượng phục vụ:</strong> Ban Giám đốc (Admin) • Bác sĩ điều trị • Điều dưỡng trưởng (DON) • Điều dưỡng viên • Trợ lý điều dưỡng (CNA) • Kế toán viện phí</div>
+      <span class="badge bg-emerald-500/20 text-emerald-400">Tuân thủ Thông tư 46/2018/TT-BYT</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: PHÂN HỆ 1 - XÁC THỰC, KÍCH HOẠT & PHÂN QUYỀN RBAC -->
+  <div class="slide bg-slate-950" id="slide-7">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">PHÂN HỆ 1: XÁC THỰC, KÍCH HOẠT & MA TRẬN PHÂN QUYỀN (RBAC)</h2>
+      <span class="text-xs text-slate-400">Slide 07 / 13</span>
+    </div>
+    <div class="grid grid-cols-3 gap-5 my-auto">
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-cyan-400">Kích hoạt tài khoản y tế (SC_002)</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Tài khoản nhân viên y tế mới được khởi tạo ở trạng thái <em>Pending Activation</em>. Nhân viên truy cập qua liên kết bảo mật, xác minh danh tính và thiết lập mật khẩu mạnh chuẩn doanh nghiệp.
+        </p>
+        <span class="badge bg-slate-800 text-slate-300">Password Policy: &gt;= 8 ký tự, đủ chữ hoa, số, ký tự đặc biệt</span>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-indigo-400">Xác thực 2 bước 2FA OTP (SC_003)</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Sau khi nhập đúng mật khẩu, hệ thống tự động sinh mã OTP 6 chữ số gửi qua SMS Brandname (eSMS Vietnam) hoặc Email. Mã có thời hạn hiệu lực trong vòng 5 phút.
+        </p>
+        <span class="badge bg-slate-800 text-slate-300">Cặp mã khóa: Access Token (15m) + Refresh Token (7d)</span>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-emerald-400">Ma trận Phân quyền RBAC (SC_006)</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Phân định quyền hạn chi tiết đến từng hành vi cụ thể (Xem, Tạo, Sửa, Duyệt, Ký số, Xóa) trên từng phân hệ, ngăn ngừa hoàn toàn nguy cơ truy cập trái phép vào hồ sơ bệnh án.
+        </p>
+        <span class="badge bg-slate-800 text-slate-300">Bảo vệ bởi NestJS AuthGuards & RolesGuard</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Màn hình triển khai: SC_001 (Login), SC_002 (Activation), SC_003 (2FA), SC_004 (User List), SC_006 (Role Matrix)</span>
+      <span>Bảo mật dữ liệu y khoa chuẩn Bộ Y tế</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: PHÂN HỆ 2 - SÀNG LỌC CẤP CỨU & BỆNH ÁN ĐIỆN TỬ 360° -->
+  <div class="slide bg-slate-950" id="slide-8">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">PHÂN HỆ 2: TIẾP NHẬN, SÀNG LỌC & BỆNH ÁN ĐIỆN TỬ 360° (EMR)</h2>
+      <span class="text-xs text-slate-400">Slide 08 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-cyan-400">🚑 SÀNG LỌC CẤP CỨU & TIẾP NHẬN (SC_020, SC_021)</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Sàng lọc phân luồng cấp cứu (Pre-admission):</strong> Chấm điểm nguy cơ y tế, đánh giá nhanh tri giác và dấu hiệu sinh tồn ban đầu.</li>
+          <li>• <strong>Hồ sơ tiếp nhận nhập viện (Admission Form):</strong> Quét mã CCCD, xác thực thẻ BHYT, thu thập thông tin người giám hộ hợp pháp.</li>
+          <li>• <strong>Ký cam kết điều trị nội trú:</strong> Lưu vết cam kết viện phí và đồng ý điều trị trực tiếp vào hồ sơ điện tử.</li>
+          <li>• <strong>Cấp mã bệnh án duy nhất (MRN):</strong> Tự động gán buồng giường phù hợp với tình trạng lâm sàng.</li>
+        </ul>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-indigo-400">📋 HỒ SƠ 360° & ĐÁNH GIÁ LÂM SÀNG (SC_018, SC_022, SC_024)</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Bệnh án điện tử 360° (Resident Profile):</strong> Tổng hợp tiền sử bệnh, dị ứng thuốc (thẻ đỏ cảnh báo), chỉ số sinh tồn và chế độ ăn.</li>
+          <li>• <strong>Phiếu Đánh giá Lâm sàng Ban đầu (Initial Assessment):</strong> Đánh giá trong 24h nhập viện: Thể chất, ADL Score, nguy cơ loét tì đè (Braden Scale), nguy cơ té ngã (Morse Scale).</li>
+          <li>• <strong>Phân loại Cấp độ Chăm sóc (Level of Care - LOC):</strong> Thuật toán tự động xếp loại người bệnh từ <strong>Cấp độ 1</strong> (Tối thiểu) đến <strong>Cấp độ 4</strong> (Đặc biệt toàn diện).</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Màn hình triển khai: SC_017, SC_018, SC_019, SC_020, SC_021, SC_022, SC_023, SC_024, SC_025</span>
+      <span>Số hóa toàn diện dữ liệu bệnh nhân nội trú</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: PHÂN HỆ 3 - KẾ HOẠCH ĐIỀU TRỊ & HỘI CHẨN ĐA CHUYÊN KHOA IDT -->
+  <div class="slide bg-slate-950" id="slide-9">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">PHÂN HỆ 3: KẾ HOẠCH ĐIỀU TRỊ, LOC GATE & HỘI CHẨN IDT</h2>
+      <span class="text-xs text-slate-400">Slide 09 / 13</span>
+    </div>
+    <div class="grid grid-cols-3 gap-5 my-auto">
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <span class="badge bg-amber-500/20 text-amber-400">LOC GATE (SC_028)</span>
+        <h4 class="text-sm font-bold text-white">Cổng Kiểm soát Tiên quyết</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Cơ chế nghiệp vụ nghiêm ngặt ngăn chặn lập Kế hoạch điều trị nếu bệnh nhân chưa có Phiếu đánh giá lâm sàng và Cấp độ chăm sóc (LOC) hợp lệ còn thời hạn.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <span class="badge bg-indigo-500/20 text-indigo-400">DON REVIEW & E-SIGNATURE (SC_030, SC_031)</span>
+        <h4 class="text-sm font-bold text-white">Thẩm định & Ký số Điện tử</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Kế hoạch điều trị ở trạng thái Nháp (Draft) được Điều dưỡng trưởng thẩm định độ an toàn và ký số điện tử. Lưu vết khóa công khai, thời gian ký và User ID.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <span class="badge bg-emerald-500/20 text-emerald-400">HỘI CHẨN IDT (SC_036)</span>
+        <h4 class="text-sm font-bold text-white">Đồng thuận Đa chuyên khoa</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Hội chẩn liên chuyên khoa (IDT Acknowledgment) với chữ ký đồng thuận của Bác sĩ điều trị, Điều dưỡng viên phụ trách và Chuyên gia dinh dưỡng trước khi ban hành.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Màn hình triển khai: SC_026, SC_027, SC_028, SC_029, SC_030, SC_031, SC_036</span>
+      <span>Chuẩn hóa phác đồ điều trị đa chuyên khoa</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: PHÂN HỆ 4 - Y LỆNH THEO CA, SINH TỒN & VIỆN PHÍ BHYT -->
+  <div class="slide bg-slate-950" id="slide-10">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">PHÂN HỆ 4: Y LỆNH THEO CA, SINH TỒN & QUYẾT TOÁN VIỆN PHÍ BHYT</h2>
+      <span class="text-xs text-slate-400">Slide 10 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-cyan-400">🩺 Y LỆNH THEO CA & DẤU HIỆU SINH TỒN (SC_032, SC_033)</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Danh mục y lệnh theo ca trực (Daily Tasks):</strong> Tự động đồng bộ các can thiệp từ Kế hoạch điều trị thành đầu việc cho Ca Sáng, Ca Chiều, Ca Đêm.</li>
+          <li>• <strong>Biểu đồ sinh tồn tại giường (Bedside Vitals):</strong> Ghi nhận 5 chỉ số sống: Mạch, Huyết áp, SpO2, Thân nhiệt, Nhịp thở.</li>
+          <li>• <strong>Cảnh báo bất thường tự động:</strong> Kích hoạt cảnh báo đỏ thị giác khi chỉ số vượt ngưỡng an toàn y khoa.</li>
+          <li>• <strong>Tái đánh giá định kỳ (Reassessment - SC_034):</strong> Kích hoạt sau mỗi 30 hoặc 90 ngày để điều chỉnh cấp độ chăm sóc.</li>
+        </ul>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-emerald-400">💰 QUẢN LÝ VIỆN PHÍ & QUYẾT TOÁN BHYT (SC_008, SC_035)</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Định mức viện phí theo LOC:</strong> Biểu giá tiền giường và tiền công chăm sóc hàng ngày theo từng cấp độ LOC (chuẩn VNĐ).</li>
+          <li>• <strong>Bảng kê chi phí nội trú minh bạch:</strong> Tự động tính toán số ngày nằm viện, tiền thuốc eMAR, xét nghiệm và vật tư y tế.</li>
+          <li>• <strong>Tách bạch 3 cấu phần thanh toán:</strong>
+            <div class="mt-1 p-2 rounded bg-slate-800/80 text-[11px] font-mono space-y-1">
+              <div>1. Quỹ BHYT chi trả (80% hoặc 100%)</div>
+              <div>2. Bảo hiểm bổ sung / thương mại</div>
+              <div>3. Đồng chi trả của người bệnh (tiền túi)</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Màn hình triển khai: SC_008, SC_032, SC_033, SC_034, SC_035</span>
+      <span>Đồng bộ dữ liệu thời gian thực giữa Điều dưỡng và Kế toán viện phí</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: ĐIỂM SÁNG KỸ THUẬT: KHÓA BỆNH ÁN & TRỢ LÝ AI COPILOT -->
+  <div class="slide bg-slate-950" id="slide-11">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">ĐIỂM SÁNG KỸ THUẬT: KHÓA BỆNH ÁN (CHART LOCK) & AI COPILOT</h2>
+      <span class="text-xs text-slate-400">Slide 11 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-rose-400">🚨 SỰ CỐ Y KHOA & CƠ CHẾ CHART LOCK (SC_037, SC_038, SC_041)</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Phân cấp 4 mức độ sự cố:</strong> Theo quy định của Bộ Y tế (từ sự cố tiềm ẩn đến sự cố nguy kịch).</li>
+          <li>• <strong>Tự động khóa bệnh án (Hard-Lock):</strong> Khi xảy ra sự cố cấp độ 3-4, hồ sơ bệnh nhân bị khóa cứng tức thì; chuyển sang chế độ Chỉ đọc (Read-only) nhằm bảo toàn chứng cứ pháp lý.</li>
+          <li>• <strong>Báo cáo cơ quan quản lý (Sở Y tế):</strong> Tự động xuất biểu mẫu báo cáo ngoài theo hạn định SLA 24h.</li>
+          <li>• <strong>Mở khóa bệnh án có kiểm toán (Chart Unlock - SC_042):</strong> Chỉ Giám đốc bệnh viện có quyền mở khóa sau điều tra, ghi nhận nhật ký Audit Trail vĩnh viễn.</li>
+        </ul>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-purple-400">🤖 TRỢ LÝ TRÍ TUỆ NHÂN TẠO MEDCARE AI COPILOT</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Tóm tắt bệnh án thông minh:</strong> Nén toàn bộ diễn biến lâm sàng nhiều ngày thành bản tóm tắt ngắn gọn trong vài giây cho bác sĩ nhận ca trực.</li>
+          <li>• <strong>Cảnh báo tương tác thuốc nguy hiểm:</strong> Phân tích đơn thuốc và tiền sử dị ứng, phát hiện xung đột dược chất trước khi cấp phát.</li>
+          <li>• <strong>Gợi ý can thiệp điều dưỡng:</strong> Đề xuất can thiệp chăm sóc dựa trên thang điểm lâm sàng (Evidence-Based Nursing).</li>
+        </ul>
+        <div class="p-2.5 rounded bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300">
+          💡 Tích hợp trực tiếp tại tầng Backend NestJS với dịch vụ AI chuyên biệt.
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Màn hình triển khai: SC_037, SC_038, SC_039, SC_040, SC_041, SC_042</span>
+      <span>Đạt chuẩn an toàn người bệnh & Pháp lý y tế Việt Nam</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: KẾT QUẢ ĐẠT ĐƯỢC & BÀI HỌC KINH NGHIỆM -->
+  <div class="slide bg-slate-950" id="slide-12">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">KẾT QUẢ ĐẠT ĐƯỢC & BÀI HỌC THỰC TIỄN</h2>
+      <span class="text-xs text-slate-400">Slide 12 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h3 class="text-sm font-bold text-emerald-400">🏆 KẾT QUẢ ĐẠT ĐƯỢC SAU 3 THÁNG THỰC TẬP</h3>
+        <ul class="text-xs text-slate-300 space-y-2.5">
+          <li class="flex items-start space-x-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong>Chuyên môn:</strong> Hoàn thành xuất sắc toàn bộ 44 màn hình nghiệp vụ phức tạp của MedCare HIS/EMR; làm chủ React 18/19, NestJS, Prisma và SQL Server.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong>Quy trình:</strong> Vận hành thuần thục Git Flow, Conventional Commits, Cross-Code Review và quản lý Agile/Scrum trên Jira.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="text-emerald-400 font-bold">✓</span>
+            <span><strong>Đánh giá doanh nghiệp:</strong> Đạt điểm chuyên môn <strong>9.5 / 10</strong>, xếp loại <strong>Hoàn thành xuất sắc</strong> từ Giám đốc Công ty Việt Trí Đạo.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h3 class="text-sm font-bold text-amber-400">💡 BÀI HỌC KINH NGHIỆM KỸ SƯ PHẦN MỀM</h3>
+        <ul class="text-xs text-slate-300 space-y-2.5">
+          <li>1. <strong>Nghiệp vụ và CSDL đi trước viết mã:</strong> Thấu hiểu sâu sắc tài liệu BRD và thiết kế chuẩn hóa Schema CSDL quan hệ giúp tiết kiệm hơn 50% thời gian tái cấu trúc.</li>
+          <li>2. <strong>Sức mạnh của Type-Safety:</strong> TypeScript Strict Mode và Validation DTO chặt chẽ là chìa khóa triệt tiêu lỗi runtime trong hệ thống y tế.</li>
+          <li>3. <strong>Văn hóa phản biện tích cực:</strong> Đón nhận phản hồi trong Code Review với tinh thần cởi mở là con đường nhanh nhất để nâng cao trình độ.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Đánh giá từ Đơn vị thực tập: Hoàn thành xuất sắc (9.5/10)</span>
+      <span>Trưởng đơn vị: Nguyễn Tấn Huy</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: HƯỚNG PHÁT TRIỂN & LỜI CẢM ƠN (Q&A) -->
+  <div class="slide bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950" id="slide-13">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h2 class="text-xl font-bold text-white">HƯỚNG PHÁT TRIỂN & LỜI CẢM ƠN</h2>
+      <span class="text-xs text-slate-400">Slide 13 / 13</span>
+    </div>
+    <div class="grid grid-cols-2 gap-6 my-auto">
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-cyan-400">🚀 ĐỊNH HƯỚNG PHÁT TRIỂN TIẾP THEO</h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li>• <strong>Mobile App cho Điều dưỡng:</strong> Xây dựng ứng dụng di động (React Native) quét mã vạch thuốc và QR vòng tay bệnh nhân tại giường.</li>
+          <li>• <strong>Trục liên thông & Cổng thanh toán:</strong> Kết nối liên thông BHYT quốc gia và cổng thanh toán trực tuyến (VNPay, VietQR).</li>
+          <li>• <strong>Nâng cấp AI Copilot:</strong> Ứng dụng kỹ thuật RAG kết nối dữ liệu Dược thư Quốc gia để cảnh báo tương tác thuốc chuyên sâu.</li>
+          <li>• <strong>Cá nhân:</strong> Tiếp tục phát triển theo hướng Kỹ sư phần mềm Fullstack, đào sâu Kiến trúc phân tán và Điện toán đám mây.</li>
+        </ul>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between text-center">
+        <div class="my-auto space-y-3">
+          <p class="text-2xl font-extrabold text-white">TRÂN TRỌNG CẢM ƠN!</p>
+          <p class="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
+            Em xin chân thành cảm ơn Quý Thầy Cô trong Hội đồng và Ban Lãnh đạo Công ty TNHH Công nghệ số Việt Trí Đạo đã lắng nghe!
+          </p>
+          <div class="inline-block p-3 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-semibold text-sm">
+            HỘI ĐỒNG CÓ CÂU HỎI HOẶC GÓP Ý DÀNH CHO EM KHÔNG Ạ?
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500">Sinh viên thực hiện: Hồ Đức Đoàn — 22IT044 — 22SE2</p>
+      </div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-2">
+      <span>Trường Đại học CNTT & TT Việt - Hàn (VKU)</span>
+      <span>Đà Nẵng, Tháng 10 Năm 2026</span>
+    </div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <div class="fixed bottom-4 right-6 flex items-center space-x-3 bg-slate-900/90 border border-slate-800 px-4 py-2 rounded-full shadow-2xl backdrop-blur z-50">
+    <button onclick="prevSlide()" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-300 hover:text-white transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </button>
+    <span id="slideIndicator" class="text-xs font-mono font-semibold text-indigo-400">01 / 13</span>
+    <button onclick="nextSlide()" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-300 hover:text-white transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 13;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const activeSlide = document.getElementById(`slide-${n}`);
+      if (activeSlide) activeSlide.classList.add('active');
+      document.getElementById('slideIndicator').innerText = `${String(n).padStart(2, '0')} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) { currentSlide++; showSlide(currentSlide); }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+    });
+  </script>
+</body>
+</html>

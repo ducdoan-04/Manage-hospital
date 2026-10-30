@@ -27,6 +27,7 @@ import {
     Send,
     ShieldAlert,
     ShieldCheck,
+    ExternalLink,
     Sparkles,
     Trash2,
     UserCheck,
@@ -34,6 +35,7 @@ import {
     Wand2,
     X,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
     aiService,
     type BhytAuditResult,
@@ -41,6 +43,7 @@ import {
     type News2Result,
     type PatientExplanationResult,
     type PrescriptionSafetyResult,
+    type SavedEmrRecord,
 } from "../../services/ai";
 import { aiChatHistory, type ChatMessage, type ChatSession } from "../../services/aiChatHistory";
 import { FormattedMedicalMessage } from "../../components/ai/FormattedMedicalMessage";
@@ -89,6 +92,29 @@ export default function AiAssistantPage() {
     const [residents, setResidents] = useState<CarePlanResident[]>([]);
     const [selectedResidentId, setSelectedResidentId] = useState<string>("");
     const [isWordEditorOpen, setIsWordEditorOpen] = useState(false);
+    const [savedEmrList, setSavedEmrList] = useState<SavedEmrRecord[]>([]);
+    const [isLoadingSavedEmr, setIsLoadingSavedEmr] = useState(false);
+    const [lastSavedRecordId, setLastSavedRecordId] = useState<string | null>(null);
+
+    const loadSavedEmrs = async (residentId?: string) => {
+        setIsLoadingSavedEmr(true);
+        try {
+            const list = await aiService.getSavedEmr(residentId || undefined);
+            setSavedEmrList(list);
+        } catch (err) {
+            console.warn("Could not load saved EMRs:", err);
+        } finally {
+            setIsLoadingSavedEmr(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedResidentId) {
+            loadSavedEmrs(selectedResidentId);
+        } else {
+            loadSavedEmrs();
+        }
+    }, [selectedResidentId]);
 
     const recognitionRef = useRef<any>(null);
     const simulationTimerRef = useRef<any>(null);
@@ -429,8 +455,10 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
             });
             const residentObj = residents.find((r) => r.id === selectedResidentId);
             const patientName = residentObj ? `${residentObj.lastName} ${residentObj.firstName}` : "Bệnh nhân ngoại trú";
-            setSaveSuccessMessage(`Đã điền và lưu hồ sơ EMR thành công cho ${patientName}! (Mã: #${res.recordId || "EMR-SYNC"})`);
+            setLastSavedRecordId(res.recordId);
+            setSaveSuccessMessage(`Đã điền và lưu hồ sơ EMR thành công vào CSDL cho ${patientName}! (Mã phiếu: #${res.recordId || "EMR-SYNC"})`);
             setFillSuccess(true);
+            await loadSavedEmrs(selectedResidentId || undefined);
             setTimeout(() => setFillSuccess(false), 5000);
         } catch (err: any) {
             alert("Lỗi lưu hồ sơ EMR: " + (err.message || "Lỗi mạng"));
@@ -470,6 +498,7 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
         try {
             const allergies = allergiesInput.split(",").map((s) => s.trim()).filter(Boolean);
             const res = await aiService.checkPrescription({
+                residentId: selectedResidentId ? Number(selectedResidentId) || undefined : undefined,
                 medications: medList,
                 allergies,
             });
@@ -479,6 +508,15 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleApplyAlternativeDrug = (originalDrug: string, replacement: string) => {
+        setMedList(prev => {
+            const filtered = prev.filter(m => !m.name.toLowerCase().includes(originalDrug.toLowerCase()));
+            const repName = replacement.split("(")[0].trim();
+            const repDosage = replacement.includes("(") ? replacement.split("(")[1].replace(")", "").trim() : "Theo chỉ định";
+            return [...filtered, { name: repName, dosage: repDosage, frequency: "Theo chỉ định AI" }];
+        });
     };
 
     // ==========================================
@@ -498,7 +536,10 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
     const handleCalculateNews2 = async () => {
         setIsLoading(true);
         try {
-            const res = await aiService.calculateNews2(news2Inputs);
+            const res = await aiService.calculateNews2({
+                ...news2Inputs,
+                residentId: selectedResidentId ? Number(selectedResidentId) || undefined : undefined,
+            });
             setNews2Result(res);
         } catch (err: any) {
             alert("Lỗi tính điểm NEWS2: " + err.message);
@@ -523,6 +564,7 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
             const procs = bhytProcedures.split(",").map((s) => s.trim()).filter(Boolean);
             const secs = bhytSecondary.split(",").map((s) => s.trim()).filter(Boolean);
             const res = await aiService.auditBhyt({
+                residentId: selectedResidentId ? Number(selectedResidentId) || undefined : undefined,
                 primaryDiagnosisIcd10: bhytDiagnosis,
                 secondaryDiagnosesIcd10: secs,
                 medications: meds,
@@ -539,6 +581,7 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
     // ==========================================
     // TAB 5: PATIENT EXPLANATION
     // ==========================================
+    const [targetAudience, setTargetAudience] = useState<"PATIENT" | "FAMILY">("PATIENT");
     const [medicalNotesInput, setMedicalNotesInput] = useState(
         "Bệnh nhân được chẩn đoán Viêm loét dạ dày tá tràng mạn tính giai đoạn tiến triển, vi khuẩn HP dương tính. Bạch cầu tăng nhẹ, niêm mạc xung huyết rải rác hang vị. Cần điều trị phác đồ 4 thuốc có Bismuth trong 14 ngày."
     );
@@ -549,7 +592,7 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
         try {
             const res = await aiService.explainForPatient({
                 medicalNotes: medicalNotesInput,
-                targetAudience: "PATIENT",
+                targetAudience,
             });
             setPatientResult(res);
         } catch (err: any) {
@@ -896,7 +939,8 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
 
             {/* ----------------- TAB 1: EMR SPEECH TO TEXT ----------------- */}
             {activeTab === "emr" && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* LEFT COLUMN: SPEECH & CLINICAL DICTATION */}
                     <div className="lg:col-span-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
@@ -1187,9 +1231,27 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
 
                         {/* SUCCESS BANNERS */}
                         {saveSuccessMessage && (
-                            <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-xs text-emerald-900 flex items-start gap-2 animate-fadeIn">
-                                <CheckCircle2 className="text-emerald-600 shrink-0 mt-0.5" size={16} />
-                                <div className="font-semibold">{saveSuccessMessage}</div>
+                            <div className="p-3.5 bg-emerald-50 border-2 border-emerald-400 rounded-xl text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
+                                <div className="flex items-start gap-2">
+                                    <CheckCircle2 className="text-emerald-600 shrink-0 mt-0.5" size={18} />
+                                    <div>
+                                        <div className="font-bold text-emerald-950">{saveSuccessMessage}</div>
+                                        <div className="text-[11px] text-emerald-700 mt-0.5">
+                                            Hồ sơ Bệnh án EMR, chẩn đoán ICD-10 và đơn thuốc đã được lưu trực tiếp vào CSDL bệnh viện.
+                                        </div>
+                                    </div>
+                                </div>
+                                {selectedResidentId && (
+                                    <Link
+                                        to={`/residents/${selectedResidentId}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="shrink-0 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+                                    >
+                                        <span>Mở xem Hồ sơ Bệnh nhân</span>
+                                        <ExternalLink size={13} />
+                                    </Link>
+                                )}
                             </div>
                         )}
 
@@ -1214,16 +1276,36 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                             </div>
                         ) : (
                             <div className="space-y-4 text-sm animate-fadeIn">
-                                {/* Triệu chứng & Khám */}
-                                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                                        Lý do vào viện & Triệu chứng chính:
+                                {/* Lý do vào viện & Triệu chứng chính */}
+                                <div className="bg-gradient-to-r from-teal-50/70 to-slate-50 p-3.5 rounded-xl border border-teal-200/70 shadow-xs">
+                                    <div className="text-[11px] font-bold text-teal-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                        <HeartPulse size={14} className="text-teal-600" />
+                                        <span>Lý do vào viện & Triệu chứng chính:</span>
                                     </div>
-                                    <div className="font-semibold text-slate-900">{emrResult.chiefComplaint}</div>
-                                    <div className="text-xs text-slate-600 mt-2 pt-2 border-t border-slate-200">
-                                        <span className="font-medium">Ghi chú lâm sàng:</span> {emrResult.clinicalNote}
-                                    </div>
+                                    <div className="font-bold text-slate-900 text-sm leading-snug">{emrResult.chiefComplaint}</div>
                                 </div>
+
+                                {/* Ghi chú & Phân tích lâm sàng EMR */}
+                                {emrResult.clinicalNote && (
+                                    <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                                        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between pb-1.5 border-b border-slate-100">
+                                            <div className="flex items-center gap-1.5 text-slate-700">
+                                                <FileText size={14} className="text-teal-600" />
+                                                <span>Ghi chú & Phân tích Lâm sàng Chi tiết</span>
+                                            </div>
+                                            <span className="text-[10px] font-medium text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
+                                                Google MedGemma EMR
+                                            </span>
+                                        </div>
+                                        <div className="pt-1">
+                                            <FormattedMedicalMessage
+                                                content={emrResult.clinicalNote}
+                                                hideHeader={true}
+                                                hideFooter={true}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Mã ICD-10 */}
                                 <div>
@@ -1295,15 +1377,220 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         )}
                     </div>
                 </div>
+
+                {/* ----------------- SAVED EMR RECORDS TABLE / HISTORY CARD ----------------- */}
+                <div className="mt-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+                        <div className="flex items-center gap-2.5">
+                            <FileText className="text-teal-600" size={22} />
+                            <div>
+                                <h3 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                                    <span>Lịch sử Bệnh án EMR Đã Lưu Trong CSDL</span>
+                                    {selectedResidentId && (
+                                        <span className="text-teal-700 bg-teal-50 border border-teal-200 text-xs px-2 py-0.5 rounded-full font-bold">
+                                            {residents.find((r) => r.id === selectedResidentId)?.lastName} {residents.find((r) => r.id === selectedResidentId)?.firstName}
+                                        </span>
+                                    )}
+                                </h3>
+                                <p className="text-[11px] text-gray-500">
+                                    Dữ liệu bệnh án số hóa thực tế đã được lưu trữ an toàn trong CSDL hệ thống HIS/EMR của bệnh viện
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => loadSavedEmrs(selectedResidentId || undefined)}
+                                disabled={isLoadingSavedEmr}
+                                className="px-2.5 py-1.5 text-xs text-gray-700 hover:text-teal-700 bg-gray-50 hover:bg-teal-50 border rounded-lg flex items-center gap-1.5 transition-all"
+                            >
+                                <RefreshCw size={12} className={isLoadingSavedEmr ? "animate-spin" : ""} />
+                                <span>Làm mới danh sách</span>
+                            </button>
+                            {selectedResidentId && (
+                                <Link
+                                    to={`/residents/${selectedResidentId}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-3 py-1.5 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-lg flex items-center gap-1.5 transition-all shadow-sm"
+                                >
+                                    <span>Mở Hồ sơ Bệnh nhân</span>
+                                    <ExternalLink size={12} />
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+
+                    {isLoadingSavedEmr ? (
+                        <div className="py-8 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
+                            <RefreshCw className="animate-spin text-teal-600" size={16} />
+                            <span>Đang tải danh sách bệnh án đã lưu...</span>
+                        </div>
+                    ) : savedEmrList.length === 0 ? (
+                        <div className="py-8 text-center bg-gray-50/70 rounded-xl border border-dashed border-gray-200 space-y-1.5">
+                            <FileText size={32} className="mx-auto text-gray-300" />
+                            <p className="text-xs font-semibold text-gray-600">Chưa có bản ghi Bệnh án EMR nào được lưu cho bệnh nhân này.</p>
+                            <p className="text-[11px] text-gray-400">
+                                Hãy bấm nút xanh <strong className="text-emerald-700">"Lưu vào Bệnh án EMR"</strong> ở trên sau khi trích xuất để lưu trực tiếp vào CSDL.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {savedEmrList.map((item, idx) => {
+                                const isJustSaved = item.id === lastSavedRecordId || idx === 0;
+                                return (
+                                    <div
+                                        key={item.id}
+                                        className={`p-4 rounded-xl border transition-all ${
+                                            isJustSaved
+                                                ? "bg-emerald-50/70 border-emerald-300 ring-2 ring-emerald-400/20"
+                                                : "bg-white border-gray-200 hover:border-gray-300"
+                                        }`}
+                                    >
+                                        <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${isJustSaved ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-700"}`}>
+                                                    {isJustSaved ? "✓ Vừa Lưu Thành Công" : `#${item.id.slice(0, 8)}`}
+                                                </span>
+                                                <span className="font-bold text-xs text-gray-900">{item.residentName}</span>
+                                                <span className="text-[11px] text-gray-500">
+                                                    · Lưu lúc: {new Date(item.createdAt).toLocaleString("vi-VN")}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] text-emerald-700 bg-emerald-100 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                    <CheckCircle2 size={11} /> CSDL HIS/EMR
+                                                </span>
+                                                {item.residentId && (
+                                                    <Link
+                                                        to={`/residents/${item.residentId}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="text-[11px] text-teal-700 hover:text-teal-900 font-bold flex items-center gap-0.5 underline ml-2"
+                                                    >
+                                                        Mở bệnh nhân <ExternalLink size={11} />
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {item.chiefComplaint && (
+                                            <div className="text-xs text-gray-800 mb-2">
+                                                <strong className="text-gray-600">Lý do khám: </strong>
+                                                <span>{item.chiefComplaint}</span>
+                                            </div>
+                                        )}
+
+                                        {item.suggestedIcd10 && item.suggestedIcd10.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5 mb-2">
+                                                <span className="text-[11px] font-semibold text-gray-500 self-center">ICD-10:</span>
+                                                {item.suggestedIcd10.map((icd, i) => (
+                                                    <span key={i} className="text-[11px] px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-800 rounded-md font-semibold">
+                                                        {icd.code} - {icd.nameVi}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {item.clinicalNote && (
+                                            <p className="text-[11px] text-gray-600 leading-relaxed bg-gray-50/80 p-2.5 rounded-lg border border-gray-100 line-clamp-3 mb-2 whitespace-pre-line">
+                                                {item.clinicalNote}
+                                            </p>
+                                        )}
+
+                                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] pt-1 border-t text-gray-500">
+                                            <div>
+                                                {item.suggestedMedications && item.suggestedMedications.length > 0 && (
+                                                    <span className="mr-3 text-emerald-700 font-medium">
+                                                        💊 {item.suggestedMedications.length} thuốc đã kê
+                                                    </span>
+                                                )}
+                                                {item.suggestedOrders && item.suggestedOrders.length > 0 && (
+                                                    <span className="text-blue-700 font-medium">
+                                                        🧪 {item.suggestedOrders.length} chỉ định CLS
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setSpeechText(item.chiefComplaint ? `${item.chiefComplaint}. ${item.clinicalNote}` : item.clinicalNote);
+                                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                                }}
+                                                className="text-teal-700 hover:text-teal-900 font-semibold"
+                                            >
+                                                Tải lại nội dung này lên khung soạn thảo ↑
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+                </>
             )}
 
             {/* ----------------- TAB 2: VỆ SĨ ĐƠN THUỐC ----------------- */}
             {activeTab === "rx" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                        <div className="font-bold text-gray-800 flex items-center gap-2">
-                            <Pill className="text-amber-500" size={20} />
-                            <h3>Đơn thuốc đang kê & Tiền sử dị ứng</h3>
+                        <div className="font-bold text-gray-800 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Pill className="text-amber-500" size={20} />
+                                <h3>Đơn thuốc đang kê & Tiền sử dị ứng</h3>
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                                AI MedGemma
+                            </span>
+                        </div>
+
+                        {/* Presets */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                            <span className="text-[11px] text-gray-500 font-semibold self-center">Ca mẫu:</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setAllergiesInput("Penicillin, Nhóm Beta-lactam");
+                                    setMedList([
+                                        { name: "Augmentin (Amoxicillin/Clavulanate)", dosage: "1000mg", frequency: "2 lần/ngày" },
+                                        { name: "Clopidogrel (Plavix)", dosage: "75mg", frequency: "1 viên/ngày" },
+                                        { name: "Omeprazole", dosage: "20mg", frequency: "1 viên/ngày trước ăn" },
+                                    ]);
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg border border-amber-200 font-medium transition-all"
+                            >
+                                Dị ứng Penicillin & Tương tác CYP2C19
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setAllergiesInput("Không ghi nhận");
+                                    setMedList([
+                                        { name: "Warfarin (Sintrom)", dosage: "4mg", frequency: "1 viên/ngày lúc 18h" },
+                                        { name: "Meloxicam (Mobic)", dosage: "15mg", frequency: "1 viên/ngày sau ăn" },
+                                        { name: "Ciprofloxacin", dosage: "500mg", frequency: "2 lần/ngày" },
+                                        { name: "Methylprednisolon", dosage: "16mg", frequency: "1 viên/ngày buổi sáng" },
+                                    ]);
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg border border-rose-200 font-medium transition-all"
+                            >
+                                Xuất huyết (Warfarin+NSAID)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setAllergiesInput("Không có dị ứng");
+                                    setMedList([
+                                        { name: "Amlodipine", dosage: "5mg", frequency: "1 viên/ngày buổi sáng" },
+                                        { name: "Metformin", dosage: "850mg", frequency: "2 lần/ngày sau ăn" },
+                                        { name: "Paracetamol", dosage: "500mg", frequency: "Khi sốt > 38.5°C" },
+                                    ]);
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 font-medium transition-all"
+                            >
+                                Đơn an toàn chuẩn
+                            </button>
                         </div>
 
                         <div>
@@ -1321,11 +1608,11 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
 
                         <div>
                             <label className="block text-xs font-bold text-gray-600 uppercase mb-2">
-                                Danh sách thuốc trong đơn:
+                                Danh sách thuốc trong đơn ({medList.length} thuốc):
                             </label>
-                            <div className="space-y-2 mb-3">
+                            <div className="space-y-2 mb-3 max-h-56 overflow-y-auto">
                                 {medList.map((m, idx) => (
-                                    <div key={idx} className="p-3 bg-gray-50 rounded-xl border flex items-center justify-between">
+                                    <div key={idx} className="p-3 bg-gray-50 rounded-xl border flex items-center justify-between hover:bg-gray-100/80 transition-all">
                                         <div>
                                             <div className="font-bold text-sm text-gray-800">{m.name}</div>
                                             <div className="text-xs text-gray-500">{m.dosage} • {m.frequency}</div>
@@ -1333,6 +1620,7 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                                         <button
                                             onClick={() => handleRemoveMed(idx)}
                                             className="text-gray-400 hover:text-rose-600 p-1"
+                                            title="Xóa thuốc"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -1345,13 +1633,13 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                                     type="text"
                                     value={newMedName}
                                     onChange={(e) => setNewMedName(e.target.value)}
-                                    placeholder="Thêm thuốc mới (VD: Warfarin, Ciprofloxacin...)"
+                                    placeholder="Thêm thuốc mới (VD: Clarithromycin, Atorvastatin...)"
                                     className="flex-1 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500"
                                     onKeyDown={(e) => e.key === "Enter" && handleAddMed()}
                                 />
                                 <button
                                     onClick={handleAddMed}
-                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-sm flex items-center gap-1"
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-sm flex items-center gap-1 transition-all"
                                 >
                                     <Plus size={16} /> Thêm
                                 </button>
@@ -1361,10 +1649,10 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         <button
                             onClick={handleCheckRx}
                             disabled={isLoading}
-                            className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-600/20 transition-all disabled:opacity-50"
+                            className="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-600/20 transition-all disabled:opacity-50"
                         >
                             {isLoading ? <RefreshCw className="animate-spin" size={18} /> : <ShieldAlert size={18} />}
-                            {isLoading ? "AI đang quét tương tác..." : "Quét Tương tác & Nguy cơ Dị ứng"}
+                            {isLoading ? "AI MedGemma đang quét tương tác..." : "Quét Tương Tác & Nguy Cơ Dị Ứng Với AI"}
                         </button>
                     </div>
 
@@ -1372,16 +1660,16 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         <div className="flex items-center justify-between border-b pb-3">
                             <h3 className="font-bold text-gray-800 flex items-center gap-2">
                                 <ShieldCheck className="text-teal-600" size={20} />
-                                Kết quả Kiểm định An toàn Đơn thuốc
+                                Kết quả Kiểm định An toàn Đơn thuốc (AI MedGemma)
                             </h3>
                             {rxResult && (
                                 <span
                                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                                         rxResult.safetyStatus === "DANGEROUS"
-                                            ? "bg-rose-100 text-rose-800"
+                                            ? "bg-rose-100 text-rose-800 border border-rose-300"
                                             : rxResult.safetyStatus === "WARNING"
-                                            ? "bg-amber-100 text-amber-800"
-                                            : "bg-emerald-100 text-emerald-800"
+                                            ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                            : "bg-emerald-100 text-emerald-800 border border-emerald-300"
                                     }`}
                                 >
                                     {rxResult.safetyStatus === "DANGEROUS"
@@ -1396,50 +1684,99 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         {!rxResult ? (
                             <div className="py-20 text-center text-gray-400 space-y-3">
                                 <ShieldAlert size={48} className="mx-auto text-gray-300" />
-                                <p className="text-sm">Bấm nút "Quét Tương tác" để AI bảo vệ an toàn y lệnh thuốc</p>
-                            </div>
-                        ) : rxResult.alerts.length === 0 ? (
-                            <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
-                                <CheckCircle2 size={40} className="mx-auto text-emerald-600" />
-                                <h4 className="font-bold text-emerald-900">Đơn thuốc Hoàn toàn An toàn</h4>
-                                <p className="text-xs text-emerald-700">
-                                    Không phát hiện tương tác đối kháng hay dị ứng chéo theo cơ sở dữ liệu Dược thư Quốc gia.
-                                </p>
+                                <p className="text-sm">Bấm nút "Quét Tương Tác" để AI MedGemma bảo vệ an toàn y lệnh thuốc</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                {rxResult.alerts.map((alt, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`p-4 rounded-xl border space-y-2 ${
-                                            alt.severity === "CRITICAL"
-                                                ? "bg-rose-50/80 border-rose-200"
-                                                : "bg-amber-50/80 border-amber-200"
-                                        }`}
-                                    >
+                                {/* AI MedGemma Analysis Summary Card */}
+                                {rxResult.aiAnalysis && (
+                                    <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <AlertTriangle
-                                                size={18}
-                                                className={alt.severity === "CRITICAL" ? "text-rose-600" : "text-amber-600"}
-                                            />
-                                            <h4
-                                                className={`font-bold text-sm ${
-                                                    alt.severity === "CRITICAL" ? "text-rose-950" : "text-amber-950"
-                                                }`}
-                                            >
-                                                {alt.title}
-                                            </h4>
+                                            <Sparkles size={18} className="text-amber-600 animate-pulse" />
+                                            <span className="font-bold text-amber-950 text-sm">Đánh giá Dược lâm sàng AI MedGemma</span>
+                                            <span className="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full">
+                                                Google MedGemma 1.5 4B
+                                            </span>
                                         </div>
+                                        <p className="text-xs text-amber-950 leading-relaxed whitespace-pre-line">
+                                            {rxResult.aiAnalysis}
+                                        </p>
+                                    </div>
+                                )}
 
-                                        <p className="text-xs text-gray-700 leading-relaxed">{alt.message}</p>
-
-                                        <div className="p-3 bg-white/80 rounded-lg text-xs space-y-1 border">
-                                            <div className="font-bold text-gray-900">Khuyến nghị xử trí y khoa:</div>
-                                            <div className="text-gray-700">{alt.recommendation}</div>
-                                            <div className="text-gray-400 text-[11px] pt-1">Nguồn: {alt.source}</div>
+                                {/* Suggested Alternatives from AI */}
+                                {rxResult.suggestedAlternatives && rxResult.suggestedAlternatives.length > 0 && (
+                                    <div className="p-4 bg-emerald-50/90 border border-emerald-200 rounded-2xl space-y-2.5">
+                                        <div className="flex items-center gap-2 font-bold text-emerald-950 text-sm">
+                                            <CheckCircle2 size={18} className="text-emerald-600" />
+                                            <span>Đề xuất Thuốc Thay Thế An Toàn từ AI:</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {rxResult.suggestedAlternatives.map((alt, i) => (
+                                                <div key={i} className="p-3 bg-white rounded-xl border border-emerald-200 text-xs flex items-center justify-between gap-3 shadow-sm">
+                                                    <div className="space-y-0.5">
+                                                        <div className="flex items-center gap-2 font-bold">
+                                                            <span className="text-rose-600 line-through">{alt.originalDrug}</span>
+                                                            <span className="text-emerald-700">➔ {alt.replacement}</span>
+                                                        </div>
+                                                        <p className="text-gray-500 text-[11px]">{alt.reason}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleApplyAlternativeDrug(alt.originalDrug, alt.replacement)}
+                                                        className="shrink-0 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95"
+                                                    >
+                                                        + Đổi thuốc
+                                                    </button>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
+                                )}
+
+                                {rxResult.alerts.length === 0 ? (
+                                    <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
+                                        <CheckCircle2 size={40} className="mx-auto text-emerald-600" />
+                                        <h4 className="font-bold text-emerald-900">Đơn thuốc Hoàn toàn An toàn</h4>
+                                        <p className="text-xs text-emerald-700">
+                                            Không phát hiện tương tác đối kháng hay dị ứng chéo theo cơ sở dữ liệu Dược thư Quốc gia Việt Nam.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {rxResult.alerts.map((alt, idx) => (
+                                            <div
+                                                key={idx}
+                                                className={`p-4 rounded-xl border space-y-2 ${
+                                                    alt.severity === "CRITICAL"
+                                                        ? "bg-rose-50/80 border-rose-200"
+                                                        : "bg-amber-50/80 border-amber-200"
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <AlertTriangle
+                                                        size={18}
+                                                        className={alt.severity === "CRITICAL" ? "text-rose-600" : "text-amber-600"}
+                                                    />
+                                                    <h4
+                                                        className={`font-bold text-sm ${
+                                                            alt.severity === "CRITICAL" ? "text-rose-950" : "text-amber-950"
+                                                        }`}
+                                                    >
+                                                        {alt.title}
+                                                    </h4>
+                                                </div>
+
+                                                <p className="text-xs text-gray-700 leading-relaxed">{alt.message}</p>
+
+                                                <div className="p-3 bg-white/80 rounded-lg text-xs space-y-1 border">
+                                                    <div className="font-bold text-gray-900">Khuyến nghị xử trí y khoa:</div>
+                                                    <div className="text-gray-700">{alt.recommendation}</div>
+                                                    <div className="text-gray-400 text-[11px] pt-1">Nguồn: {alt.source}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -1450,9 +1787,70 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
             {activeTab === "news2" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                        <div className="font-bold text-gray-800 flex items-center gap-2">
-                            <HeartPulse className="text-rose-500" size={20} />
-                            <h3>Nhập Chỉ Số Sinh Tồn (Vital Signs)</h3>
+                        <div className="font-bold text-gray-800 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <HeartPulse className="text-rose-500" size={20} />
+                                <h3>Nhập Chỉ Số Sinh Tồn (Vital Signs)</h3>
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">
+                                MedGemma ICU
+                            </span>
+                        </div>
+
+                        {/* Presets */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                            <span className="text-[11px] text-gray-500 font-semibold self-center">Ca lâm sàng:</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setNews2Inputs({
+                                        respiratoryRate: 26,
+                                        spO2: 91,
+                                        onOxygen: true,
+                                        systolicBP: 95,
+                                        pulseRate: 118,
+                                        consciousness: "VOICE",
+                                        temperatureCelsius: 39.2,
+                                    });
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg border border-rose-200 font-medium transition-all"
+                            >
+                                Ca Sepsis Nguy Kịch (NEWS2 = 14)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setNews2Inputs({
+                                        respiratoryRate: 23,
+                                        spO2: 93,
+                                        onOxygen: true,
+                                        systolicBP: 108,
+                                        pulseRate: 98,
+                                        consciousness: "ALERT",
+                                        temperatureCelsius: 38.4,
+                                    });
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg border border-amber-200 font-medium transition-all"
+                            >
+                                Ca Cảnh Báo Sớm (NEWS2 = 6)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setNews2Inputs({
+                                        respiratoryRate: 16,
+                                        spO2: 98,
+                                        onOxygen: false,
+                                        systolicBP: 120,
+                                        pulseRate: 75,
+                                        consciousness: "ALERT",
+                                        temperatureCelsius: 36.8,
+                                    });
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 font-medium transition-all"
+                            >
+                                Ca Ổn Định (NEWS2 = 0)
+                            </button>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 text-xs">
@@ -1532,10 +1930,10 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         <button
                             onClick={handleCalculateNews2}
                             disabled={isLoading}
-                            className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 transition-all disabled:opacity-50"
+                            className="w-full py-3 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 transition-all disabled:opacity-50"
                         >
                             {isLoading ? <RefreshCw className="animate-spin" size={18} /> : <HeartPulse size={18} />}
-                            {isLoading ? "Đang tính điểm..." : "Tính Điểm NEWS2 & Đánh Giá Nguy Cơ"}
+                            {isLoading ? "AI MedGemma đang tính điểm & hội chẩn..." : "Tính Điểm NEWS2 & Hội Chẩn Cấp Cứu Với AI"}
                         </button>
                     </div>
 
@@ -1543,19 +1941,19 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         <div className="flex items-center justify-between border-b pb-3">
                             <h3 className="font-bold text-gray-800 flex items-center gap-2">
                                 <Activity className="text-rose-600" size={20} />
-                                Bảng Đánh Giá Lâm Sàng Sớm (NEWS2 Score)
+                                Bảng Đánh Giá Lâm Sàng Sớm (NEWS2 Score & MedGemma ICU)
                             </h3>
                             {news2Result && (
                                 <span
-                                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                                         news2Result.riskLevel === "HIGH"
-                                            ? "bg-rose-100 text-rose-800"
+                                            ? "bg-rose-100 text-rose-800 border border-rose-300"
                                             : news2Result.riskLevel === "MEDIUM"
-                                            ? "bg-amber-100 text-amber-800"
-                                            : "bg-emerald-100 text-emerald-800"
+                                            ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                            : "bg-emerald-100 text-emerald-800 border border-emerald-300"
                                     }`}
                                 >
-                                    Nguy cơ: {news2Result.riskLevel}
+                                    Nguy cơ: {news2Result.riskLevel === "HIGH" ? "🔴 NGUY CƠ CAO" : news2Result.riskLevel === "MEDIUM" ? "🟡 CẢNH BÁO TRUNG BÌNH" : "🟢 ỔN ĐỊNH"}
                                 </span>
                             )}
                         </div>
@@ -1563,12 +1961,12 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         {!news2Result ? (
                             <div className="py-20 text-center text-gray-400 space-y-3">
                                 <HeartPulse size={48} className="mx-auto text-gray-300" />
-                                <p className="text-sm">Bấm nút tính điểm để nhận phân tích cảnh báo nguy kịch</p>
+                                <p className="text-sm">Bấm nút "Tính Điểm NEWS2" để AI MedGemma hội chẩn và đề xuất gói can thiệp giờ vàng</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {/* Score Badge */}
-                                <div className="flex items-center gap-4 p-4 bg-slate-900 text-white rounded-2xl">
+                                <div className="flex items-center gap-4 p-4 bg-slate-900 text-white rounded-2xl shadow-md">
                                     <div className="text-center px-4 border-r border-slate-700">
                                         <div className="text-3xl font-black text-rose-400">{news2Result.totalScore}</div>
                                         <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
@@ -1583,6 +1981,22 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                                     </div>
                                 </div>
 
+                                {/* AI MedGemma ICU Clinical Impression Box */}
+                                {news2Result.aiClinicalImpression && (
+                                    <div className="p-4 bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200 rounded-2xl space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Sparkles size={18} className="text-rose-600 animate-pulse" />
+                                            <span className="font-bold text-rose-950 text-sm">Hội chẩn Cấp cứu AI MedGemma ICU</span>
+                                            <span className="text-[10px] bg-rose-200 text-rose-900 font-bold px-2 py-0.5 rounded-full">
+                                                MedGemma Acute Care
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-rose-900 leading-relaxed whitespace-pre-line">
+                                            {news2Result.aiClinicalImpression}
+                                        </p>
+                                    </div>
+                                )}
+
                                 {/* Sepsis Alert if any */}
                                 {news2Result.sepsisRiskFlag && (
                                     <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-xl flex items-start gap-3">
@@ -1592,6 +2006,24 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                                                 🚨 BÁO ĐỘNG ĐỎ: NGUY CƠ NHIỄM TRÙNG HUYẾT (SEPSIS)
                                             </div>
                                             <p className="text-rose-800">{news2Result.sepsisWarning}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Hour-1 Emergency Bundle Protocol from AI */}
+                                {news2Result.emergencyProtocol && news2Result.emergencyProtocol.length > 0 && (
+                                    <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-3">
+                                        <div className="flex items-center gap-2 font-bold text-rose-400 text-sm">
+                                            <AlertTriangle size={18} />
+                                            <span>Y Lệnh Can Thiệp Cấp Cứu Giờ Vàng (Hour-1 Bundle):</span>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            {news2Result.emergencyProtocol.map((step, i) => (
+                                                <div key={i} className="text-xs text-slate-200 flex items-start gap-2 bg-slate-800/80 p-2.5 rounded-xl border border-slate-700">
+                                                    <span className="text-emerald-400 font-bold shrink-0">✓</span>
+                                                    <span>{step}</span>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -1618,9 +2050,43 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
             {activeTab === "bhyt" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                        <div className="font-bold text-gray-800 flex items-center gap-2">
-                            <ShieldAlert className="text-blue-600" size={20} />
-                            <h3>Hồ sơ Đề Nghị Thanh Toán BHYT</h3>
+                        <div className="font-bold text-gray-800 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <ShieldAlert className="text-blue-600" size={20} />
+                                <h3>Hồ sơ Đề Nghị Thanh Toán BHYT</h3>
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                                MedGemma Auditor
+                            </span>
+                        </div>
+
+                        {/* Presets */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                            <span className="text-[11px] text-gray-500 font-semibold self-center">Mẫu giám định:</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setBhytDiagnosis("I10");
+                                    setBhytSecondary("K21.0");
+                                    setBhytMeds("Amlodipine 5mg, Atorvastatin 20mg, Nexium 40mg, Albumin 20%");
+                                    setBhytProcedures("Điện tim ECG, Chụp MRI cột sống thắt lưng, Xét nghiệm Hs-Troponin T");
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg border border-amber-200 font-medium transition-all"
+                            >
+                                Hồ sơ nguy cơ xuất toán (Statin, MRI, Troponin)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setBhytDiagnosis("J18.9");
+                                    setBhytSecondary("R50.9, J06.9");
+                                    setBhytMeds("Cefuroxime 500mg, Paracetamol 500mg, Acetylcystein 200mg");
+                                    setBhytProcedures("Chụp X-quang tim phổi thẳng, Tổng phân tích tế bào máu ngoại vi");
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 font-medium transition-all"
+                            >
+                                Hồ sơ Hợp lệ 100% (Viêm phổi)
+                            </button>
                         </div>
 
                         <div>
@@ -1638,14 +2104,14 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
 
                         <div>
                             <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
-                                Mã Chẩn đoán phụ kèm theo (nếu có):
+                                Mã Chẩn đoán phụ kèm theo (phân cách dấu phẩy):
                             </label>
                             <input
                                 type="text"
                                 value={bhytSecondary}
                                 onChange={(e) => setBhytSecondary(e.target.value)}
-                                className="w-full p-2.5 border rounded-xl text-sm"
-                                placeholder="VD: E78.2, K21..."
+                                className="w-full p-2.5 border rounded-xl text-sm font-semibold text-gray-800"
+                                placeholder="VD: E78.2, K21.0, M51.1..."
                             />
                         </div>
 
@@ -1676,10 +2142,10 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         <button
                             onClick={handleAuditBhyt}
                             disabled={isLoading}
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all disabled:opacity-50"
+                            className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all disabled:opacity-50"
                         >
                             {isLoading ? <RefreshCw className="animate-spin" size={18} /> : <ShieldCheck size={18} />}
-                            {isLoading ? "Đang rà soát BHYT..." : "Rà Soát Chống Xuất Toán BHYT"}
+                            {isLoading ? "AI MedGemma đang rà soát Thông tư BHYT..." : "Rà Soát Chống Xuất Toán Viện Phí Với AI"}
                         </button>
                     </div>
 
@@ -1687,10 +2153,14 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         <div className="flex items-center justify-between border-b pb-3">
                             <h3 className="font-bold text-gray-800 flex items-center gap-2">
                                 <FileText className="text-blue-600" size={20} />
-                                Kết quả Giám định Hồ sơ BHYT
+                                Kết quả Giám định Hồ sơ BHYT (AI MedGemma)
                             </h3>
                             {bhytResult && (
-                                <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-800">
+                                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                                    bhytResult.isAuditPassed
+                                        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                        : "bg-amber-100 text-amber-800 border-amber-300"
+                                }`}>
                                     {bhytResult.auditStatus}
                                 </span>
                             )}
@@ -1699,49 +2169,107 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                         {!bhytResult ? (
                             <div className="py-20 text-center text-gray-400 space-y-3">
                                 <ShieldAlert size={48} className="mx-auto text-gray-300" />
-                                <p className="text-sm">Bấm "Rà soát chống xuất toán" để đối chiếu quy định BHXH</p>
-                            </div>
-                        ) : bhytResult.flaggedItems.length === 0 ? (
-                            <div className="p-8 text-center bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
-                                <CheckCircle2 size={44} className="mx-auto text-emerald-600" />
-                                <h4 className="font-bold text-emerald-950 text-base">Hồ sơ 100% Hợp Lệ</h4>
-                                <p className="text-xs text-emerald-800">
-                                    Mọi loại thuốc và kỹ thuật cận lâm sàng đều tương thích chuẩn với mã bệnh chẩn đoán.
-                                </p>
+                                <p className="text-sm">Bấm "Rà soát chống xuất toán" để đối chiếu quy định TT 20/2022/TT-BYT & BHXH</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <div className="p-4 bg-amber-500/10 border border-amber-300 rounded-xl flex items-center justify-between">
-                                    <div>
-                                        <div className="font-bold text-amber-900 text-sm">
-                                            Phát hiện {bhytResult.totalFlagged} mục có nguy cơ bị cơ quan BHXH xuất toán!
+                                {/* AI MedGemma Audit Summary Card */}
+                                {bhytResult.aiAuditSummary && (
+                                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Sparkles size={18} className="text-blue-600 animate-pulse" />
+                                            <span className="font-bold text-blue-950 text-sm">Báo Cáo Giám Định Viện Phí AI MedGemma</span>
+                                            <span className="text-[10px] bg-blue-200 text-blue-900 font-bold px-2 py-0.5 rounded-full">
+                                                TT 20/2022/TT-BYT
+                                            </span>
                                         </div>
-                                        <div className="text-xs text-amber-700">Cần chỉnh sửa bổ sung trước khi đẩy cổng BHYT.</div>
+                                        <p className="text-xs text-blue-950 leading-relaxed whitespace-pre-line">
+                                            {bhytResult.aiAuditSummary}
+                                        </p>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-xs text-gray-500 font-bold uppercase">Nguy cơ thiệt hại</div>
-                                        <div className="text-lg font-black text-rose-600">
-                                            {bhytResult.totalEstimatedLossVnd.toLocaleString("vi-VN")} đ
-                                        </div>
-                                    </div>
-                                </div>
+                                )}
 
-                                <div className="space-y-3">
-                                    {bhytResult.flaggedItems.map((item, idx) => (
-                                        <div key={idx} className="p-3.5 bg-gray-50 border rounded-xl text-xs space-y-1.5">
-                                            <div className="flex items-center justify-between">
-                                                <span className="font-bold text-gray-900 text-sm">{item.item}</span>
-                                                <span className="text-rose-600 font-bold">
-                                                    -{item.potentialLossVnd.toLocaleString("vi-VN")} đ
-                                                </span>
+                                {/* Suggested ICD-10 Additions */}
+                                {bhytResult.suggestedIcdCodesToAdd && bhytResult.suggestedIcdCodesToAdd.length > 0 && (
+                                    <div className="p-4 bg-amber-50/90 border border-amber-300 rounded-2xl space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-bold text-amber-950 text-sm flex items-center gap-2">
+                                                <FileText size={18} className="text-amber-600" />
+                                                Gợi ý Bổ Sung Mã ICD-10 Hợp Lệ (Bấm để thêm vào chẩn đoán):
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {bhytResult.suggestedIcdCodesToAdd.map((code, i) => {
+                                                const codeOnly = code.split(" - ")[0].trim();
+                                                const isAlreadyAdded = bhytSecondary.includes(codeOnly);
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (!isAlreadyAdded) {
+                                                                setBhytSecondary((prev) => (prev ? `${prev}, ${codeOnly}` : codeOnly));
+                                                            }
+                                                        }}
+                                                        disabled={isAlreadyAdded}
+                                                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                            isAlreadyAdded
+                                                                ? "bg-emerald-100 text-emerald-800 border border-emerald-300 opacity-80"
+                                                                : "bg-white hover:bg-amber-100 border border-amber-300 text-amber-900 active:scale-95"
+                                                        }`}
+                                                    >
+                                                        {isAlreadyAdded ? <Check size={14} className="text-emerald-700" /> : <Plus size={14} className="text-amber-700" />}
+                                                        <span>{code}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {bhytResult.flaggedItems.length === 0 ? (
+                                    <div className="p-8 text-center bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
+                                        <CheckCircle2 size={44} className="mx-auto text-emerald-600" />
+                                        <h4 className="font-bold text-emerald-950 text-base">Hồ sơ 100% Hợp Lệ</h4>
+                                        <p className="text-xs text-emerald-800">
+                                            Mọi loại thuốc và kỹ thuật cận lâm sàng đều tương thích chuẩn với danh mục mã bệnh ICD-10 đã kê khai.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="p-4 bg-amber-500/10 border border-amber-300 rounded-xl flex items-center justify-between">
+                                            <div>
+                                                <div className="font-bold text-amber-900 text-sm">
+                                                    Phát hiện {bhytResult.totalFlagged} mục có nguy cơ bị cơ quan BHXH xuất toán!
+                                                </div>
+                                                <div className="text-xs text-amber-700">Cần chỉnh sửa bổ sung trước khi đẩy cổng BHYT.</div>
                                             </div>
-                                            <p className="text-gray-600 leading-relaxed">{item.reason}</p>
-                                            <div className="p-2 bg-blue-50 text-blue-900 rounded-lg font-medium border border-blue-200">
-                                                💡 Khuyến nghị: {item.recommendation}
+                                            <div className="text-right">
+                                                <div className="text-xs text-gray-500 font-bold uppercase">Nguy cơ thiệt hại</div>
+                                                <div className="text-lg font-black text-rose-600">
+                                                    {bhytResult.totalEstimatedLossVnd.toLocaleString("vi-VN")} đ
+                                                </div>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+
+                                        <div className="space-y-3">
+                                            {bhytResult.flaggedItems.map((item, idx) => (
+                                                <div key={idx} className="p-3.5 bg-gray-50 border rounded-xl text-xs space-y-1.5 hover:bg-gray-100/70 transition-all">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="font-bold text-gray-900 text-sm">{item.item}</span>
+                                                        <span className="text-rose-600 font-bold">
+                                                            -{item.potentialLossVnd.toLocaleString("vi-VN")} đ
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-gray-600 leading-relaxed">{item.reason}</p>
+                                                    <div className="p-2 bg-blue-50 text-blue-900 rounded-lg font-medium border border-blue-200">
+                                                        💡 Khuyến nghị: {item.recommendation}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -1752,55 +2280,135 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
             {activeTab === "patient" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                        <div className="font-bold text-gray-800 flex items-center gap-2">
-                            <Volume2 className="text-indigo-600" size={20} />
-                            <h3>Bệnh án chuyên môn (Y lệnh hàn lâm)</h3>
+                        <div className="font-bold text-gray-800 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Volume2 className="text-indigo-600" size={20} />
+                                <h3>Bệnh án chuyên môn (Y lệnh hàn lâm)</h3>
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                                AI MedGemma
+                            </span>
                         </div>
 
-                        <p className="text-xs text-gray-500">
-                            Nhập kết quả xét nghiệm hoặc ghi chú chẩn đoán phức tạp. AI sẽ chuyển đổi sang giọng văn ấm áp, dễ hiểu để gửi cho bệnh nhân.
-                        </p>
+                        {/* Audience Selector */}
+                        <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-xl">
+                            <button
+                                type="button"
+                                onClick={() => setTargetAudience("PATIENT")}
+                                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                    targetAudience === "PATIENT" ? "bg-white text-indigo-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+                                }`}
+                            >
+                                👤 Cho Người Bệnh
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setTargetAudience("FAMILY")}
+                                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                    targetAudience === "FAMILY" ? "bg-white text-indigo-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+                                }`}
+                            >
+                                👥 Cho Thân Nhân / Người Nhà
+                            </button>
+                        </div>
+
+                        {/* Presets */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                            <span className="text-[11px] text-gray-500 font-semibold self-center">Bệnh án mẫu:</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMedicalNotesInput(
+                                        "Bệnh nhân được chẩn đoán Viêm loét dạ dày tá tràng mạn tính giai đoạn tiến triển, vi khuẩn HP dương tính. Bạch cầu tăng nhẹ, niêm mạc xung huyết rải rác hang vị. Cần điều trị phác đồ 4 thuốc có Bismuth trong 14 ngày."
+                                    );
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 rounded-lg border border-indigo-200 font-medium transition-all"
+                            >
+                                Viêm loét dạ dày HP(+)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMedicalNotesInput(
+                                        "Bệnh nhân sốt cao 39°C ngày thứ 3, ho khạc đờm đặc màu rỉ sắt, đau tức ngực khi hít sâu. X-quang ghi nhận đám mờ thùy dưới phổi phải, chẩn đoán Viêm phổi thùy cấp do phế cầu khuẩn. Kê đơn kháng sinh tiêm tĩnh mạch kết hợp khí dung."
+                                    );
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg border border-rose-200 font-medium transition-all"
+                            >
+                                Viêm phổi cấp sốt cao
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMedicalNotesInput(
+                                        "Bệnh nhân nam 65 tuổi đo huyết áp phòng khám 175/105 mmHg, chóng mặt, hoa mắt, rối loạn tiền đình. Tiền sử tăng huyết áp nguyên phát 5 năm nhưng hay quên uống thuốc. Đề nghị uống Amlodipine 5mg kết hợp Losartan 50mg mỗi sáng."
+                                    );
+                                }}
+                                className="text-[11px] px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 font-medium transition-all"
+                            >
+                                Tăng huyết áp kịch phát
+                            </button>
+                        </div>
 
                         <textarea
                             rows={6}
                             value={medicalNotesInput}
                             onChange={(e) => setMedicalNotesInput(e.target.value)}
-                            className="w-full p-3.5 border rounded-xl text-sm leading-relaxed"
-                            placeholder="Nhập ghi chú chẩn đoán..."
+                            className="w-full p-3.5 border rounded-xl text-sm leading-relaxed focus:ring-2 focus:ring-indigo-500 outline-none"
+                            placeholder="Nhập ghi chú chẩn đoán hoặc dán kết quả cận lâm sàng..."
                         />
 
                         <button
                             onClick={handleExplainForPatient}
                             disabled={isLoading}
-                            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50"
+                            className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50"
                         >
                             {isLoading ? <RefreshCw className="animate-spin" size={18} /> : <Sparkles size={18} />}
-                            {isLoading ? "Đang chuyển ngữ y khoa..." : "Chuyển Sang Ngôn Ngữ Dễ Hiểu"}
+                            {isLoading ? "AI MedGemma đang chuyển ngữ..." : `Chuyển Ngôn Ngữ Dễ Hiểu Cho ${targetAudience === "FAMILY" ? "Thân Nhân" : "Bệnh Nhân"}`}
                         </button>
                     </div>
 
                     <div className="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                        <div className="border-b pb-3">
+                        <div className="flex items-center justify-between border-b pb-3">
                             <h3 className="font-bold text-gray-800 flex items-center gap-2">
                                 <HeartPulse className="text-indigo-600" size={20} />
-                                Lời Dặn Dò Thân Thiện Dành Cho Người Bệnh
+                                Lời Dặn Dò Thân Thiện Dành Cho {targetAudience === "FAMILY" ? "Thân Nhân" : "Người Bệnh"}
                             </h3>
+                            {patientResult && (
+                                <button
+                                    onClick={() => {
+                                        if ("speechSynthesis" in window) {
+                                            window.speechSynthesis.cancel();
+                                            const utter = new SpeechSynthesisUtterance(patientResult.friendlySummary);
+                                            utter.lang = "vi-VN";
+                                            utter.rate = 0.95;
+                                            window.speechSynthesis.speak(utter);
+                                        } else {
+                                            alert("Trình duyệt không hỗ trợ tổng hợp giọng nói.");
+                                        }
+                                    }}
+                                    className="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold flex items-center gap-1.5 border border-indigo-200 transition-all active:scale-95"
+                                >
+                                    <Volume2 size={14} />
+                                    <span>Đọc to lời dặn</span>
+                                </button>
+                            )}
                         </div>
 
                         {!patientResult ? (
                             <div className="py-20 text-center text-gray-400 space-y-3">
                                 <Volume2 size={48} className="mx-auto text-gray-300" />
-                                <p className="text-sm">Bấm nút để AI biên soạn thông điệp ấm áp cho người bệnh</p>
+                                <p className="text-sm">Bấm nút để AI MedGemma biên soạn thông điệp ấm áp, dễ hiểu cho người bệnh</p>
                             </div>
                         ) : (
                             <div className="space-y-4 text-xs">
-                                <div className="p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl text-indigo-950 text-sm leading-relaxed font-medium">
+                                <div className="p-4 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 border border-indigo-200 rounded-2xl text-indigo-950 text-sm leading-relaxed font-medium shadow-sm">
                                     "{patientResult.friendlySummary}"
                                 </div>
 
                                 <div className="p-4 bg-gray-50 rounded-xl border space-y-2">
-                                    <div className="font-bold text-gray-900 uppercase tracking-wider text-[11px]">
-                                        Điểm mấu chốt bạn cần nhớ:
+                                    <div className="font-bold text-gray-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                                        <span>📌</span> Điểm mấu chốt cần nhớ:
                                     </div>
                                     <ul className="list-disc list-inside space-y-1 text-gray-700">
                                         {patientResult.keyPoints.map((pt, idx) => (
@@ -1810,8 +2418,8 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                                 </div>
 
                                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-2">
-                                    <div className="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
-                                        Chế độ dinh dưỡng & sinh hoạt tại nhà:
+                                    <div className="font-bold text-emerald-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                                        <span>🥗</span> Chế độ dinh dưỡng & sinh hoạt tại nhà:
                                     </div>
                                     <ul className="list-disc list-inside space-y-1 text-emerald-800">
                                         {patientResult.lifestyleRecommendations.map((tip, idx) => (
@@ -1820,9 +2428,17 @@ ${emrResult.suggestedMedications.map((m) => `- ${m.drugName}: ${m.dosage}, ${m.r
                                     </ul>
                                 </div>
 
-                                <div className="p-3 bg-rose-50 text-rose-800 rounded-xl border border-rose-200 font-semibold">
-                                    ⚠️ {patientResult.emergencyNotice}
+                                <div className="p-3.5 bg-rose-50 text-rose-800 rounded-xl border border-rose-200 font-semibold flex items-center gap-2">
+                                    <span>⚠️</span>
+                                    <span>{patientResult.emergencyNotice}</span>
                                 </div>
+
+                                {patientResult.encouragement && (
+                                    <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-900 rounded-xl border border-emerald-200 font-semibold flex items-center gap-2">
+                                        <span>💚</span>
+                                        <span>{patientResult.encouragement}</span>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

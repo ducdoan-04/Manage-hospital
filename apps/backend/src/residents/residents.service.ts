@@ -16,6 +16,49 @@ export class ResidentsService {
         const fullName = [resident.last_name, resident.middle_name, cleanFirstName].filter(Boolean).join(" ");
         const roomNumber = resident.beds?.rooms?.room_number ?? undefined;
 
+        // Trích xuất chẩn đoán chính, thuốc đang dùng, và ghi chú lâm sàng từ Bệnh án EMR (clinical_records)
+        const latestEmr = resident.clinical_records?.find((r: any) => r.record_type === "EMR_AI_NOTE");
+        let parsedEmr: any = null;
+        if (latestEmr) {
+            try {
+                parsedEmr = JSON.parse(latestEmr.description);
+            } catch {
+                parsedEmr = { clinicalNote: latestEmr.description };
+            }
+        }
+
+        const primaryDiagnosis = parsedEmr?.icd10?.[0]
+            ? `${parsedEmr.icd10[0].code} - ${parsedEmr.icd10[0].nameVi}`
+            : (parsedEmr?.chiefComplaint || undefined);
+
+        const currentMedications = parsedEmr?.medications?.length
+            ? parsedEmr.medications.map((m: any) => `${m.drugName} ${m.dosage || ""}`.trim()).join(", ")
+            : (resident.medication_orders?.length
+                ? resident.medication_orders.map((m: any) => `${m.drug_name} ${m.dosage || ""}`.trim()).join(", ")
+                : undefined);
+
+        const clinicalNotes = parsedEmr?.clinicalNote ?? undefined;
+
+        const emrRecords = (resident.clinical_records || [])
+            .filter((r: any) => r.record_type === "EMR_AI_NOTE")
+            .map((r: any) => {
+                let parsed: any = {};
+                try {
+                    parsed = JSON.parse(r.description);
+                } catch {
+                    parsed = { clinicalNote: r.description };
+                }
+                return {
+                    id: r.id,
+                    chiefComplaint: parsed.chiefComplaint || "",
+                    clinicalNote: parsed.clinicalNote || "",
+                    icd10: parsed.icd10 || [],
+                    orders: parsed.orders || [],
+                    medications: parsed.medications || [],
+                    createdAt: r.created_at,
+                };
+            });
+
         return {
             id: resident.id,
             residentCode: `BN-${String(resident.id).slice(0, 8).toUpperCase()}`,
@@ -34,9 +77,11 @@ export class ResidentsService {
             emergencyContactRelationship: undefined,
             emergencyContactPhone: "Chưa cung cấp",
             emergencyContactEmail: undefined,
-            primaryDiagnosis: undefined,
+            primaryDiagnosis,
             allergies: undefined,
-            currentMedications: undefined,
+            currentMedications,
+            clinicalNotes,
+            emrRecords,
             mobilityStatus: undefined,
             isChartLocked: resident.is_chart_locked,
         };
@@ -143,7 +188,17 @@ export class ResidentsService {
     async findOne(id: string) {
         const resident = await this.prisma.residents.findUnique({
             where: { id },
-            include: { beds: { include: { rooms: true } } },
+            include: {
+                beds: { include: { rooms: true } },
+                clinical_records: {
+                    where: { is_deleted: false },
+                    orderBy: { created_at: "desc" },
+                },
+                medication_orders: {
+                    where: { is_deleted: false },
+                    orderBy: { created_at: "desc" },
+                },
+            },
         });
 
         if (!resident) {

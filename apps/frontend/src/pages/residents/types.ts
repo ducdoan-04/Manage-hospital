@@ -37,6 +37,15 @@ export type Resident = {
     emergencyContactRelationship?: string;
     emergencyContactPhone: string;
     emergencyContactEmail?: string;
+    emrRecords?: Array<{
+        id: string;
+        chiefComplaint: string;
+        clinicalNote: string;
+        icd10: Array<{ code: string; nameVi: string; confidence?: number; rationale?: string }>;
+        orders: Array<{ type: string; name: string; priority: string }>;
+        medications: Array<{ drugName: string; dosage?: string; route?: string; frequency?: string }>;
+        createdAt: string;
+    }>;
 };
 
 export type ResidentFormPayload = {

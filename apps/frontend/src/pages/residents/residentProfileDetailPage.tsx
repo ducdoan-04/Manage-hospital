@@ -106,6 +106,13 @@ export function ResidentProfileDetailPage() {
                     <Link className="secondary-action" to={APP_ROUTES.RESIDENTS}>
                         ← Quay lại danh sách
                     </Link>
+                    <Link
+                        className="secondary-action"
+                        style={{ backgroundColor: "#047857", color: "#ffffff", borderColor: "#047857" }}
+                        to="/ai-assistant"
+                    >
+                        ✨ Mở AI Trợ lý Bệnh án
+                    </Link>
                     <Link className="primary-action" to={`${APP_ROUTES.RESIDENTS}/${resident.id}/edit`}>
                         Chỉnh sửa hồ sơ
                     </Link>
@@ -236,6 +243,151 @@ export function ResidentProfileDetailPage() {
                             <dd>{displayValue(resident.clinicalNotes)}</dd>
                         </div>
                     </dl>
+                </article>
+
+                {/* HỒ SƠ BỆNH ÁN ĐIỆN TỬ EMR ĐÃ LƯU TỪ AI */}
+                <article className="detail-panel detail-panel--wide" style={{ marginTop: "1rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                        <div>
+                            <h2 style={{ margin: 0 }}>Hồ sơ Bệnh án Điện tử EMR (Lịch sử Lâm sàng AI)</h2>
+                            <p style={{ margin: "4px 0 0 0", fontSize: "0.85rem", color: "#64748b" }}>
+                                Tổng hợp các lần khám, trích xuất bệnh án giọng nói và phác đồ đã được lưu vào hệ thống HIS/EMR.
+                            </p>
+                        </div>
+                        <Link
+                            to="/ai-assistant"
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "6px 14px",
+                                backgroundColor: "#059669",
+                                color: "#ffffff",
+                                borderRadius: "8px",
+                                fontSize: "0.8rem",
+                                fontWeight: "bold",
+                                textDecoration: "none",
+                            }}
+                        >
+                            + Lập Bệnh án Mới với AI
+                        </Link>
+                    </div>
+
+                    {!resident.emrRecords || resident.emrRecords.length === 0 ? (
+                        <div style={{ padding: "2rem", textAlign: "center", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px dashed #cbd5e1" }}>
+                            <p style={{ margin: 0, fontWeight: "bold", color: "#475569" }}>Chưa có Bệnh án EMR nào được lưu cho bệnh nhân này.</p>
+                            <p style={{ margin: "6px 0 12px 0", fontSize: "0.85rem", color: "#64748b" }}>
+                                Bạn có thể sử dụng AI Trợ lý để nói hoặc nhập triệu chứng, AI sẽ tự động phân loại ICD-10 và tạo đơn thuốc.
+                            </p>
+                            <Link
+                                to="/ai-assistant"
+                                style={{
+                                    display: "inline-block",
+                                    padding: "8px 16px",
+                                    backgroundColor: "#059669",
+                                    color: "#ffffff",
+                                    borderRadius: "8px",
+                                    fontSize: "0.85rem",
+                                    fontWeight: "bold",
+                                    textDecoration: "none",
+                                }}
+                            >
+                                ✨ Mở Trợ lý Trích xuất Bệnh án AI
+                            </Link>
+                        </div>
+                    ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                            {resident.emrRecords.map((record, index) => (
+                                <div
+                                    key={record.id}
+                                    style={{
+                                        padding: "1.25rem",
+                                        borderRadius: "12px",
+                                        border: "1px solid #e2e8f0",
+                                        backgroundColor: index === 0 ? "#f0fdf4" : "#ffffff",
+                                        borderColor: index === 0 ? "#86efac" : "#e2e8f0",
+                                    }}
+                                >
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem", borderBottom: "1px solid rgba(0,0,0,0.06)", paddingBottom: "0.5rem" }}>
+                                        <div>
+                                            <span style={{ fontSize: "0.75rem", fontWeight: "bold", padding: "2px 8px", borderRadius: "9999px", backgroundColor: index === 0 ? "#dcfce7" : "#f1f5f9", color: index === 0 ? "#166534" : "#475569" }}>
+                                                {index === 0 ? "Bệnh án Mới Nhất" : `Bệnh án #${record.id.slice(0, 8)}`}
+                                            </span>
+                                            <span style={{ fontSize: "0.8rem", color: "#64748b", marginLeft: "10px" }}>
+                                                Lưu lúc: {new Date(record.createdAt).toLocaleString("vi-VN")}
+                                            </span>
+                                        </div>
+                                        <span style={{ fontSize: "0.75rem", color: "#16a34a", fontWeight: "bold" }}>
+                                            ✓ Đã lưu CSDL HIS/EMR
+                                        </span>
+                                    </div>
+
+                                    {record.chiefComplaint && (
+                                        <div style={{ marginBottom: "0.5rem" }}>
+                                            <strong style={{ fontSize: "0.85rem", color: "#1e293b" }}>Lý do khám: </strong>
+                                            <span style={{ fontSize: "0.85rem", color: "#334155" }}>{record.chiefComplaint}</span>
+                                        </div>
+                                    )}
+
+                                    {record.icd10 && record.icd10.length > 0 && (
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "0.75rem" }}>
+                                            <strong style={{ fontSize: "0.8rem", color: "#1e293b", alignSelf: "center" }}>Chẩn đoán ICD-10:</strong>
+                                            {record.icd10.map((icd, i) => (
+                                                <span
+                                                    key={i}
+                                                    style={{
+                                                        padding: "2px 8px",
+                                                        borderRadius: "6px",
+                                                        backgroundColor: "#e0f2fe",
+                                                        color: "#0369a1",
+                                                        fontSize: "0.75rem",
+                                                        fontWeight: "600",
+                                                        border: "1px solid #bae6fd",
+                                                    }}
+                                                >
+                                                    {icd.code} - {icd.nameVi}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {record.clinicalNote && (
+                                        <div style={{ padding: "0.75rem", backgroundColor: "rgba(255,255,255,0.7)", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.05)", marginBottom: "0.75rem", fontSize: "0.8rem", color: "#334155", lineHeight: "1.5", whiteSpace: "pre-line" }}>
+                                            {record.clinicalNote}
+                                        </div>
+                                    )}
+
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "0.75rem", fontSize: "0.8rem" }}>
+                                        {record.medications && record.medications.length > 0 && (
+                                            <div style={{ padding: "0.75rem", backgroundColor: "#fafaf9", borderRadius: "8px", border: "1px solid #f5f5f4" }}>
+                                                <strong style={{ color: "#059669", display: "block", marginBottom: "4px" }}>💊 Đơn thuốc đã lưu ({record.medications.length}):</strong>
+                                                <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "#44403c" }}>
+                                                    {record.medications.map((m, mi) => (
+                                                        <li key={mi}>
+                                                            <strong>{m.drugName}</strong> {m.dosage ? `· ${m.dosage}` : ""} {m.frequency ? `· ${m.frequency}` : ""}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {record.orders && record.orders.length > 0 && (
+                                            <div style={{ padding: "0.75rem", backgroundColor: "#fafaf9", borderRadius: "8px", border: "1px solid #f5f5f4" }}>
+                                                <strong style={{ color: "#2563eb", display: "block", marginBottom: "4px" }}>🧪 Chỉ định cận lâm sàng ({record.orders.length}):</strong>
+                                                <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "#1e293b" }}>
+                                                    {record.orders.map((o, oi) => (
+                                                        <li key={oi}>
+                                                            [{o.type}] <strong>{o.name}</strong> {o.priority === "STAT" ? "(Khẩn cấp)" : ""}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </article>
             </section>
         </main>
