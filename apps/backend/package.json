@@ -21,7 +21,7 @@
         "test:watch": "jest --watch"
     },
     "dependencies": {
-        "@nestjs/common": "^11.1.27",
+        "@nestjs/common": "^12.2.0",
         "@nestjs/core": "^11.1.27",
         "@nestjs/jwt": "^11.0.0",
         "@nestjs/passport": "^11.0.5",
